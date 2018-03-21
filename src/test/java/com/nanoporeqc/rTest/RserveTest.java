@@ -1,4 +1,4 @@
-package com.nanoporeqc;
+package com.nanoporeqc.rTest;
 
 import com.nanoporeqc.config.IntegrationTest;
 import org.junit.After;
@@ -23,8 +23,6 @@ import org.rosuda.REngine.RFactor;
 import org.rosuda.REngine.RList;
 import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

@@ -6,14 +6,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REngine;
 import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
 import org.springframework.core.io.ClassPathResource;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -57,7 +55,7 @@ public class IoniserTest {
 
     @Test
     public void testReadFast5Summary() throws IOException, RserveException, REXPMismatchException {
-        ClassPathResource rScript = new ClassPathResource("r_scripts/plotReadAccumulation.R");
+        ClassPathResource rScript = new ClassPathResource("r_scripts/readAccumulation.R");
 
         connection.eval(String.format("source('%s')", rScript.getFile().getAbsolutePath()));
 

@@ -23,9 +23,10 @@ readCategoryQuals <- function(summaryData) {
     res <- data.frame(readType, meanBaseQuality)
 }
 
-out <- readCategoryQuals(summaryData)
+out <- tryCatch(readCategoryQuals(summaryData), error = function(cond){return (tibble())})
 
-temp <- select(out, readType)
-readType <- matrix(as.charackter(unlist(temp)), nrow = nrow(temp))
-temp <- select(out, meanBaseQuality)
-newReads <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
+temp <- tryCatch(select(out, read_type), error = function(cond){return (tibble(read_type = character()))})
+read_type <- matrix(as.character(unlist(temp)), nrow = nrow(temp))
+
+temp <- tryCatch(select(out, mean_base_quality), error = function(cond){return (tibble(mean_base_quality = numeric()))})
+mean_base_quality <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))

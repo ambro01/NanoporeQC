@@ -17,11 +17,10 @@ activeChannels <- function(summaryData) {
     tab <- dplyr::data_frame(minute = unlist(apply(startEndSummary, 1, function(x) { x['first']:x['last'] }))) %>% dplyr::count(minute)
 }
 
-out <- activeChannels(summaryData)
+out <- tryCatch(activeChannels(summaryData), error = function(cond){return (tibble())})
 
-matrixData <- matrix(as.numeric(unlist(out)), nrow = nrow(out))
+temp <- tryCatch(select(out, minute), error = function(cond){return (tibble(minute = numeric()))})
+minute <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
 
-temp <- select(out, minute)
-minutes <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
-temp <- select(out, n)
+temp <- tryCatch(select(out, n), error = function(cond){return (tibble(n = numeric()))})
 channels <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))

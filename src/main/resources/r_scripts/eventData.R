@@ -1,15 +1,19 @@
-# id, start_time, duration, num_events, medial_signal
+# id, start_time, duration, num_events, median_signal
 # id, czas start, czas trwania, liczba zdarzen, sredni sygnal
 
-out <- eventRate(summaryData)
+out <- tryCatch(eventData(summaryData), error = function(cond){return (tibble())})
 
-temp <- select(out, id)
+temp <- tryCatch(select(out, id), error = function(cond){return (tibble(id = numeric()))})
 id <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
-temp <- select(out, start_time)
-startTime <- matrix(as.charackter(unlist(temp)), nrow = nrow(temp))
-temp <- select(out, duration)
-duration <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
-temp <- select(out, num_events)
-duration <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
-temp <- select(out, medial_signal)
-startTime <- matrix(as.charackter(unlist(temp)), nrow = nrow(temp))
+
+temp <- tryCatch(select(out, start_time), error = function(cond){return (tibble(start_time = double()))})
+start_time <- matrix(as.double(unlist(temp)), nrow = nrow(temp))
+
+temp <- tryCatch(select(out, duration), error = function(cond){return (tibble(duration = double()))})
+duration <- matrix(as.double(unlist(temp)), nrow = nrow(temp))
+
+temp <- tryCatch(select(out, num_events), error = function(cond){return (tibble(num_events = numeric()))})
+num_events <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
+
+temp <- tryCatch(select(out, median_signal), error = function(cond){return (tibble(median_signal = double()))})
+median_signal <- matrix(as.double(unlist(temp)), nrow = nrow(temp))

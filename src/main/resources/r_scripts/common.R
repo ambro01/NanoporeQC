@@ -9,7 +9,6 @@
 }
 
 .matchRecords <- function(summaryData) {
-
     ids <- readInfo(summaryData)[['id']]
     ri_row <- match(ids, readInfo(summaryData)[['id']])
     ed_row <- match(ids, eventData(summaryData)[['id']])
@@ -31,5 +30,4 @@
     fastq2D = fq_row)
 
     return(record_table)
-
 }

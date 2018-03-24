@@ -39,9 +39,10 @@ readCategoryCounts <- function(summaryData) {
     }
 }
 
-out <- readCategoryCounts(summaryData)
+out <- tryCatch(readCategoryCounts(summaryData), error = function(cond){return (tibble())})
 
-temp <- select(out, category)
-readType <- matrix(as.charackter(unlist(temp)), nrow = nrow(temp))
-temp <- select(out, count)
-newReads <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
+temp <- tryCatch(select(out, category), error = function(cond){return (tibble(category = character()))})
+category <- matrix(as.character(unlist(temp)), nrow = nrow(temp))
+
+temp <- tryCatch(select(out, count), error = function(cond){return (tibble(count = double()))})
+count <- matrix(as.double(unlist(temp)), nrow = nrow(temp))

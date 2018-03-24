@@ -17,13 +17,13 @@ readAccumulation <- function(summaryData) {
         dplyr::mutate(accumulation = dplyr::order_by(minute, cumsum(new_reads)))
 }
 
-out <- readAccumulation(summaryData)
+out <- tryCatch(readAccumulation(summaryData), error = function(cond){return (tibble())})
 
-matrixData <- matrix(as.numeric(unlist(out)), nrow = nrow(out))
+temp <- tryCatch(select(out, minute), error = function(cond){return (tibble(minute = double()))})
+minute <- matrix(as.double(unlist(temp)), nrow = nrow(temp))
 
-temp <- select(out, minute)
-minutes <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
-temp <- select(out, new_reads)
-newReads <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
-temp <- select(out, accumulation)
+temp <- tryCatch(select(out, new_reads), error = function(cond){return (tibble(new_reads = numeric()))})
+new_reads <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
+
+temp <- tryCatch(select(out, accumulation), error = function(cond){return (tibble(accumulation = numeric()))})
 accumulation <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))

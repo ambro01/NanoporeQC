@@ -1,4 +1,4 @@
-# id, num_events, duration, start_time, strand, full_2D, bases_calles
+# id, num_events, duration, start_time, strand, full_2D, bases_called
 # id, ilosc zdarzen, czas trwania, czas startu, typ odczytu, czy jest 2D, ilosc dopasowan
 
 #' Plot the mean rate at which bases are recorded
@@ -31,23 +31,30 @@ baseProductionRate <- function(summaryData) {
     recordTable <- .matchRecords(summaryData)
     fastqIDX <- c(recordTable[['fastqTemplate']], recordTable[['fastqComplement']])
     fastqIDX <- fastqIDX[-which(is.na(fastqIDX))]
-    res <- mutate(baseCalled(summaryData), bases_called = width(fastq(summaryData)[ fastqIDX ]))
+    res <- mutate(baseCalled(summaryData), bases_called = ShortRead::width(fastq(summaryData)[ fastqIDX ]))
 }
 
-out <- baseProductionRate(summaryData)
-# id, num_events, duration, start_time, strand, full_2D, bases_calles
+# id, num_events, duration, start_time, strand, full_2D, bases_called
 
-temp <- select(out, id)
+out <- tryCatch(baseProductionRate(summaryData), error = function(cond){return (tibble())})
+
+temp <- tryCatch(select(out, id), error = function(cond){return (tibble(id = numeric()))})
 id <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
-temp <- select(out, num_events)
-numEvents <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
-temp <- select(out, duration)
-duration <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
-temp <- select(out, start_time)
-startTime <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
-temp <- select(out, strand)
-strandType <- matrix(as.charackter(unlist(temp)), nrow = nrow(temp))
-temp <- select(out, full_2D)
-isFull2D <- matrix(as.logical(unlist(temp)), nrow = nrow(temp))
-temp <- select(out, bases_calles)
-basesCalls <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
+
+temp <- tryCatch(select(out, num_events), error = function(cond){return (tibble(num_events = double()))})
+num_events <- matrix(as.double(unlist(temp)), nrow = nrow(temp))
+
+temp <- tryCatch(select(out, duration), error = function(cond){return (tibble(duration = double()))})
+duration <- matrix(as.double(unlist(temp)), nrow = nrow(temp))
+
+temp <- tryCatch(select(out, start_time), error = function(cond){return (tibble(start_time = numeric()))})
+start_time <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
+
+temp <- tryCatch(select(out, strand), error = function(cond){return (tibble(strand = character()))})
+strand <- matrix(as.character(unlist(temp)), nrow = nrow(temp))
+
+temp <- tryCatch(select(out, full_2D), error = function(cond){return (tibble(full_2D = logical()))})
+full_2D <- matrix(as.logical(unlist(temp)), nrow = nrow(temp))
+
+temp <- tryCatch(select(out, bases_called), error = function(cond){return (tibble(bases_called = numeric()))})
+bases_called <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))

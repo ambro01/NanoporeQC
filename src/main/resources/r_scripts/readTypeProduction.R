@@ -22,15 +22,19 @@ readTypeProduction <- function(summaryData, groupedMinutes = 10) {
         mutate(hour = (time_group * groupedMinutes)/60 )
 }
 
-out <- readTypeProduction(summaryData)
+out <- tryCatch(readTypeProduction(summaryData), error = function(cond){return (tibble())})
 
-temp <- select(out, time_group)
-timeGroup <- matrix(as.charackter(unlist(temp)), nrow = nrow(temp))
-temp <- select(out, full_2D)
-isFull2D <- matrix(as.logical(unlist(temp)), nrow = nrow(temp))
-temp <- select(out, pass)
-pass <- matrix(as.charackter(unlist(temp)), nrow = nrow(temp))
-temp <- select(out, count)
-count <- matrix(as.charackter(unlist(temp)), nrow = nrow(temp))
-temp <- select(out, hour)
-hour <- matrix(as.charackter(unlist(temp)), nrow = nrow(temp))
+temp <- tryCatch(select(out, time_group), error = function(cond){return (tibble(pass = double()))})
+time_group <- matrix(as.double(unlist(temp)), nrow = nrow(temp))
+
+temp <- tryCatch(select(out, full_2D), error = function(cond){return (tibble(pass = logical()))})
+full_2D <- matrix(as.logical(unlist(temp)), nrow = nrow(temp))
+
+temp <- tryCatch(select(out, pass), error = function(cond){return (tibble(pass = logical()))})
+pass <- matrix(as.logical(unlist(temp)), nrow = nrow(temp))
+
+temp <- tryCatch(select(out, count), error = function(cond){return (tibble(pass = numeric()))})
+count <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
+
+temp <- tryCatch(select(out, hour), error = function(cond){return (tibble(pass = double()))})
+hour <- matrix(as.double(unlist(temp)), nrow = nrow(temp))

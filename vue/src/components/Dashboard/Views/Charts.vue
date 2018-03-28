@@ -51,7 +51,7 @@
       }
     },
     created () {
-      HTTP.get(`api/charts/1`)
+      HTTP.get(`api/charts/readAccumulation/minute/accumulation`)
         .then(response => {
           this.datacollection = {
             labels: response.data.xvalues,

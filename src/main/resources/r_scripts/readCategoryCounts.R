@@ -15,30 +15,6 @@
 #' @export
 #' @importFrom dplyr summarise count
 
-readCategoryCounts <- function(summaryData) {
-    tab <- c(nrow(readInfo(summaryData)),
-    dplyr::count(baseCalled(summaryData), strand, sort = TRUE)[['n']],
-    dplyr::count(baseCalled(summaryData), full_2D)[[2,'n']] / 2)
-
-    if ("pass" %in% names(readInfo(summaryData))) {
-        pf <- any(dplyr::count(readInfo(summaryData), pass)[['pass']], na.rm = TRUE)
-    } else {
-        pf <- FALSE
-    }
-    if (pf) {
-        tab <- c(tab, nrow(filter(readInfo(summaryData), pass == TRUE)))
-        res <- data_frame(
-        category = factor(c('Fast5 File Count', 'Template', 'Complement', 'Full 2D', 'Pass'),
-        levels = c('Fast5 File Count', 'Template', 'Complement', 'Full 2D', 'Pass')),
-        count = tab)
-    } else {
-        res <- data_frame(
-        category = factor(c('Fast5 File Count', 'Template', 'Complement', 'Full 2D'),
-        levels = c('Fast5 File Count', 'Template', 'Complement', 'Full 2D')),
-        count = tab)
-    }
-}
-
 out <- tryCatch(readCategoryCounts(summaryData), error = function(cond){return (tibble())})
 
 temp <- tryCatch(select(out, category), error = function(cond){return (tibble(category = character()))})

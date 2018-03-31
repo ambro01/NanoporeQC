@@ -35,4 +35,7 @@
   export default {}
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+  @import "assets/sass/paper-dashboard";
+  @import "assets/sass/filemanagement";
+</style>

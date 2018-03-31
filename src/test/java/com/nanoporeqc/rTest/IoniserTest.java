@@ -1,17 +1,16 @@
 package com.nanoporeqc.rTest;
 
 import com.nanoporeqc.config.IntegrationTest;
-import com.nanoporeqc.r.domain.RFast5Resource;
 import com.nanoporeqc.r.consts.RScriptsConst;
+import com.nanoporeqc.r.domain.RFast5Resource;
 import com.nanoporeqc.r.domain.RVariable;
-import com.nanoporeqc.r.services.RFast5ResourceService;
-import com.nanoporeqc.r.services.RVariableService;
+import com.nanoporeqc.r.service.RFast5ResourceService;
+import com.nanoporeqc.r.service.RService;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REngine;
 import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
@@ -20,10 +19,7 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Category(IntegrationTest.class)
 public class IoniserTest {
@@ -31,12 +27,14 @@ public class IoniserTest {
     private RConnection connection = null;
     private REngine engine = null;
     private RFast5Resource rFast5Resource;
+    private RService rService;
 
     @Before
     public void createConnection() throws RserveException, IOException {
         connection = new RConnection();
         engine = connection;
         rFast5Resource = new RFast5Resource();
+        rService = new RService(connection);
         RFast5ResourceService rFast5ResourceService = new RFast5ResourceService();
 
         List<URL> urlList = new ArrayList<>();
@@ -66,8 +64,6 @@ public class IoniserTest {
 
     @Test
     public void testRScripts() {
-        RVariableService rVariableService = new RVariableService();
-
         RScriptsConst.RScriptsMap.values().forEach(rScript -> {
             ClassPathResource rScriptPath = new ClassPathResource("r_scripts/" + rScript.getName().getFileName());
 
@@ -80,7 +76,7 @@ public class IoniserTest {
             List<RVariable> rVariables = new ArrayList<>(rScript.getRVariablesMap().values());
 
             for (RVariable rVariable : rVariables) {
-                rVariable.setRDataSet(rVariableService.getDataSetFromR(rVariable, connection));
+                rVariable.setRDataSet(rService.getDataSetFromR(rVariable));
 
                 Assert.assertNotNull(rVariable.getRDataSet());
             }

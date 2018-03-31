@@ -35,7 +35,7 @@
   import BarChart from 'src/components/Charts/BarChart.vue'
   import BubbleChart from 'src/components/Charts/BubbleChart.vue'
   import Reactive from 'src/components/Charts/Reactive.vue'
-  import {HTTP} from 'src/http-common'
+  import {AXIOS} from 'src/http-common'
 
   export default {
     name: 'VueChartJS',
@@ -51,7 +51,7 @@
       }
     },
     created () {
-      HTTP.get(`api/charts/readAccumulation/minute/accumulation`)
+      AXIOS.get(`api/charts/readAccumulation/minute/accumulation`)
         .then(response => {
           this.datacollection = {
             labels: response.data.xvalues,

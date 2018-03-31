@@ -1,23 +1,44 @@
 package com.nanoporeqc.r.enumeration;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 public enum RScriptEnum {
-    READ_INFO("readInfo.R"),
-    BASE_CALLED("baseCalled.R"),
-    EVENT_DATA("eventData.R"),
-    READ_ACCUMULATION("readAccumulation.R"),
-    ACTIVE_CHANNELS("activeChannels.R"),
-    BASE_PRODUCTION_RATE("baseProductionRate.R"),
-    READ_CATEGORY_COUNTS("readCategoryCounts.R"),
-    READ_CATEGORY_QUALITY("readCategoryQuality.R"),
-    READ_TYPE_PRODUCTION("readTypeProduction.R");
+    READ_INFO("readInfo"),
+    BASE_CALLED("baseCalled"),
+    EVENT_DATA("eventData"),
+    READ_ACCUMULATION("readAccumulation"),
+    ACTIVE_CHANNELS("activeChannels"),
+    BASE_PRODUCTION_RATE("baseProductionRate"),
+    READ_CATEGORY_COUNTS("readCategoryCounts"),
+    READ_CATEGORY_QUALITY("readCategoryQuality"),
+    READ_TYPE_PRODUCTION("readTypeProduction");
 
-    private String fileName;
+    private String value;
 
-    RScriptEnum(String fileName) {
-        this.fileName = fileName;
+    private static final Map<String, RScriptEnum> map = new HashMap<>();
+
+    static {
+        for (RScriptEnum myEnum : values()) {
+            map.put(myEnum.getValue(), myEnum);
+        }
+    }
+
+    public static RScriptEnum getEnumByValue(String value){
+        return map.get(value);
+    }
+
+    RScriptEnum(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
     }
 
     public String getFileName() {
-        return fileName;
+        return value + ".R";
     }
 }

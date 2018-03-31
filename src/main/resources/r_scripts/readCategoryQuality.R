@@ -16,13 +16,6 @@
 #' @importFrom ShortRead alphabetScore
 #' @importFrom Biostrings quality
 
-readCategoryQuals <- function(summaryData) {
-    fq <- fastq(summaryData)
-    readType <- factor(.readtypeFromFASTQ(fq), levels = c('space', 'template', 'complement', '2D'))
-    meanBaseQuality <- ShortRead::alphabetScore(Biostrings::quality(fq)) / width(fq)
-    res <- data.frame(readType, meanBaseQuality)
-}
-
 out <- tryCatch(readCategoryQuals(summaryData), error = function(cond){return (tibble())})
 
 temp <- tryCatch(select(out, read_type), error = function(cond){return (tibble(read_type = character()))})

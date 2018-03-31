@@ -13,14 +13,6 @@
 #' }
 #' @export
 #' @importFrom dplyr left_join
-readTypeProduction <- function(summaryData, groupedMinutes = 10) {
-    tmp <- dplyr::left_join(baseCalled(summaryData), readInfo(summaryData), by = 'id') %>%
-        filter(strand == "template") %>%
-        mutate(time_group = start_time %/% (60 * groupedMinutes)) %>%
-        group_by(time_group, full_2D, pass) %>%
-        summarise(count = n()) %>%
-        mutate(hour = (time_group * groupedMinutes)/60 )
-}
 
 out <- tryCatch(readTypeProduction(summaryData), error = function(cond){return (tibble())})
 

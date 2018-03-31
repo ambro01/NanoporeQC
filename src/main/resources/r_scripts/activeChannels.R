@@ -12,11 +12,6 @@
 #' @export
 #' @importFrom dplyr mutate count data_frame
 
-activeChannels <- function(summaryData) {
-    startEndSummary <- dplyr::mutate(eventData(summaryData), first = start_time %/% 60, last = (start_time + duration) %/% 60)
-    tab <- dplyr::data_frame(minute = unlist(apply(startEndSummary, 1, function(x) { x['first']:x['last'] }))) %>% dplyr::count(minute)
-}
-
 out <- tryCatch(activeChannels(summaryData), error = function(cond){return (tibble())})
 
 temp <- tryCatch(select(out, minute), error = function(cond){return (tibble(minute = numeric()))})

@@ -25,15 +25,6 @@
 #' @importFrom dplyr mutate
 #' @importFrom ShortRead width
 
-baseProductionRate <- function(summaryData) {
-    ## select only the fastq records for the template and complement reads
-    ## ignore the composite 2D reads here
-    recordTable <- .matchRecords(summaryData)
-    fastqIDX <- c(recordTable[['fastqTemplate']], recordTable[['fastqComplement']])
-    fastqIDX <- fastqIDX[-which(is.na(fastqIDX))]
-    res <- mutate(baseCalled(summaryData), bases_called = ShortRead::width(fastq(summaryData)[ fastqIDX ]))
-}
-
 # id, num_events, duration, start_time, strand, full_2D, bases_called
 
 out <- tryCatch(baseProductionRate(summaryData), error = function(cond){return (tibble())})

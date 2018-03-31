@@ -1,4 +1,4 @@
-package com.nanoporeqc.r.services;
+package com.nanoporeqc.r.service;
 
 import com.nanoporeqc.r.domain.RFast5Resource;
 

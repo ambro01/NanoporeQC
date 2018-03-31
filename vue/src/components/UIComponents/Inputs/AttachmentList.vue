@@ -12,7 +12,7 @@
                                                    :href="attachment.path">{{ attachment.name + ' (' + Number((attachment.size / 1024 / 1024).toFixed(1)) + 'MB)'}}</a></span>
               <span class="label label-success">{{ attachment.category.name }}</span>
               <span class="label label-warning">{{ attachment.time }}</span>
-              <span class="" style="background: red; cursor: pointer;" @click="removeAttachment(attachment)"><button
+              <span class="" style="cursor: pointer;" @click="removeAttachment(attachment)"><button
                 class="btn btn-xs btn-danger">Remove</button></span>
             </div>
           </div>
@@ -22,7 +22,7 @@
   </div>
 </template>
 <script>
-  import {axios} from 'src/http-common'
+  import {AXIOS} from 'src/http-common'
 
   export default {
     props: [
@@ -45,7 +45,7 @@
         }
         }
         // Make HTTP request to store announcement
-        axios.delete(this.settings.file_management.delete_attachment, data)
+        AXIOS.delete(this.settings.file_management.delete_attachment, data)
           .then(function (response) {
             console.log(response)
             if (response.data.success) {
@@ -65,7 +65,7 @@
       pullAttachments () {
         window.Event.fire('loading_on')
         // Make HTTP request to store announcement
-        axios.post(this.settings.file_management.pull_attachments)
+        AXIOS.post(this.settings.file_management.pull_attachments)
           .then(function (response) {
             console.log(response)
             if (response.data.success) {

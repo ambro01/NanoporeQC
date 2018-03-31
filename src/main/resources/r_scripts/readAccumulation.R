@@ -11,11 +11,6 @@
 #' }
 #' @export
 #' @importFrom dplyr group_by summarise mutate order_by with_order n
-readAccumulation <- function(summaryData) {
-    readAccumulation <- dplyr::group_by(eventData(summaryData), minute = start_time %/% 60) %>%
-        dplyr::summarise(new_reads = n()) %>%
-        dplyr::mutate(accumulation = dplyr::order_by(minute, cumsum(new_reads)))
-}
 
 out <- tryCatch(readAccumulation(summaryData), error = function(cond){return (tibble())})
 

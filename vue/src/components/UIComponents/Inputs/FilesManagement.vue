@@ -11,7 +11,7 @@
         <div class="col-md-12">
           <div class="attachment-holder animated fadeIn" v-cloak v-for="(attachment, index) in attachments">
             <span class="label label-primary">{{ attachment.name + ' (' + Number((attachment.size / 1024 / 1024).toFixed(1)) + 'MB)'}}</span>
-            <span class="" style="background: red; cursor: pointer;" @click="removeAttachment(attachment)"><button class="btn btn-xs btn-danger">Remove</button></span>
+            <span class="" @click="removeAttachment(attachment)"><button class="btn btn-xs btn-danger">Remove</button></span>
           </div>
         </div>
       </div>
@@ -20,7 +20,7 @@
     </div>
 </template>
 <script>
-  import {axios} from 'src/http-common'
+  import {AXIOS} from 'src/http-common'
 
   export default {
     props: [
@@ -53,7 +53,7 @@
         if (this.attachments.length > 0) {
           for (var i = 0; i < this.attachments.length; i++) {
             let attachment = this.attachments[i]
-            this.data.append('attachments[]', attachment)
+            this.data.append('files', attachment)
           }
         }
       },
@@ -83,8 +83,8 @@
           }.bind(this)
         }
         // Make HTTP request to store announcement
-        axios.post(this.settings.file_management.upload_files, this.data, config)
-          .then(function (response) {
+        AXIOS.post(`api/files`, this.data, config)
+          .then(response => {
             console.log(response)
             if (response.data.success) {
               console.log('Successfull Upload')
@@ -94,10 +94,8 @@
               console.log('Unsuccessful Upload')
               this.errors = response.data.errors
             }
-          }.bind(this)) // Make sure we bind Vue Component object to this funtion so we get a handle of it in order to call its other methods
-          .catch(function (error) {
-            console.log(error)
           })
+          // .bind(this) // Make sure we bind Vue Component object to this funtion so we get a handle of it in order to call its other methods
       },
       // We want to clear the FormData object on every upload so we can re-calculate new files again.
       // Keep in mind that we can delete files as well so in the future we will need to keep track of that as well

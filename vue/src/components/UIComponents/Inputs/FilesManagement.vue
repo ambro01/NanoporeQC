@@ -85,7 +85,6 @@
         // Make HTTP request to store announcement
         AXIOS.post(`api/files`, this.data, config)
           .then(response => {
-            console.log(response)
             if (response.data.success) {
               console.log('Successfull Upload')
               toastr.success('Files Uploaded!', 'Success')

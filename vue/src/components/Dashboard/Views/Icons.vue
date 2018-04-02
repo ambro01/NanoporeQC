@@ -5,6 +5,7 @@
         <div>
           <files-management></files-management>
           <attachemnt-list></attachemnt-list>
+          <analyse-save></analyse-save>
         </div>
       </div>
     </div>
@@ -15,11 +16,13 @@
 
   import FilesManagement from 'src/components/UIComponents/Inputs/FilesManagement.vue'
   import AttachemntList from 'src/components/UIComponents/Inputs/AttachmentList.vue'
+  import AnalyseSave from 'src/components/UIComponents/Inputs/AnalyseSave.vue'
 
   export default {
     components: {
       FilesManagement,
-      AttachemntList
+      AttachemntList,
+      AnalyseSave
     },
     data () {
       return {

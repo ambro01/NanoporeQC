@@ -85,7 +85,7 @@ $padding-large-horizontal: 30px !default;
 $padding-small-vertical: 4px !default;
 $padding-small-horizontal: 10px !default;
 
-$padding-xs-vertical: 2px !default;
+$padding-xs-vertical: 0px !default;
 $padding-xs-horizontal: 5px !default;
 
 $padding-label-vertical: 2px !default;
@@ -99,9 +99,9 @@ $margin-large-vertical: 30px !default;
 $margin-base-vertical: 15px !default;
 
 // border radius for buttons
-$border-radius-btn-small: 26px !default;
-$border-radius-btn-base: 20px !default;
-$border-radius-btn-large: 50px !default;
+$border-radius-btn-small: 5px !default;
+$border-radius-btn-base: 4px !default;
+$border-radius-btn-large: 10px !default;
 
 // Cristina: am schimbat aici si s-au modificat inputurile
 $margin-bottom: 0 0 10px 0 !default;

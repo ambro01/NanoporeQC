@@ -1,9 +1,10 @@
 <template>
-  <div class="form-group col-md-12">
+  <div class="content">
     <label class="control-label">Run analyse</label>
-    <br><br>
+    <br>
     <input v-model="analyseName" placeholder="Enter name"/>
-    <button class="btn btn-primary" @click="submit">Run</button>
+    <button class="btn btn-primary" v-if="this.analyseName.length" @click="submit">Save and run</button>
+    <button class="btn btn-primary" v-if="this.analyseResultsFlag" @click="showAnalyseResults">View results</button>
   </div>
 </template>
 <script>
@@ -12,17 +13,19 @@
   export default {
     data () {
       return {
-        analyseName: ''
+        analyseName: '',
+        analyseResultsFlag: false
       }
     },
     methods: {
       submit () {
         AXIOS.post(`api/analyse/new`, {analyseName: this.analyseName})
           .then(response => {
-            if (response.data.success) {
+            if (response.status === 200) {
               console.log('Successfull Upload')
-              toastr.success('Files Uploaded!', 'Success')
+              // toastr.success('Files Uploaded!', 'Success')
               this.resetData()
+              this.analyseResultsFlag = true
             } else {
               console.log('Unsuccessful Upload')
               this.errors = response.data.errors
@@ -33,7 +36,10 @@
       // We want to clear the FormData object on every upload so we can re-calculate new files again.
       // Keep in mind that we can delete files as well so in the future we will need to keep track of that as well
       resetData () {
-        this.data.analyseName = '' // Reset it completely
+        this.analyseName = '' // Reset it completely
+      },
+      showAnalyseResults () {
+        this.$emit('analyseResults', true)
       }
     }
   }

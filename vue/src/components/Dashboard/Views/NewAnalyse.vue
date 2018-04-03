@@ -1,36 +1,48 @@
 <template>
-  <div class="row">
-    <div class="col-md-12">
+  <div>
       <div class="card">
-        <div>
-          <files-management></files-management>
-          <attachemnt-list></attachemnt-list>
-          <analyse-save></analyse-save>
-        </div>
+          <files-management v-on:filesupload="onFilesUploaded"></files-management>
+          <!--<attachment-list></attachment-list>-->
       </div>
+    <div class="card">
+      <analyse-save v-on:analyseResults="onAnalyseResults" v-if=this.filesUploaded></analyse-save>
     </div>
-
+    <div class="card" v-if=this.analyseResults>
+      <report-charts :id=0></report-charts>
+    </div>
   </div>
 </template>
-<script>
 
+<script>
   import FilesManagement from 'src/components/UIComponents/Inputs/FilesManagement.vue'
-  import AttachemntList from 'src/components/UIComponents/Inputs/AttachmentList.vue'
   import AnalyseSave from 'src/components/UIComponents/Inputs/AnalyseSave.vue'
+  import ReportCharts from 'src/components/Dashboard/Views/ReportCharts.vue'
 
   export default {
     components: {
       FilesManagement,
-      AttachemntList,
-      AnalyseSave
+      AnalyseSave,
+      ReportCharts
     },
     data () {
       return {
         loading: false,
-        percent: null
+        percent: null,
+        analyseResults: false,
+        filesUploaded: false
       }
     },
-    methods: {},
+    methods: {
+      onAnalyseResults (newValue) {
+        if (this.analyseResults === newValue) {
+          this.analyseResults = !newValue
+        }
+        this.analyseResults = newValue
+      },
+      onFilesUploaded (newValue) {
+        this.filesUploaded = newValue
+      }
+    },
 
     created () {
       console.log('App created')

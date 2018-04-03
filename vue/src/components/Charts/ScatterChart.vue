@@ -1,9 +1,9 @@
 <script>
   // Importing Line class from the vue-chartjs wrapper
-  import {Line} from 'vue-chartjs'
+  import {Scatter} from 'vue-chartjs'
   // Exporting this so it can be used in other components
   export default {
-    extends: Line,
+    extends: Scatter,
     data () {
       return {
         datacollection: {

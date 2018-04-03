@@ -24,9 +24,9 @@ const SidebarStore = {
       path: '/admin/typography'
     },
     {
-      name: 'Icons',
+      name: 'New Analyse',
       icon: 'ti-pencil-alt2',
-      path: '/admin/icons'
+      path: '/admin/new-analyse'
     },
     {
       name: 'Maps',

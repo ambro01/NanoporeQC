@@ -1,22 +1,20 @@
 <template>
-    <div class="form-group col-md-12">
-      <label class="control-label">Attachments</label>
+    <div class="content">
+      <label class="control-label">Files of analyse</label>
       <br><br>
-      <div class="col-md-12">
         <label class="btn btn-default" for="attachments">
           <input type="file" multiple="multiple" id="attachments" @change="uploadFieldChange" style="display:none;">
           Browse files ...
         </label>
         <hr>
-        <div class="col-md-12">
+        <div>
           <div class="attachment-holder animated fadeIn" v-cloak v-for="(attachment, index) in attachments">
             <span class="label label-primary">{{ attachment.name + ' (' + Number((attachment.size / 1024 / 1024).toFixed(1)) + 'MB)'}}</span>
             <span class="" @click="removeAttachment(attachment)"><button class="btn btn-xs btn-danger">Remove</button></span>
           </div>
         </div>
-      </div>
-      <br><br>
-      <button class="btn btn-primary" @click="submit">Upload</button>
+        <hr>
+        <button class="btn btn-primary" v-if=this.attachments.length @click="submit">Upload</button>
     </div>
 </template>
 <script>
@@ -85,10 +83,11 @@
         // Make HTTP request to store announcement
         AXIOS.post(`api/files`, this.data, config)
           .then(response => {
-            if (response.data.success) {
+            if (response.status === 200) {
               console.log('Successfull Upload')
-              toastr.success('Files Uploaded!', 'Success')
+              // toastr.success('Files Uploaded!', 'Success')
               this.resetData()
+              this.$emit('filesupload', true)
             } else {
               console.log('Unsuccessful Upload')
               this.errors = response.data.errors
@@ -100,7 +99,7 @@
       // Keep in mind that we can delete files as well so in the future we will need to keep track of that as well
       resetData () {
         this.data = new FormData() // Reset it completely
-        this.attachments = []
+        // this.attachments = []
       },
       start () {
         console.log('Starting File Management Component')

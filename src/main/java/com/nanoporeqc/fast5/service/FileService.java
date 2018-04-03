@@ -1,5 +1,6 @@
-package com.nanoporeqc.fast5;
+package com.nanoporeqc.fast5.service;
 
+import com.nanoporeqc.fast5.consts.FileConsts;
 import com.nanoporeqc.r.service.RChartService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +12,7 @@ import java.io.IOException;
 
 @Service
 public class FileService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RChartService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileService.class);
 
     public void saveFiles(MultipartFile[] files) throws IOException {
         for (MultipartFile file : files) {

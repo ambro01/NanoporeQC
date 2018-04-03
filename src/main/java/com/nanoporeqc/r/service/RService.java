@@ -1,5 +1,6 @@
 package com.nanoporeqc.r.service;
 
+import com.nanoporeqc.fast5.consts.FileConsts;
 import com.nanoporeqc.r.config.RConfiguration;
 import com.nanoporeqc.r.domain.RFast5Resource;
 import com.nanoporeqc.r.domain.RVariable;
@@ -81,6 +82,18 @@ public class RService {
 
         try {
             rConnection.eval("dirPath <- " + "'" + filesDir + "'");
+            rConnection.eval(String.format("source('%s')", Paths.get(resource.toURI()).toFile()));
+        } catch (RserveException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveSummaryToFile(String summaryName) {
+        URL resource = RConfiguration.class.getResource("/r_scripts/saveSummary.R");
+
+        try {
+            rConnection.eval("summaryName <- " + "'" + FileConsts.SUMMARY_DIR + summaryName + "'");
+            rConnection.eval("summaryType <- " + "'" + FileConsts.SUMMARY_TYPE + "'");
             rConnection.eval(String.format("source('%s')", Paths.get(resource.toURI()).toFile()));
         } catch (RserveException | URISyntaxException e) {
             e.printStackTrace();

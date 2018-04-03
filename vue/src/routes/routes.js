@@ -6,7 +6,7 @@ import NotFound from '../components/GeneralViews/NotFoundPage.vue'
 import Overview from 'src/components/Dashboard/Views/Overview.vue'
 import UserProfile from 'src/components/Dashboard/Views/UserProfile.vue'
 import Notifications from 'src/components/Dashboard/Views/Notifications.vue'
-import Icons from 'src/components/Dashboard/Views/Icons.vue'
+import NewAnalyse from 'src/components/Dashboard/Views/NewAnalyse.vue'
 import Maps from 'src/components/Dashboard/Views/Charts.vue'
 import Typography from 'src/components/Dashboard/Views/Typography.vue'
 import TableList from 'src/components/Dashboard/Views/TableList.vue'
@@ -38,9 +38,9 @@ const routes = [
         component: Notifications
       },
       {
-        path: 'icons',
-        name: 'icons',
-        component: Icons
+        path: 'new-analyse',
+        name: 'new-analyse',
+        component: NewAnalyse
       },
       {
         path: 'maps',

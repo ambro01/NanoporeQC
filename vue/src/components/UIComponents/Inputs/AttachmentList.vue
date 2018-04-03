@@ -48,12 +48,12 @@
         AXIOS.delete(this.settings.file_management.delete_attachment, data)
           .then(function (response) {
             console.log(response)
-            if (response.data.success) {
-              toastr.success('File deleted!', 'Success')
+            if (response.status === 200) {
+              // toastr.success('File deleted!', 'Success')
               this.getAttachmentSize()
             } else {
               console.log(response.data.errors)
-              toastr.error('Something went wront', 'Error')
+              // toastr.error('Something went wront', 'Error')
             }
             window.Event.fire('loading_off')
           }.bind(this)) // Make sure we bind Vue Component object to this funtion so we get a handle of it in order to call its other methods
@@ -68,14 +68,14 @@
         AXIOS.post(this.settings.file_management.pull_attachments)
           .then(function (response) {
             console.log(response)
-            if (response.data.success) {
+            if (response.status === 200) {
               this.attachments = response.data.data
               console.log('Attachments: ', this.attachments)
-              toastr.success('We just pulled all the attachments', 'Background Task: Success')
+              // toastr.success('We just pulled all the attachments', 'Background Task: Success')
               this.getAttachmentSize()
             } else {
               console.log(response.data.errors)
-              toastr.warning('Cannot pull attachments. User has to be logged in', 'Background Task: Warning')
+              // toastr.warning('Cannot pull attachments. User has to be logged in', 'Background Task: Warning')
             }
             window.Event.fire('loading_off')
           }.bind(this)) // Make sure we bind Vue Component object to this funtion so we get a handle of it in order to call its other methods

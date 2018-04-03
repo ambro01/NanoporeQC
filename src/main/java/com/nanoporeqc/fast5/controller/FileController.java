@@ -1,5 +1,6 @@
-package com.nanoporeqc.fast5;
+package com.nanoporeqc.fast5.controller;
 
+import com.nanoporeqc.fast5.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

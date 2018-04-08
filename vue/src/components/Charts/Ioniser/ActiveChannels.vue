@@ -1,26 +1,17 @@
 <script>
-  // Importing Line class from the vue-chartjs wrapper
-  import {Line} from 'vue-chartjs'
-  import {HTTP} from 'src/http-common'
-  // Exporting this so it can be used in other components
+  // Importing Bar and mixins class from the vue-chartjs wrapper
+  import {
+    Line,
+    mixins
+  } from 'vue-chartjs'
+  // Getting the reactiveProp mixin from the mixins module.
+  const {reactiveProp} = mixins
   export default {
-    extends: Scatter,
+    extends: Line,
+    mixins: [reactiveProp],
     data () {
       return {
-        datacollection: {
-          // Data to be represented on x-axis
-          labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-          datasets: [{
-            label: 'Data One',
-//            backgroundColor: '#f87979',
-            pointBackgroundColor: 'white',
-            borderWidth: 1,
-            pointBorderColor: '#249EBF',
-            // Data to be represented on y-axis
-            data: [40, 20, 30, 50, 90, 10, 20, 40, 50, 70, 90, 100]
-          }]
-        },
-        // Chart.js options that controls the appearance of the chart
+        // Chart.js options that control the appearance of the chart
         options: {
           scales: {
             yAxes: [{
@@ -32,8 +23,13 @@
               }
             }],
             xAxes: [{
+              ticks: {
+                callback: function (value, index, values) {
+                  return value + '\''
+                }
+              },
               gridLines: {
-                display: false
+                display: true
               }
             }]
           },
@@ -45,10 +41,9 @@
         }
       }
     },
-
     mounted () {
-      // renderChart function renders the chart with the datacollection and options object.
-      this.renderChart(this.datacollection, this.options)
+      // this.chartData is created in the mixin and contains all the data needed to build the chart.
+      this.renderChart(this.chartData, this.options)
     }
   }
 </script>

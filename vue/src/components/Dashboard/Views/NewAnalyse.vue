@@ -5,10 +5,10 @@
           <!--<attachment-list></attachment-list>-->
       </div>
     <div class="card">
-      <analyse-save v-on:analyseResults="onAnalyseResults" v-if=this.filesUploaded></analyse-save>
+      <analyse-save @runAnalyse="onRunAnalyse" v-if=this.showSaveAndRun></analyse-save>
     </div>
-    <div class="card" v-if=this.analyseResults>
-      <report-charts :id=0></report-charts>
+    <div class="card" v-if=this.showReport>
+      <report-charts :id=0 :updateTrigger="this.showReport"></report-charts>
     </div>
   </div>
 </template>
@@ -28,37 +28,33 @@
       return {
         loading: false,
         percent: null,
-        analyseResults: false,
-        filesUploaded: false
+        showReport: false,
+        showSaveAndRun: false
       }
     },
     methods: {
-      onAnalyseResults (newValue) {
-        if (this.analyseResults === newValue) {
-          this.analyseResults = !newValue
-        }
-        this.analyseResults = newValue
+      onRunAnalyse () {
+        this.showReport = true
+        this.showSaveAndRun = false
       },
-      onFilesUploaded (newValue) {
-        this.filesUploaded = newValue
+      onFilesUploaded () {
+        this.showSaveAndRun = true
+        this.showReport = false
       }
     },
-
-    created () {
-      console.log('App created')
-      Event.listen('percent', function (percent) {
+    watch: {
+      percent: function (percent) {
         console.log('Received Upload Percent Status!')
         this.percent = percent
-      }.bind(this))
-
-      Event.listen('loading_on', function () {
+      },
+      loading_on: function () {
         console.log('Received Loading ON Event!')
         this.loading = true
-      }.bind(this))
-
-      Event.listen('loading_off', function () {
+      },
+      loading_off: function () {
         console.log('Received Loading OFF Event!')
         this.loading = false
-      }.bind(this))
-    }}
+      }
+    }
+}
 </script>

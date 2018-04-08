@@ -1,27 +1,18 @@
 <template>
-  <section class="container">
+  <section class="content">
+    <label class="control-label">Report of analyse</label>
     <div class="columns">
-      <div class="column">
-        <h3>Line Chart</h3>
-        <read-accumulation></read-accumulation>
-      </div>
-      <div class="column">
-        <h3>Bar Chart</h3>
-        <bar-chart></bar-chart>
-      </div>
-      <div class="column">
-        <h3>Scatter Chart</h3>
-        <scatter-chart></scatter-chart>
-      </div>
-    </div>
-    <div class="columns">
-      <div class="column">
-        <h3>Bubble Chart</h3>
-        <bubble-chart></bubble-chart>
-      </div>
-      <div class="column">
-        <h3>Reactivity - Live update upon change in datasets</h3>
-        <reactive :chart-data="datacollection"></reactive>
+      <button class="btn btn-primary" @click="showAnalyseResults">View results</button>
+      <div>
+        <div class="column">
+          <h3>Read accumulation</h3>
+          <!--<read-accumulation :chart-data="this.dataReadAccumulation"></read-accumulation>-->
+        </div>
+        <hr>
+        <div class="column">
+          <h3>Active channels</h3>
+          <active-channels :chart-data="this.dataActiveChannels"></active-channels>
+        </div>
       </div>
     </div>
   </section>
@@ -29,25 +20,75 @@
 
 <script>
   import ReadAccumulation from 'src/components/Charts/Ioniser/ReadAccumulation.vue'
-  import BarChart from 'src/components/Charts/BarChart.vue'
-  import ScatterChart from 'src/components/Charts/ScatterChart.vue'
-  import BubbleChart from 'src/components/Charts/BubbleChart.vue'
-  import Reactive from 'src/components/Charts/Reactive.vue'
+  import ActiveChannels from 'src/components/Charts/Ioniser/ActiveChannels.vue'
   import StatsCard from '../../UIComponents/Cards/StatsCard.vue'
+  import { AXIOS } from 'src/http-common'
 
   export default {
     name: 'VueChartJS',
     components: {
       StatsCard,
       ReadAccumulation,
-      BarChart,
-      ScatterChart,
-      BubbleChart,
-      Reactive
+      ActiveChannels
     },
     props: [
       'id'
-    ]
+    ],
+    data () {
+      return {
+        showResults: true,
+        dataReadAccumulation: null,
+        dataActiveChannels: null
+      }
+    },
+    methods: {
+      showAnalyseResults () {
+        this.getAllDataSet()
+        this.showSaveAndRun = false
+      },
+      getAllDataSet () {
+//        this.getReadAccumulation()
+        this.getActiveChannels()
+      },
+      getReadAccumulation () {
+        AXIOS.get(`api/charts/readAccumulation/minute/accumulation` + (this.id > 0 ? ('/' + this.id) : ''))
+          .then(response => {
+            this.dataReadAccumulation = {
+              labels: response.data.xvalues,
+              datasets: [
+                {
+                  label: 'Reads accumulation in time',
+                  backgroundColor: '#f87979',
+                  data: response.data.yvalues
+                }
+              ]
+            }
+          })
+          .catch(e => {
+            console.error(e)
+          })
+      },
+      getActiveChannels () {
+        AXIOS.get(`api/charts/activeChannels/minute/channels` + (this.id > 0 ? ('/' + this.id) : ''))
+          .then(response => {
+            this.dataActiveChannels = {
+              labels: response.data.xvalues,
+              datasets: [
+                {
+                  label: 'Active channels in time',
+                  backgroundColor: '#f87979',
+                  fill: false,
+                  showLine: false,
+                  data: response.data.yvalues
+                }
+              ]
+            }
+          })
+          .catch(e => {
+            console.error(e)
+          })
+      }
+    }
   }
 </script>
 

@@ -4,7 +4,6 @@
     <br>
     <input v-model="analyseName" placeholder="Enter name"/>
     <button class="btn btn-primary" v-if="this.analyseName.length" @click="submit">Save and run</button>
-    <button class="btn btn-primary" v-if="this.analyseResultsFlag" @click="showAnalyseResults">View results</button>
   </div>
 </template>
 <script>
@@ -13,8 +12,7 @@
   export default {
     data () {
       return {
-        analyseName: '',
-        analyseResultsFlag: false
+        analyseName: ''
       }
     },
     methods: {
@@ -25,21 +23,18 @@
               console.log('Successfull Upload')
               // toastr.success('Files Uploaded!', 'Success')
               this.resetData()
-              this.analyseResultsFlag = true
             } else {
               console.log('Unsuccessful Upload')
               this.errors = response.data.errors
             }
           })
+        this.$emit('runAnalyse')
         // .bind(this) // Make sure we bind Vue Component object to this funtion so we get a handle of it in order to call its other methods
       },
       // We want to clear the FormData object on every upload so we can re-calculate new files again.
       // Keep in mind that we can delete files as well so in the future we will need to keep track of that as well
       resetData () {
         this.analyseName = '' // Reset it completely
-      },
-      showAnalyseResults () {
-        this.$emit('analyseResults', true)
       }
     }
   }

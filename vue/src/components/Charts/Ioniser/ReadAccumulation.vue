@@ -1,9 +1,11 @@
 <script>
   // Importing Bar and mixins class from the vue-chartjs wrapper
-  import {Line, mixins} from 'vue-chartjs'
-  import {AXIOS} from 'src/http-common'
+  import {
+    Line,
+    mixins
+  } from 'vue-chartjs'
   // Getting the reactiveProp mixin from the mixins module.
-  const { reactiveProp } = mixins
+  const {reactiveProp} = mixins
   export default {
     extends: Line,
     mixins: [reactiveProp],
@@ -20,9 +22,14 @@
                 display: true
               }
             }],
-            xAxes: [ {
+            xAxes: [{
+              ticks: {
+                callback: function (value, index, values) {
+                  return value + '\''
+                }
+              },
               gridLines: {
-                display: false
+                display: true
               }
             }]
           },
@@ -31,34 +38,12 @@
           },
           responsive: true,
           maintainAspectRatio: false
-        },
-        dataCollection: null
+        }
       }
-    },
-    props: [
-      'id'
-    ],
-    created () {
-      AXIOS.get(`api/charts/readAccumulation/minute/accumulation/` + this.id)
-        .then(response => {
-          this.dataCollection = {
-            labels: response.data.xvalues,
-            datasets: [
-              {
-                label: 'Reads',
-                backgroundColor: '#f87979',
-                data: response.data.yvalues
-              }
-            ]
-          }
-        })
-        .catch(e => {
-          console.error(e)
-        })
     },
     mounted () {
       // this.chartData is created in the mixin and contains all the data needed to build the chart.
-      this.renderChart(this.dataCollection, this.options)
+      this.renderChart(this.chartData, this.options)
     }
   }
 </script>

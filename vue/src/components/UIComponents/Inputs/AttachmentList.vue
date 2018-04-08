@@ -47,7 +47,6 @@
         // Make HTTP request to store announcement
         AXIOS.delete(this.settings.file_management.delete_attachment, data)
           .then(function (response) {
-            console.log(response)
             if (response.status === 200) {
               // toastr.success('File deleted!', 'Success')
               this.getAttachmentSize()
@@ -67,7 +66,6 @@
         // Make HTTP request to store announcement
         AXIOS.post(this.settings.file_management.pull_attachments)
           .then(function (response) {
-            console.log(response)
             if (response.status === 200) {
               this.attachments = response.data.data
               console.log('Attachments: ', this.attachments)

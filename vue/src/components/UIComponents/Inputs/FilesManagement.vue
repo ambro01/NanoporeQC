@@ -35,10 +35,6 @@
         percentCompleted: 0 // You can store upload progress 0-100 in value, and show it on the screen
       }
     },
-    watch: {
-    },
-    computed: {
-    },
     methods: {
       getAttachmentSize () {
         this.upload_size = 0 // Reset to beginningƒ
@@ -87,7 +83,7 @@
               console.log('Successfull Upload')
               // toastr.success('Files Uploaded!', 'Success')
               this.resetData()
-              this.$emit('filesupload', true)
+              this.$emit('filesupload')
             } else {
               console.log('Unsuccessful Upload')
               this.errors = response.data.errors

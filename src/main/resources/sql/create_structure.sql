@@ -10,8 +10,9 @@ create table USER (
 );
 
 create table ANALYSE_ENTITY (
-  ANALYSE_ID numeric(8,0),
+  ANALYSE_ID numeric(8,0) NOT NULL ,
   ANALYSE_TIME datetime,
-  SUMMARY_FILE_NAME varchar(50),
-  SUMMARY_FILE_CONTENT blob
+  ANALYSE_NAME varchar(50),
+  SUMMARY_FILE_CONTENT mediumblob,
+  PRIMARY KEY (ANALYSE_ID)
 );

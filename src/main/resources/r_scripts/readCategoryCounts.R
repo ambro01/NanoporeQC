@@ -20,5 +20,5 @@ out <- tryCatch(readCategoryCounts(summaryData), error = function(cond){return (
 temp <- tryCatch(select(out, category), error = function(cond){return (tibble(category = character()))})
 category <- matrix(as.character(unlist(temp)), nrow = nrow(temp))
 
-temp <- tryCatch(select(out, count), error = function(cond){return (tibble(count = double()))})
-count <- matrix(as.double(unlist(temp)), nrow = nrow(temp))
+temp <- tryCatch(select(out, count), error = function(cond){return (tibble(count = numeric()))})
+count <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))

@@ -1,11 +1,14 @@
 package com.nanoporeqc.rTest;
 
 import com.nanoporeqc.config.IntegrationTest;
+import com.nanoporeqc.fast5.consts.FileConsts;
+import com.nanoporeqc.r.config.RConfiguration;
 import com.nanoporeqc.r.consts.RScriptsConst;
 import com.nanoporeqc.r.domain.RFast5Resource;
 import com.nanoporeqc.r.domain.RVariable;
 import com.nanoporeqc.r.service.RFast5ResourceService;
 import com.nanoporeqc.r.service.RService;
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -14,47 +17,50 @@ import org.junit.experimental.categories.Category;
 import org.rosuda.REngine.REngine;
 import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
-import org.springframework.core.io.ClassPathResource;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Category(IntegrationTest.class)
 public class IoniserTest {
 
     private RConnection connection = null;
     private REngine engine = null;
-    private RFast5Resource rFast5Resource;
     private RService rService;
 
     @Before
     public void createConnection() throws RserveException, IOException {
         connection = new RConnection();
         engine = connection;
-        rFast5Resource = new RFast5Resource();
-        rService = new RService(connection);
-        RFast5ResourceService rFast5ResourceService = new RFast5ResourceService();
+        rService = new RService(connection, null);
 
-        List<URL> urlList = new ArrayList<>();
-        urlList.add(IoniserTest.class.getResource("/test/r_test/1.fast5"));
-        urlList.add(IoniserTest.class.getResource("/test/r_test/2.fast5"));
-        urlList.add(IoniserTest.class.getResource("/test/r_test/3.fast5"));
-        urlList.add(IoniserTest.class.getResource("/test/r_test/4.fast5"));
-        urlList.add(IoniserTest.class.getResource("/test/r_test/5.fast5"));
+        Map<String, File> fileMap = new HashMap<>();
+        fileMap.put("1.fast5", new File(IoniserTest.class.getResource("/test/r_test/1.fast5").getFile()));
+        fileMap.put("2.fast5", new File(IoniserTest.class.getResource("/test/r_test/2.fast5").getFile()));
+        fileMap.put("3.fast5", new File(IoniserTest.class.getResource("/test/r_test/3.fast5").getFile()));
+        fileMap.put("4.fast5", new File(IoniserTest.class.getResource("/test/r_test/4.fast5").getFile()));
+        fileMap.put("5.fast5", new File(IoniserTest.class.getResource("/test/r_test/5.fast5").getFile()));
 
-        rFast5Resource.setFilesUrls(urlList);
+        fileMap.forEach((s, file) -> {
+            String filePath = FileConsts.FAST5FILES_DIR + s;
+            File destination = new File(filePath);
+            try {
+                if (destination.createNewFile()) {
+                    FileUtils.copyFile(file, destination);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
-        String filesPath = rFast5ResourceService.getFilesPathsAsString(rFast5Resource);
-
-        ClassPathResource rScript = new ClassPathResource("r_scripts/loadLibraries.R");
-        connection.eval(String.format("source('%s')", rScript.getFile().getAbsolutePath()));
-        rScript = new ClassPathResource("r_scripts/common.R");
-        connection.eval(String.format("source('%s')", rScript.getFile().getAbsolutePath()));
-        connection.eval("files <- " + filesPath);
-        rScript = new ClassPathResource("r_scripts/readFast5Summary.R");
-        connection.eval(String.format("source('%s')", rScript.getFile().getAbsolutePath()));
+        connection.eval(String.format("source('%s')", getScriptFilePath(IoniserTest.class.getResource("/r_scripts/loadLibraries.R"))));
+        connection.eval(String.format("source('%s')", getScriptFilePath(IoniserTest.class.getResource("/r_scripts/common.R"))));
+        connection.eval(String.format("source('%s')", getScriptFilePath(IoniserTest.class.getResource("/r_scripts/readFast5SummaryFromDir.R"))));
     }
 
     @After
@@ -65,11 +71,11 @@ public class IoniserTest {
     @Test
     public void testRScripts() {
         RScriptsConst.RScriptsMap.values().forEach(rScript -> {
-            ClassPathResource rScriptPath = new ClassPathResource("r_scripts/" + rScript.getName().getFileName());
+            URL rScriptPath = RConfiguration.class.getResource("/r_scripts/" + rScript.getName().getFileName());
 
             try {
-                connection.eval(String.format("source('%s')", rScriptPath.getFile().getAbsolutePath()));
-            } catch (RserveException | IOException e) {
+                connection.eval(String.format("source('%s')", getScriptFilePath(rScriptPath)));
+            } catch (RserveException e) {
                 e.printStackTrace();
             }
 
@@ -81,5 +87,25 @@ public class IoniserTest {
                 Assert.assertNotNull(rVariable.getRDataSet());
             }
         });
+    }
+
+    private String getScriptFilePath(URL url) {
+        String filePath = FileConsts.SCRIPTS_DIR + "script.R";
+        File source = new File(url.getFile());
+        File destination = new File(filePath);
+
+        if (destination.exists()) {
+            destination.delete();
+        }
+
+        try {
+            if (destination.createNewFile()) {
+                FileUtils.copyFile(source, destination);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return destination.getAbsolutePath();
     }
 }

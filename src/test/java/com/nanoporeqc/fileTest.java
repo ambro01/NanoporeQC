@@ -13,7 +13,7 @@ public class fileTest {
 
     @Test
     public void savingTest() throws IOException {
-        String filePath = "/tmp/testFiles/a.txt";
+        String filePath = "/home/ra/testFiles/a.txt";
 
         File file = new File(filePath);
 

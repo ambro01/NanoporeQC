@@ -1,1 +1,1 @@
-saveRDS(summaryData, paste(summaryName, summaryType, sep=""))
+saveRDS(summaryData, summaryName)

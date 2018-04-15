@@ -1,59 +1,59 @@
 package com.nanoporeqc.r.service;
 
 import com.nanoporeqc.ChartDto;
-import com.nanoporeqc.r.config.RConfiguration;
 import com.nanoporeqc.r.consts.RScriptsConst;
-import com.nanoporeqc.r.domain.RFast5Resource;
 import com.nanoporeqc.r.domain.RScript;
 import com.nanoporeqc.r.domain.RVariable;
 import com.nanoporeqc.r.enumeration.RScriptEnum;
-import org.rosuda.REngine.Rserve.RConnection;
-import org.rosuda.REngine.Rserve.RserveException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 @Service
 public class RChartService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RChartService.class);
 
-    private RService rService;
+    private final RService rService;
+
+    private ReentrantLock lock = new ReentrantLock();
 
     @Autowired
-    public RChartService(RService rService) {
+    public RChartService(final RService rService) {
         this.rService = rService;
     }
 
 
-    public ChartDto getChartDataXY(RScriptEnum rScriptEnum, String xDataName, String yDataName) {
+    public ChartDto getChartDataXY(RScriptEnum rScriptEnum, String xName, String[] yNames) {
 
-        RScript rScript = RScriptsConst.RScriptsMap.get(rScriptEnum);
+        final RScript rScript = RScriptsConst.RScriptsMap.get(rScriptEnum);
 
-        URL resource = RConfiguration.class.getResource("/r_scripts/" + rScript.getName().getFileName());
+        RVariable xData = rScript.getRVariablesMap().get(xName);
+        List<RVariable> yDataList = new ArrayList<>();
+        for (String yName : yNames) {
+            yDataList.add(rScript.getRVariablesMap().get(yName));
+        }
 
-        rService.evaluateRScript(resource);
+        lock.lock();
+        try {
+            rService.evaluateRScript(rScriptEnum);
+            xData.setRDataSet(rService.getDataSetFromR(xData));
+            for (RVariable yData : yDataList) {
+                yData.setRDataSet(rService.getDataSetFromR(yData));
+            }
+        } finally {
+            lock.unlock();
+        }
 
-        RVariable xData = rScript.getRVariablesMap().get(xDataName);
-        RVariable yData = rScript.getRVariablesMap().get(yDataName);
-
-
-        xData.setRDataSet(rService.getDataSetFromR(xData));
-        yData.setRDataSet(rService.getDataSetFromR(yData));
-
-        ChartDto chartDto = new ChartDto();
-        chartDto.setXValues(xData.getRDataSet());
-        chartDto.setYValues(yData.getRDataSet());
-
-        return chartDto;
+        return ChartDto.builder()
+                .xValues(xData.getRDataSet())
+                .yValuesList(yDataList.stream().map(RVariable::getRDataSet).collect(Collectors.toList()))
+                .build();
     }
 }

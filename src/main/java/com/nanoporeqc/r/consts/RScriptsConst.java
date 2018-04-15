@@ -53,11 +53,14 @@ public class RScriptsConst {
 
     private static final RScript READ_CATEGORY_COUNTS = new RScript(RScriptEnum.READ_CATEGORY_COUNTS, Map.of(
             "category", new RVariable("category", RVariableTypeEnum.CHARACTER),
-            "count", new RVariable("count", RVariableTypeEnum.DOUBLE)));
+            "count", new RVariable("count", RVariableTypeEnum.NUMERIC)));
 
     private static final RScript READ_CATEGORY_QUALITY = new RScript(RScriptEnum.READ_CATEGORY_QUALITY, Map.of(
-            "read_type", new RVariable("read_type", RVariableTypeEnum.CHARACTER),
-            "mean_base_quality", new RVariable("mean_base_quality", RVariableTypeEnum.NUMERIC)));
+            "category", new RVariable("category", RVariableTypeEnum.CHARACTER),
+            "min", new RVariable("min", RVariableTypeEnum.NUMERIC),
+            "max", new RVariable("max", RVariableTypeEnum.NUMERIC),
+            "mean", new RVariable("mean", RVariableTypeEnum.NUMERIC),
+            "median", new RVariable("median", RVariableTypeEnum.NUMERIC)));
 
     private static final RScript READ_TYPE_PRODUCTION = new RScript(RScriptEnum.READ_TYPE_PRODUCTION, Map.of(
             "time_group", new RVariable("time_group", RVariableTypeEnum.DOUBLE),

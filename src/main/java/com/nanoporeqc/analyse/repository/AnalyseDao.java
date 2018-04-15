@@ -1,7 +1,9 @@
 package com.nanoporeqc.analyse.repository;
 
+import com.nanoporeqc.analyse.domain.Analyse;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class AnalyseDao {
+public interface AnalyseDao extends JpaRepository<Analyse, Long> {
 }

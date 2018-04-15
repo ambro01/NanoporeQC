@@ -21,32 +21,38 @@ readAccumulation <- function(summaryData) {
 readCategoryCounts <- function(summaryData) {
     tab <- c(nrow(readInfo(summaryData)),
     dplyr::count(baseCalled(summaryData), strand, sort = TRUE)[['n']],
-    dplyr::count(baseCalled(summaryData), full_2D)[[2,'n']] / 2)
+    nrow(subset(baseCalled(summaryData), full_2D == TRUE)) / 2)
 
+    pf <- FALSE
     if ("pass" %in% names(readInfo(summaryData))) {
         pf <- any(dplyr::count(readInfo(summaryData), pass)[['pass']], na.rm = TRUE)
-    } else {
-        pf <- FALSE
     }
     if (pf) {
         tab <- c(tab, nrow(filter(readInfo(summaryData), pass == TRUE)))
-        res <- data_frame(
-        category = factor(c('Fast5 File Count', 'Template', 'Complement', 'Full 2D', 'Pass'),
-        levels = c('Fast5 File Count', 'Template', 'Complement', 'Full 2D', 'Pass')),
-        count = tab)
+        res <- data_frame(category = c('Fast5 File Count', 'Template', 'Complement', 'Full 2D', 'Pass'), count = tab)
     } else {
-        res <- data_frame(
-        category = factor(c('Fast5 File Count', 'Template', 'Complement', 'Full 2D'),
-        levels = c('Fast5 File Count', 'Template', 'Complement', 'Full 2D')),
-        count = tab)
+        res <- data_frame(category = c('Fast5 File Count', 'Template', 'Complement', 'Full 2D'), count = tab)
     }
 }
 
 readCategoryQuals <- function(summaryData) {
     fq <- fastq(summaryData)
     readType <- factor(.readtypeFromFASTQ(fq), levels = c('space', 'template', 'complement', '2D'))
-    meanBaseQuality <- ShortRead::alphabetScore(Biostrings::quality(fq)) / width(fq)
+    meanBaseQuality <- ShortRead::alphabetScore(Biostrings::quality(fq)) / ShortRead::width(fq)
     res <- data.frame(readType, meanBaseQuality)
+    minRes <- aggregate(meanBaseQuality ~ readType, res, function(x) min(x))
+    maxRes <- aggregate(meanBaseQuality ~ readType, res, function(x) max(x))
+    meanRes <- aggregate(meanBaseQuality ~ readType, res, function(x) mean(x))
+    medianRes <- aggregate(meanBaseQuality ~ readType, res, function(x) median(x))
+
+    readType <- tryCatch(select(minRes, readType), error = function(cond){return (tibble(readType = character()))})
+    min <- tryCatch(select(minRes, meanBaseQuality), error = function(cond){return (tibble(min = numeric()))})
+    max <- tryCatch(select(maxRes, meanBaseQuality), error = function(cond){return (tibble(max = numeric()))})
+    mean <- tryCatch(select(meanRes, meanBaseQuality), error = function(cond){return (tibble(mean = numeric()))})
+    median <- tryCatch(select(medianRes, meanBaseQuality), error = function(cond){return (tibble(median = numeric()))})
+
+    res <- data.frame(readType, min, max, mean, median)
+    colnames(res) <- c("category", "min", "max", "mean", "median")
 }
 
 readTypeProduction <- function(summaryData, groupedMinutes = 10) {

@@ -4,8 +4,8 @@
     Bar,
     mixins
   } from 'vue-chartjs'
-  const {reactiveProp} = mixins
   // Exporting this so it can be used in other components
+  const {reactiveProp} = mixins
   export default {
     extends: Bar,
     mixins: [reactiveProp],

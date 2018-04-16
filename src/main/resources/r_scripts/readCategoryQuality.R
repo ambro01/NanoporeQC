@@ -21,15 +21,15 @@ out <- tryCatch(readCategoryQuals(summaryData), error = function(cond){return (t
 temp <- tryCatch(select(out, category), error = function(cond){return (tibble(category = character()))})
 category <- matrix(as.character(unlist(temp)), nrow = nrow(temp))
 
-temp <- tryCatch(select(out, min), error = function(cond){return (tibble(min = numeric()))})
-min <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
+temp <- tryCatch(select(out, min), error = function(cond){return (tibble(min = double()))})
+min <- matrix(as.double(unlist(temp)), nrow = nrow(temp))
 
-temp <- tryCatch(select(out, max), error = function(cond){return (tibble(max = numeric()))})
-max <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
+temp <- tryCatch(select(out, max), error = function(cond){return (tibble(max = double()))})
+max <- matrix(as.double(unlist(temp)), nrow = nrow(temp))
 
-temp <- tryCatch(select(out, mean), error = function(cond){return (tibble(mean = numeric()))})
-mean <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
+temp <- tryCatch(select(out, mean), error = function(cond){return (tibble(mean = double()))})
+mean <- matrix(as.double(unlist(temp)), nrow = nrow(temp))
 
-temp <- tryCatch(select(out, median), error = function(cond){return (tibble(median = numeric()))})
-median <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
+temp <- tryCatch(select(out, median), error = function(cond){return (tibble(median = double()))})
+median <- matrix(as.double(unlist(temp)), nrow = nrow(temp))
 

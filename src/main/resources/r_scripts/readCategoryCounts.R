@@ -22,3 +22,8 @@ category <- matrix(as.character(unlist(temp)), nrow = nrow(temp))
 
 temp <- tryCatch(select(out, count), error = function(cond){return (tibble(count = numeric()))})
 count <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
+
+files_count <- count[1,1]
+template_count <- count[2,1]
+complement_count <- count[3,1]
+full_2d_count <- count[4,1]

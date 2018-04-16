@@ -4,6 +4,7 @@ import com.nanoporeqc.fast5.consts.FileConsts;
 import com.nanoporeqc.fast5.service.FileService;
 import com.nanoporeqc.r.domain.RVariable;
 import com.nanoporeqc.r.enumeration.RScriptEnum;
+import org.apache.commons.io.FileUtils;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
@@ -92,6 +93,7 @@ public class RService {
     }
 
     private void copyAllRScriptsToDisc() {
+        fileService.cleanDirectory(FileConsts.SCRIPTS_DIR);
         for (RScriptEnum rScriptEnum : RScriptEnum.values()) {
             fileService.saveRScriptFile(rScriptEnum);
         }

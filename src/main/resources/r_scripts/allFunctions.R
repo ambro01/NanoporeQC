@@ -23,16 +23,7 @@ readCategoryCounts <- function(summaryData) {
     dplyr::count(baseCalled(summaryData), strand, sort = TRUE)[['n']],
     nrow(subset(baseCalled(summaryData), full_2D == TRUE)) / 2)
 
-    pf <- FALSE
-    if ("pass" %in% names(readInfo(summaryData))) {
-        pf <- any(dplyr::count(readInfo(summaryData), pass)[['pass']], na.rm = TRUE)
-    }
-    if (pf) {
-        tab <- c(tab, nrow(filter(readInfo(summaryData), pass == TRUE)))
-        res <- data_frame(category = c('Fast5 File Count', 'Template', 'Complement', 'Full 2D', 'Pass'), count = tab)
-    } else {
-        res <- data_frame(category = c('Fast5 File Count', 'Template', 'Complement', 'Full 2D'), count = tab)
-    }
+    res <- data_frame(category = c('Fast5 File', 'Template', 'Complement', 'Full 2D'), count = tab)
 }
 
 readCategoryQuals <- function(summaryData) {
@@ -46,20 +37,31 @@ readCategoryQuals <- function(summaryData) {
     medianRes <- aggregate(meanBaseQuality ~ readType, res, function(x) median(x))
 
     readType <- tryCatch(select(minRes, readType), error = function(cond){return (tibble(readType = character()))})
-    min <- tryCatch(select(minRes, meanBaseQuality), error = function(cond){return (tibble(min = numeric()))})
-    max <- tryCatch(select(maxRes, meanBaseQuality), error = function(cond){return (tibble(max = numeric()))})
-    mean <- tryCatch(select(meanRes, meanBaseQuality), error = function(cond){return (tibble(mean = numeric()))})
-    median <- tryCatch(select(medianRes, meanBaseQuality), error = function(cond){return (tibble(median = numeric()))})
+    min_ <- tryCatch(select(minRes, meanBaseQuality), error = function(cond){return (tibble(min = numeric()))})
+    max_ <- tryCatch(select(maxRes, meanBaseQuality), error = function(cond){return (tibble(max = numeric()))})
+    mean_ <- tryCatch(select(meanRes, meanBaseQuality), error = function(cond){return (tibble(mean = numeric()))})
+    median_ <- tryCatch(select(medianRes, meanBaseQuality), error = function(cond){return (tibble(median = numeric()))})
 
-    res <- data.frame(readType, min, max, mean, median)
-    colnames(res) <- c("category", "min", "max", "mean", "median")
+    res <- data.frame(readType, min_, max_, mean_, median_)
+    colnames(res) <- c('category', 'min', 'max', 'mean', 'median')
+    return (res)
 }
 
 readTypeProduction <- function(summaryData, groupedMinutes = 10) {
     tmp <- dplyr::left_join(baseCalled(summaryData), readInfo(summaryData), by = 'id') %>%
         filter(strand == "template") %>%
-        mutate(time_group = start_time %/% (60 * groupedMinutes)) %>%
-        group_by(time_group, full_2D, pass) %>%
-        summarise(count = n()) %>%
-        mutate(hour = (time_group * groupedMinutes)/60 )
+        dplyr::mutate(time_group = start_time %/% (60 * groupedMinutes)) %>%
+        dplyr::group_by(time_group, full_2D, pass) %>%
+        dplyr::summarise(count = n()) %>%
+        dplyr::mutate(hour = (time_group * groupedMinutes)/60 )
+}
+
+kbPerChannel <- function(summaryData) {
+    tmp <- dplyr::mutate(baseCalled(summaryData), seq_length = BiocGenerics::width(fastq(summaryData)[1:nrow(baseCalled(summaryData))]),
+    channel = readInfo(summaryData)[['channel']][ match(baseCalled(summaryData)[['id']],
+    readInfo(summaryData)[['id']]) ]) %>% dplyr::group_by(channel) %>% dplyr::summarise(kb = sum(seq_length) / 1000)
+}
+
+readsPerChannel <- function(summaryData) {
+    tmp <- dplyr::group_by(readInfo(summaryData), channel) %>% dplyr::summarise(nreads = n())
 }

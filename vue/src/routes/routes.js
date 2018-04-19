@@ -9,7 +9,7 @@ import Notifications from 'src/components/Dashboard/Views/Notifications.vue'
 import NewAnalyse from 'src/components/Dashboard/Views/NewAnalyse.vue'
 import Maps from 'src/components/Dashboard/Views/Charts.vue'
 import Typography from 'src/components/Dashboard/Views/Typography.vue'
-import TableList from 'src/components/Dashboard/Views/TableList.vue'
+import TableList from 'src/components/Dashboard/Views/SummaryInfo.vue'
 
 const routes = [
   {

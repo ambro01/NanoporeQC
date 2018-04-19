@@ -6,36 +6,43 @@
       <div>
         <div class="column">
           <h3>Read accumulation</h3>
+          <p class="category">An accumulation of reads over the duration of an experiment</p>
           <read-accumulation :chart-data="this.dataReadAccumulation"></read-accumulation>
         </div>
         <hr>
         <div class="column">
           <h3>Active channels</h3>
+          <p class="category">A number of active channels for each minute of run time</p>
           <active-channels :chart-data="this.dataActiveChannels"></active-channels>
         </div>
         <hr>
         <div class="column">
           <h3>Read category counts</h3>
+          <p class="category">A strand classification with numbers of readings</p>
           <read-category-counts :chart-data="this.dataReadCategoryCounts"></read-category-counts>
         </div>
         <hr>
         <div class="column">
           <h3>Read category quality</h3>
+          <p class="category">A quality summary of an analyse. Min, max, max and median values, broken down into the strand categories</p>
           <read-category-quality :chart-data="this.dataReadCategoryQuality"></read-category-quality>
         </div>
         <hr>
         <div class="column">
-          <h3>Events counts</h3>
+          <h3>Events</h3>
+          <p class="category">Number of events over the duration of an experiment</p>
           <events-counts :chart-data="this.dataEventsCounts"></events-counts>
         </div>
         <hr>
         <div class="column">
-          <h3>Reads per channel</h3>
+          <h3>Strands per channel</h3>
+          <p class="category">Number of strands read for each channel</p>
           <reads-per-channel :chart-data="this.dataReadsPerChannel"></reads-per-channel>
         </div>
         <hr>
         <div class="column">
           <h3>kb of data per channel</h3>
+          <p class="category">The amount of data (kilobytes) read for each channel</p>
           <kb-per-channel :chart-data="this.dataKbPerChannel"></kb-per-channel>
         </div>
       </div>
@@ -96,7 +103,7 @@
         this.getKbPerChannel()
       },
       getReadAccumulation () {
-        AXIOS.get(`api/charts/readAccumulation`, {
+        AXIOS.get(`api/r/charts/readAccumulation`, {
           params: {
             xName: 'minute',
             yNames: ['accumulation'],
@@ -118,7 +125,7 @@
         })
       },
       getActiveChannels () {
-        AXIOS.get(`api/charts/activeChannels`, {
+        AXIOS.get(`api/r/charts/activeChannels`, {
           params: {
             xName: 'minute',
             yNames: ['channels'],
@@ -144,7 +151,7 @@
         })
       },
       getReadCategoryCounts () {
-        AXIOS.get(`api/charts/readCategoryCounts`, {
+        AXIOS.get(`api/r/charts/readCategoryCounts`, {
           params: {
             xName: 'category',
             yNames: ['files_count', 'template_count', 'complement_count', 'full_2d_count'],
@@ -152,7 +159,7 @@
           }
         }).then(response => {
           this.dataReadCategoryCounts = {
-            labels: ['counts'],
+            labels: [ ],
             datasets: [
               {
                 label: 'files',
@@ -181,7 +188,7 @@
         })
       },
       getReadCategoryQuality () {
-        AXIOS.get(`api/charts/readCategoryQuality`, {
+        AXIOS.get(`api/r/charts/readCategoryQuality`, {
           params: {
             xName: 'category',
             yNames: ['min', 'max', 'mean', 'median'],
@@ -218,7 +225,7 @@
         })
       },
       getEventsCounts () {
-        AXIOS.get(`api/charts/eventsCounts`, {
+        AXIOS.get(`api/r/charts/eventsCounts`, {
           params: {
             xName: 'time',
             yNames: ['events'],
@@ -245,7 +252,7 @@
         })
       },
       getReadsPerChannel () {
-        AXIOS.get(`api/charts/readsPerChannel`, {
+        AXIOS.get(`api/r/charts/readsPerChannel`, {
           params: {
             xName: 'channel',
             yNames: ['reads'],
@@ -266,7 +273,7 @@
         })
       },
       getKbPerChannel () {
-        AXIOS.get(`api/charts/kbPerChannel`, {
+        AXIOS.get(`api/r/charts/kbPerChannel`, {
           params: {
             xName: 'channel',
             yNames: ['kb'],

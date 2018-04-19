@@ -51,7 +51,7 @@
       }
     },
     created () {
-      AXIOS.get(`api/charts/readAccumulation/minute/accumulation`)
+      AXIOS.get(`api/r/charts/readAccumulation/minute/accumulation`)
         .then(response => {
           this.datacollection = {
             labels: response.data.xvalues,

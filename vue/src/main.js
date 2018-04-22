@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import vClickOutside from 'v-click-outside'
+import { ClientTable } from 'vue-tables-2'
+import VueTabs from 'vue-nav-tabs'
+import 'vue-nav-tabs/themes/vue-tabs.css'
 
 // Plugins
 import GlobalComponents from './gloablComponents'
@@ -23,6 +26,8 @@ Vue.use(GlobalComponents)
 Vue.use(vClickOutside)
 Vue.use(Notifications)
 Vue.use(SideBar)
+Vue.use(ClientTable)
+Vue.use(VueTabs)
 
 // configure router
 const router = new VueRouter({

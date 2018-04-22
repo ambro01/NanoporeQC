@@ -1,24 +1,38 @@
 <template>
+  <div class="card">
+    <div class="header">
+      <h4 class="title">Files to analyse</h4>
+    </div>
     <div class="content">
-      <label class="control-label">Files of analyse</label>
-      <br><br>
-        <label class="btn btn-default" for="attachments">
-          <input type="file" multiple="multiple" id="attachments" @change="uploadFieldChange" style="display:none;">
-          Browse files ...
-        </label>
-        <hr>
-        <div>
-          <div class="attachment-holder animated fadeIn" v-cloak v-for="(attachment, index) in attachments">
-            <span class="label label-primary">{{ attachment.name + ' (' + Number((attachment.size / 1024 / 1024).toFixed(1)) + 'MB)'}}</span>
-            <span class="" @click="removeAttachment(attachment)"><button class="btn btn-xs btn-danger">Remove</button></span>
+      <form>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="attachment-holder animated fadeIn" v-cloak v-for="(attachment, index) in attachments">
+              <span
+                class="label label-primary">{{ attachment.name + ' (' + Number((attachment.size / 1024 / 1024).toFixed(1)) + 'MB)'}}</span>
+              <span class="" @click="removeAttachment(attachment)"><button
+                class="btn btn-xs btn-danger">Remove</button></span>
+            </div>
+            <hr>
+            <div class="col-md-2">
+              <label class="btn btn-secondary btn-fill btn-wd" for="attachments">
+                <input type="file" multiple="multiple" id="attachments" @change="uploadFieldChange"
+                       style="display:none;">
+                Browse files ...
+              </label>
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-primary btn-fill btn-wd" v-if=this.attachments.length @click="submit">Upload
+              </button>
+            </div>
           </div>
         </div>
-        <hr>
-        <button class="btn btn-primary" v-if=this.attachments.length @click="submit">Upload</button>
+      </form>
     </div>
+  </div>
 </template>
 <script>
-  import {AXIOS} from 'src/http-common'
+  import { AXIOS } from 'src/http-common'
 
   export default {
     props: [
@@ -30,8 +44,7 @@
         attachments: [],
         // Each file will need to be sent as FormData element
         data: new FormData(),
-        errors: {
-        },
+        errors: {},
         percentCompleted: 0 // You can store upload progress 0-100 in value, and show it on the screen
       }
     },
@@ -70,7 +83,7 @@
       submit () {
         this.prepareFields()
         var config = {
-          headers: { 'Content-Type': 'multipart/form-data' },
+          headers: {'Content-Type': 'multipart/form-data'},
           onUploadProgress: function (progressEvent) {
             this.percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
             this.$forceUpdate()
@@ -89,7 +102,7 @@
               this.errors = response.data.errors
             }
           })
-          // .bind(this) // Make sure we bind Vue Component object to this funtion so we get a handle of it in order to call its other methods
+        // .bind(this) // Make sure we bind Vue Component object to this funtion so we get a handle of it in order to call its other methods
       },
       // We want to clear the FormData object on every upload so we can re-calculate new files again.
       // Keep in mind that we can delete files as well so in the future we will need to keep track of that as well

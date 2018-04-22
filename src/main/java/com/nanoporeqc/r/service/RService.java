@@ -2,9 +2,11 @@ package com.nanoporeqc.r.service;
 
 import com.nanoporeqc.fast5.consts.FileConsts;
 import com.nanoporeqc.fast5.service.FileService;
+import com.nanoporeqc.r.consts.RScriptsConst;
+import com.nanoporeqc.r.domain.RScript;
 import com.nanoporeqc.r.domain.RVariable;
 import com.nanoporeqc.r.enumeration.RScriptEnum;
-import org.apache.commons.io.FileUtils;
+import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
@@ -16,9 +18,11 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +32,10 @@ public class RService {
     private final RConnection rConnection;
 
     private final FileService fileService;
+
+    private ReentrantLock lock = new ReentrantLock();
+
+    private ReentrantLock basicLock = new ReentrantLock();
 
     @Autowired
     public RService(final RConnection rConnection, final FileService fileService) {
@@ -41,30 +49,42 @@ public class RService {
         copyAllRScriptsToDisc();
         LOGGER.info("Run initial R scripts:");
         for (RScriptEnum rScriptEnum : RScriptEnum.INITIALS_SCRIPTS) {
-            rConnection.eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
+            eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
             LOGGER.info("R: Load script " + rScriptEnum.getFileName());
         }
     }
 
-    public void evaluateRScript(final RScriptEnum rScriptEnum) {
+    public REXP eval(String cmd) throws RserveException {
+        basicLock.lock();
         try {
-            rConnection.eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
-        } catch (RserveException e) {
-            e.printStackTrace();
+            return rConnection.eval(cmd);
+        } finally {
+            basicLock.unlock();
         }
     }
 
-    public List getDataSetFromR(RVariable rVariable) {
+    public void evaluateRScript(final RScriptEnum rScriptEnum) {
+        lock.lock();
+        try {
+            eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
+        } catch (RserveException e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private List getDataSetFromR(RVariable rVariable) {
         try {
             switch (rVariable.getType()) {
                 case LOGICAL:
-                    return Arrays.stream(rConnection.eval(rVariable.getName()).asIntegers()).boxed().collect(Collectors.toList());
+                    return Arrays.stream(eval(rVariable.getName()).asIntegers()).boxed().collect(Collectors.toList());
                 case DOUBLE:
-                    return Arrays.stream(rConnection.eval(rVariable.getName()).asDoubles()).boxed().collect(Collectors.toList());
+                    return Arrays.stream(eval(rVariable.getName()).asDoubles()).boxed().collect(Collectors.toList());
                 case NUMERIC:
-                    return Arrays.stream(rConnection.eval(rVariable.getName()).asIntegers()).boxed().collect(Collectors.toList());
+                    return Arrays.stream(eval(rVariable.getName()).asIntegers()).boxed().collect(Collectors.toList());
                 case CHARACTER:
-                    return Arrays.asList(rConnection.eval(rVariable.getName()).asStrings());
+                    return Arrays.asList(eval(rVariable.getName()).asStrings());
                 default:
                     break;
             }
@@ -75,20 +95,26 @@ public class RService {
     }
 
     public void readFast5FilesFromDir(String filesDir) {
+        lock.lock();
         try {
-            rConnection.eval("dirPath <- " + "'" + filesDir + "'");
-            rConnection.eval(String.format("source('%s')", fileService.getRScriptPath(RScriptEnum.READ_FAST5_SUMMARY_FROM_DIR)));
+            eval("dirPath <- " + "'" + filesDir + "'");
+            eval(String.format("source('%s')", fileService.getRScriptPath(RScriptEnum.READ_FAST5_SUMMARY_FROM_DIR)));
         } catch (RserveException e) {
             e.printStackTrace();
+        } finally {
+            lock.unlock();
         }
     }
 
     public void saveSummaryToFile() {
+        lock.lock();
         try {
-            rConnection.eval("summaryName <- " + "'" + FileConsts.SUMMARY_FILE + "'");
-            rConnection.eval(String.format("source('%s')", fileService.getRScriptPath(RScriptEnum.SAVE_SUMMARY)));
+            eval("summaryName <- " + "'" + FileConsts.SUMMARY_FILE + "'");
+            eval(String.format("source('%s')", fileService.getRScriptPath(RScriptEnum.SAVE_SUMMARY)));
         } catch (RserveException e) {
             e.printStackTrace();
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -96,6 +122,15 @@ public class RService {
         fileService.cleanDirectory(FileConsts.SCRIPTS_DIR);
         for (RScriptEnum rScriptEnum : RScriptEnum.values()) {
             fileService.saveRScriptFile(rScriptEnum);
+        }
+    }
+
+    public void updateRVariableData(RVariable rVariable) {
+        lock.lock();
+        try {
+            rVariable.setRDataSet(getDataSetFromR(rVariable));
+        } finally {
+            lock.unlock();
         }
     }
 }

@@ -65,3 +65,10 @@ kbPerChannel <- function(summaryData) {
 readsPerChannel <- function(summaryData) {
     tmp <- dplyr::group_by(readInfo(summaryData), channel) %>% dplyr::summarise(nreads = n())
 }
+
+readQuality <- function(summaryData) {
+    fq <- fastq(summaryData)
+    readType <- factor(.readtypeFromFASTQ(fq), levels = c('space', 'template', 'complement', '2D'))
+    out <- ShortRead::alphabetScore(Biostrings::quality(fq)) / ShortRead::width(fq)
+    return (out)
+}

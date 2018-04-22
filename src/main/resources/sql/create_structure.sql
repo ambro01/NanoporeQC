@@ -13,6 +13,7 @@ create table ANALYSE_ENTITY (
   ANALYSE_ID numeric(8,0) NOT NULL ,
   ANALYSE_TIME datetime,
   ANALYSE_NAME varchar(50),
+  ANALYSE_COMMENT varchar(150),
   SUMMARY_FILE_CONTENT mediumblob,
   PRIMARY KEY (ANALYSE_ID)
 );

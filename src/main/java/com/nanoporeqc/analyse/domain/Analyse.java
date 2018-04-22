@@ -28,6 +28,10 @@ public class Analyse {
     @Column(name = "ANALYSE_NAME")
     private String name;
 
+    @Size(max = 150)
+    @Column(name = "ANALYSE_COMMENT")
+    private String comment;
+
     @Column(name = "SUMMARY_FILE_CONTENT")
     private Blob content;
 }

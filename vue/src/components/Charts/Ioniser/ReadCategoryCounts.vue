@@ -36,7 +36,6 @@
         }
       }
     },
-
     mounted () {
       // this.chartData is created in the mixin and contains all the data needed to build the chart.
       this.renderChart(this.chartData, this.options)

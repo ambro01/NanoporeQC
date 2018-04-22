@@ -14,13 +14,17 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "babel-helper-vue-jsx-merge-props": "^2.0.3",
     "bootstrap": "^3.3.7",
     "chart.js": "^2.7.2",
     "chartist": "^0.11.0",
     "v-click-outside": "0.0.8",
-    "vue": "^2.3.0",
+    "vue": "^2.5.16",
     "vue-chartjs": "^3.3.0",
+    "vue-good-table": "^2.4.3",
+    "vue-nav-tabs": "^0.5.7",
     "vue-router": "^2.2.0",
+    "vue-tables-2": "^1.4.31",
     "vue-toastr-2": "0.0.9"
   },
   "devDependencies": {
@@ -85,6 +89,7 @@
     "vue-style-loader": "^2.0.0",
     "vue-template-compiler": "^2.3.0",
     "vue-unit": "^0.1.0",
+    "vuetable-2": "^1.7.5",
     "webpack": "^2.2.1",
     "webpack-bundle-analyzer": "^2.2.1",
     "webpack-dev-middleware": "^1.10.0",

@@ -1,63 +1,69 @@
 <template>
-  <section class="content">
-    <label class="control-label">Report of analyse</label>
-    <div class="columns">
-      <button class="btn btn-primary" @click="showAnalyseResults">View results</button>
-      <div>
-        <div class="column">
-          <h3>Read accumulation</h3>
-          <p class="category">An accumulation of reads over the duration of an experiment</p>
-          <read-accumulation :chart-data="this.dataReadAccumulation"></read-accumulation>
-        </div>
-        <hr>
-        <div class="column">
-          <h3>Active channels</h3>
-          <p class="category">A number of active channels for each minute of run time</p>
-          <active-channels :chart-data="this.dataActiveChannels"></active-channels>
-        </div>
-        <hr>
-        <div class="column">
-          <h3>Read category counts</h3>
-          <p class="category">A strand classification with numbers of readings</p>
-          <read-category-counts :chart-data="this.dataReadCategoryCounts"></read-category-counts>
-        </div>
-        <hr>
-        <div class="column">
-          <h3>Read category quality</h3>
-          <p class="category">A quality summary of an analyse. Min, max, max and median values, broken down into the strand categories</p>
-          <read-category-quality :chart-data="this.dataReadCategoryQuality"></read-category-quality>
-        </div>
-        <hr>
-        <div class="column">
-          <h3>Events</h3>
-          <p class="category">Number of events over the duration of an experiment</p>
-          <events-counts :chart-data="this.dataEventsCounts"></events-counts>
-        </div>
-        <hr>
-        <div class="column">
-          <h3>Strands per channel</h3>
-          <p class="category">Number of strands read for each channel</p>
-          <reads-per-channel :chart-data="this.dataReadsPerChannel"></reads-per-channel>
-        </div>
-        <hr>
-        <div class="column">
-          <h3>kb of data per channel</h3>
-          <p class="category">The amount of data (kilobytes) read for each channel</p>
-          <kb-per-channel :chart-data="this.dataKbPerChannel"></kb-per-channel>
-        </div>
+  <div class="card">
+    <div class="header">
+      <h4 class="title">Report of analyse</h4>
+    </div>
+    <div class="content">
+      <vue-tabs active-tab-color="#f4f3ef" @tab-change="handleTabChange">
+        <v-tab title="Summary info"></v-tab>
+        <v-tab title="Read accumulation"></v-tab>
+        <v-tab title="Active channels"></v-tab>
+        <v-tab title="Read quality"></v-tab>
+        <v-tab title="Read category quality"></v-tab>
+        <v-tab title="Read category counts"></v-tab>
+        <v-tab title="Events"></v-tab>
+        <v-tab title="Reads per channel"></v-tab>
+        <v-tab title="kb per channel"></v-tab>
+      </vue-tabs>
+      <div v-if="this.tabIndex === 0">
+        <summary-info></summary-info>
+      </div>
+      <div v-if="this.tabIndex === 1">
+        <read-accumulation :chart-data="this.dataReadAccumulation"></read-accumulation>
+        <label class="control-label">An accumulation of reads over the duration of an experiment</label>
+      </div>
+      <div v-if="this.tabIndex === 2">
+        <active-channels :chart-data="this.dataActiveChannels"></active-channels>
+        <label class="control-label">A number of active channels for each minute of run time</label>
+      </div>
+      <div v-if="this.tabIndex === 3">
+        <read-quality :chart-data="this.dataReadQuality"></read-quality>
+        <label class="control-label">Mean qualities of file with mean factors of all files</label>
+      </div>
+      <div v-if="this.tabIndex === 4">
+        <read-category-quality :chart-data="this.dataReadCategoryQuality"></read-category-quality>
+        <label class="control-label">A quality summary of an analyse. Min, max, max and median values, broken down into the strand categories</label>
+      </div>
+      <div v-if="this.tabIndex === 5">
+        <read-category-counts :chart-data="this.dataReadCategoryCounts"></read-category-counts>
+        <label class="control-label">A strand classification with numbers of readings</label>
+      </div>
+      <div v-if="this.tabIndex === 6">
+        <events-counts :chart-data="this.dataEventsCounts"></events-counts>
+        <label class="control-label">Number of events over the duration of an experiment</label>
+      </div>
+      <div v-if="this.tabIndex === 7">
+        <reads-per-channel :chart-data="this.dataReadsPerChannel"></reads-per-channel>
+        <label class="control-label">Number of reads read for each channel</label>
+      </div>
+      <div v-if="this.tabIndex === 8">
+        <kb-per-channel :chart-data="this.dataKbPerChannel"></kb-per-channel>
+        <label class="control-label">The amount of data (kilobytes) read for each channel</label>
       </div>
     </div>
-  </section>
+  </div>
 </template>
 
 <script>
   import ReadAccumulation from 'src/components/Charts/Ioniser/ReadAccumulation.vue'
   import ActiveChannels from 'src/components/Charts/Ioniser/ActiveChannels.vue'
-  import ReadCategoryCounts from 'src/components/Charts/Ioniser/ReadCategoryCounts.vue'
+  import ReadQuality from 'src/components/Charts/Ioniser/ReadQuality.vue'
   import ReadCategoryQuality from 'src/components/Charts/Ioniser/ReadCategoryQuality.vue'
+  import ReadCategoryCounts from 'src/components/Charts/Ioniser/ReadCategoryCounts.vue'
   import EventsCounts from 'src/components/Charts/Ioniser/EventsCounts.vue'
   import ReadsPerChannel from 'src/components/Charts/Ioniser/ReadsPerChannel.vue'
   import KbPerChannel from 'src/components/Charts/Ioniser/KbPerChannel.vue'
+  import SummaryInfo from 'src/components/Stats/Ioniser/SummaryInfo.vue'
   import StatsCard from '../../UIComponents/Cards/StatsCard.vue'
   import { AXIOS } from 'src/http-common'
 
@@ -67,14 +73,17 @@
       StatsCard,
       ReadAccumulation,
       ActiveChannels,
-      ReadCategoryCounts,
+      ReadQuality,
       ReadCategoryQuality,
+      ReadCategoryCounts,
       EventsCounts,
       ReadsPerChannel,
-      KbPerChannel
+      KbPerChannel,
+      SummaryInfo
     },
     props: [
-      'id'
+      'id',
+      'updateTrigger'
     ],
     data () {
       return {
@@ -85,22 +94,58 @@
         dataReadCategoryQuality: null,
         dataEventsCounts: null,
         dataReadsPerChannel: null,
-        dataKbPerChannel: null
+        dataKbPerChannel: null,
+        dataReadQuality: null,
+        tabIndex: 0
+      }
+    },
+    mounted () {
+      this.showAnalyseResults()
+    },
+    watch: {
+      updateTrigger: function (newVal) {
+        if (!this.updateTrigger && newVal) {
+          this.showAnalyseResults()
+        }
+        this.updateTrigger = newVal
       }
     },
     methods: {
       showAnalyseResults () {
-        this.getAllDataSet()
+        this.getFirstDataSet()
         this.showSaveAndRun = false
       },
-      getAllDataSet () {
+      getFirstDataSet () {
         this.getReadAccumulation()
-        this.getActiveChannels()
-        this.getReadCategoryCounts()
-        this.getReadCategoryQuality()
-        this.getEventsCounts()
-        this.getReadsPerChannel()
-        this.getKbPerChannel()
+      },
+      handleTabChange (tabIndex, newTab, oldTab) {
+        this.tabIndex = tabIndex
+        switch (tabIndex) {
+          case 1:
+            this.getReadAccumulation()
+            break
+          case 2:
+            this.getActiveChannels()
+            break
+          case 3:
+            this.getReadQuality()
+            break
+          case 4:
+            this.getReadCategoryQuality()
+            break
+          case 5:
+            this.getReadCategoryCounts()
+            break
+          case 6:
+            this.getEventsCounts()
+            break
+          case 7:
+            this.getReadsPerChannel()
+            break
+          case 8:
+            this.getKbPerChannel()
+            break
+        }
       },
       getReadAccumulation () {
         AXIOS.get(`api/r/charts/readAccumulation`, {
@@ -159,7 +204,7 @@
           }
         }).then(response => {
           this.dataReadCategoryCounts = {
-            labels: [ ],
+            labels: [],
             datasets: [
               {
                 label: 'files',
@@ -244,6 +289,57 @@
                 lineTension: 0,
                 steppedLine: true,
                 data: response.data.yvaluesList[0]
+              }
+            ]
+          }
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      getReadQuality () {
+        AXIOS.get(`api/r/charts/readQuality`, {
+          params: {
+            xName: 'id',
+            yNames: ['quality', 'min_', 'max_', 'mean_', 'median_'],
+            id: this.id
+          }
+        }).then(response => {
+          this.dataReadQuality = {
+            labels: response.data.xvalues,
+            datasets: [
+              {
+                label: 'quality',
+                borderColor: '#f87979',
+                fill: false,
+                data: response.data.yvaluesList[0]
+              },
+              {
+                label: 'min',
+                borderColor: '#d392f8',
+                pointRadius: 0,
+                fill: false,
+                data: response.data.yvaluesList[1]
+              },
+              {
+                label: 'max',
+                borderColor: '#f8ac5f',
+                pointRadius: 0,
+                fill: false,
+                data: response.data.yvaluesList[2]
+              },
+              {
+                label: 'mean',
+                borderColor: '#47f889',
+                pointRadius: 0,
+                fill: false,
+                data: response.data.yvaluesList[3]
+              },
+              {
+                label: 'median',
+                borderColor: '#82c3f8',
+                pointRadius: 0,
+                fill: false,
+                data: response.data.yvaluesList[4]
               }
             ]
           }

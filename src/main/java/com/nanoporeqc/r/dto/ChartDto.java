@@ -1,4 +1,4 @@
-package com.nanoporeqc;
+package com.nanoporeqc.r.dto;
 
 import lombok.Builder;
 import lombok.Data;
@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 @Builder
 public class ChartDto {
-    List xValues;
-    List<List> yValuesList;
-    List<List> zValuesList;
+    private List xValues;
+    private List<List> yValuesList;
+    private List<List> zValuesList;
 }

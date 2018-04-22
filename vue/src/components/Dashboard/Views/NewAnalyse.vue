@@ -1,14 +1,10 @@
 <template>
   <div>
-      <div class="card">
-          <files-management v-on:filesupload="onFilesUploaded"></files-management>
-          <!--<attachment-list></attachment-list>-->
-      </div>
-    <div class="card">
-      <analyse-save @runAnalyse="onRunAnalyse" v-if=this.showSaveAndRun></analyse-save>
-    </div>
+    <files-management v-on:filesupload="onFilesUploaded" v-if="!this.showSaveAndRun && !this.showReport"></files-management>
+    <!--<attachment-list></attachment-list>-->
+    <analyse-save @runAnalyse="onRunAnalyse" v-if=this.showSaveAndRun></analyse-save>
     <div class="card" v-if=this.showReport>
-      <report-charts :id=0 :updateTrigger="this.showReport"></report-charts>
+      <report-charts :id=0 :updateTrigger="this.showReport" v-if=this.showReport></report-charts>
     </div>
   </div>
 </template>
@@ -56,5 +52,5 @@
         this.loading = false
       }
     }
-}
+  }
 </script>

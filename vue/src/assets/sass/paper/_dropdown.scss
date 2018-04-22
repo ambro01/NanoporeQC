@@ -3,13 +3,13 @@
   border: 0 none;
   border-radius: $border-radius-extreme;
   display: block;
-  margin-top: 10px;
+  margin-top: 40px;
   padding: 0px;
   position: absolute;
-  visibility: hidden;
+  visibility: visible;
   z-index: 9000;
 
-  @include opacity(0);
+  @include opacity(1);
   @include box-shadow($dropdown-shadow);
 
   //     the style for opening dropdowns on mobile devices; for the desktop version check the _responsive.scss file

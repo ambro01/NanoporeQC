@@ -13,9 +13,3 @@ read <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
 
 temp <- tryCatch(select(out, channel), error = function(cond){return (tibble(channel = numeric()))})
 channel <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
-
-temp <- tryCatch(select(out, mux), error = function(cond){return (tibble(mux = numeric()))})
-mux <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
-
-temp <- tryCatch(select(out, pass), error = function(cond){return (tibble(pass = logical()))})
-pass <- matrix(as.logical(unlist(temp)), nrow = nrow(temp))

@@ -4,9 +4,7 @@ import com.nanoporeqc.config.IntegrationTest;
 import com.nanoporeqc.fast5.consts.FileConsts;
 import com.nanoporeqc.r.config.RConfiguration;
 import com.nanoporeqc.r.consts.RScriptsConst;
-import com.nanoporeqc.r.domain.RFast5Resource;
 import com.nanoporeqc.r.domain.RVariable;
-import com.nanoporeqc.r.service.RFast5ResourceService;
 import com.nanoporeqc.r.service.RService;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -82,7 +80,7 @@ public class IoniserTest {
             List<RVariable> rVariables = new ArrayList<>(rScript.getRVariablesMap().values());
 
             for (RVariable rVariable : rVariables) {
-                rVariable.setRDataSet(rService.getDataSetFromR(rVariable));
+                rService.updateRVariableData(rVariable);
 
                 Assert.assertNotNull(rVariable.getRDataSet());
             }

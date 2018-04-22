@@ -1,6 +1,7 @@
 package com.nanoporeqc.analyse.service;
 
 import com.nanoporeqc.analyse.domain.Analyse;
+import com.nanoporeqc.analyse.dto.AnalyseDto;
 import com.nanoporeqc.analyse.repository.AnalyseDao;
 import com.nanoporeqc.fast5.consts.FileConsts;
 import com.nanoporeqc.fast5.service.FileService;
@@ -35,19 +36,20 @@ public class AnalyseService {
         this.analyseDao = analyseDao;
     }
 
-    public void runNewAnalyse(String analyseName) throws IOException {
+    public void runNewAnalyse(AnalyseDto analyseDto) throws IOException {
         LOGGER.info("Analyse: Running new analyse");
         rService.readFast5FilesFromDir(FileConsts.FAST5FILES_DIR);
         FileUtils.cleanDirectory(new File(FileConsts.FAST5FILES_DIR));
         LOGGER.info("Analyse: Saving summary file");
         rService.saveSummaryToFile();
-        saveNewAnalyse(analyseName);
+        saveNewAnalyse(analyseDto);
     }
 
     @Transactional
-    public void saveNewAnalyse(String analyseName) {
+    public void saveNewAnalyse(AnalyseDto analyseDto) {
         Analyse analyse = new Analyse();
-        analyse.setName(analyseName);
+        analyse.setName(analyseDto.getName());
+        analyse.setComment(analyseDto.getComment());
         analyse.setRunTime(LocalDateTime.now());
         try {
             analyse.setContent(new SerialBlob(fileService.getSummaryContent()));

@@ -38,4 +38,5 @@
 <style lang="scss">
   @import "assets/sass/paper-dashboard";
   @import "assets/sass/filemanagement";
+  @import "assets/sass/v-table-client.scss";
 </style>

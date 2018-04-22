@@ -23,7 +23,7 @@ public class AnalyseController {
     @CrossOrigin
     @PostMapping(value = "/new")
     public ResponseEntity runNewAnalyse(@RequestBody AnalyseDto analyseDto) throws IOException {
-        analyseService.runNewAnalyse(analyseDto.getAnalyseName());
+        analyseService.runNewAnalyse(analyseDto);
         return new ResponseEntity(HttpStatus.OK);
     }
 }

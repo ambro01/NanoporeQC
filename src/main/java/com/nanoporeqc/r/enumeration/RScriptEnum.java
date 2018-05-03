@@ -24,6 +24,7 @@ public enum RScriptEnum {
     READ_QUALITY("readQuality"),
     LOAD_LIBRARIES("loadLibraries"),
     SAVE_SUMMARY("saveSummary"),
+    READ_SUMMARY("readSummary"),
     COMMON("common"),
     ALL_FUNCTIONS("allFunctions"),
     READ_FAST5_SUMMARY_FROM_DIR("readFast5SummaryFromDir");

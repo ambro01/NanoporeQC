@@ -24,7 +24,7 @@
           </div>
           <div class="col-md-12">
             <div class="col-md-2">
-              <button class="btn btn-primary btn-fill btn-wd" v-if="this.analyseName.length" @click="submit">
+              <button class="btn btn-primary btn-fill btn-wd" v-if="this.analyseName.length" @click.prevent="submit">
                 Save and run
               </button>
             </div>
@@ -35,8 +35,6 @@
   </div>
 </template>
 <script>
-  import { AXIOS } from 'src/http-common'
-
   export default {
     data () {
       return {
@@ -46,7 +44,7 @@
     },
     methods: {
       submit () {
-        AXIOS.post(`api/analyse/new`, {
+        this.$http.post(`api/analyse/new`, {
           name: this.analyseName,
           comment: this.comment
         }).then(response => {

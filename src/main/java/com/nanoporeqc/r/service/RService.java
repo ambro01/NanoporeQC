@@ -1,9 +1,8 @@
 package com.nanoporeqc.r.service;
 
-import com.nanoporeqc.fast5.consts.FileConsts;
-import com.nanoporeqc.fast5.service.FileService;
-import com.nanoporeqc.r.consts.RScriptsConst;
-import com.nanoporeqc.r.domain.RScript;
+import com.nanoporeqc.fast5analyse.service.StatsService;
+import com.nanoporeqc.fast5file.consts.FileConsts;
+import com.nanoporeqc.fast5file.service.FileService;
 import com.nanoporeqc.r.domain.RVariable;
 import com.nanoporeqc.r.enumeration.RScriptEnum;
 import org.rosuda.REngine.REXP;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +25,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class RService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RChartService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatsService.class);
 
     private final RConnection rConnection;
 
@@ -111,6 +109,18 @@ public class RService {
         try {
             eval("summaryName <- " + "'" + FileConsts.SUMMARY_FILE + "'");
             eval(String.format("source('%s')", fileService.getRScriptPath(RScriptEnum.SAVE_SUMMARY)));
+        } catch (RserveException e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void loadSummaryFromFile() {
+        lock.lock();
+        try {
+            eval("summaryName <- " + "'" + FileConsts.SUMMARY_FILE + "'");
+            eval(String.format("source('%s')", fileService.getRScriptPath(RScriptEnum.READ_SUMMARY)));
         } catch (RserveException e) {
             e.printStackTrace();
         } finally {

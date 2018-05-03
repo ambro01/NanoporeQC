@@ -13,6 +13,7 @@ import App from './App'
 
 // router setup
 import routes from './routes/routes'
+import axios from './vue-axios/'
 
 // library imports
 import Chartist from 'chartist'
@@ -26,8 +27,8 @@ Vue.use(GlobalComponents)
 Vue.use(vClickOutside)
 Vue.use(Notifications)
 Vue.use(SideBar)
-Vue.use(ClientTable)
 Vue.use(VueTabs)
+Vue.use(ClientTable)
 
 // configure router
 const router = new VueRouter({
@@ -47,6 +48,7 @@ new Vue({
   el: '#app',
   render: h => h(App),
   router,
+  axios,
   data: {
     Chartist: Chartist
   }

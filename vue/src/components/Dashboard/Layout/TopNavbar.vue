@@ -26,6 +26,14 @@
               </p>
             </a>
           </li>
+          <li>
+            <a href="#" class="btn-rotate" v-on:click="logout">
+              <i class="ti-user"></i>
+              <p>
+                Log out
+              </p>
+            </a>
+          </li>
         </ul>
       </div>
     </div>
@@ -59,6 +67,10 @@
       },
       hideSidebar () {
         this.$sidebar.displaySidebar(false)
+      },
+      logout () {
+        delete localStorage.token
+        this.$router.replace('/')
       }
     }
   }

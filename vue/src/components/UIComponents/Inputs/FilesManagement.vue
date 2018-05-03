@@ -22,8 +22,7 @@
               </label>
             </div>
             <div class="col-md-2">
-              <button class="btn btn-primary btn-fill btn-wd" v-if=this.attachments.length @click="submit">Upload
-              </button>
+              <button class="btn btn-primary btn-fill btn-wd" v-if=this.attachments.length @click.prevent="submit">Upload</button>
             </div>
           </div>
         </div>
@@ -32,8 +31,6 @@
   </div>
 </template>
 <script>
-  import { AXIOS } from 'src/http-common'
-
   export default {
     props: [
       'settings'
@@ -90,7 +87,7 @@
           }.bind(this)
         }
         // Make HTTP request to store announcement
-        AXIOS.post(`api/files`, this.data, config)
+        this.$http.post(`api/files`, this.data, config)
           .then(response => {
             if (response.status === 200) {
               console.log('Successfull Upload')

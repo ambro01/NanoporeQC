@@ -22,8 +22,6 @@
   </div>
 </template>
 <script>
-  import {AXIOS} from 'src/http-common'
-
   export default {
     props: [
       'settings'
@@ -45,7 +43,7 @@
         }
         }
         // Make HTTP request to store announcement
-        AXIOS.delete(this.settings.file_management.delete_attachment, data)
+        this.$http.delete(this.settings.file_management.delete_attachment, data)
           .then(function (response) {
             if (response.status === 200) {
               // toastr.success('File deleted!', 'Success')
@@ -64,7 +62,7 @@
       pullAttachments () {
         window.Event.fire('loading_on')
         // Make HTTP request to store announcement
-        AXIOS.post(this.settings.file_management.pull_attachments)
+        this.$http.post(this.settings.file_management.pull_attachments)
           .then(function (response) {
             if (response.status === 200) {
               this.attachments = response.data.data

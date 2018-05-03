@@ -2,18 +2,23 @@ create database NANOPORE_QC;
 
 use NANOPORE_QC;
 
-create table USER (
-  USER_ID numeric(8,0),
-  LOGIN varchar(30),
-  EMAIL varchar(30),
-  PASSWORD varchar(30)
+create table USERS (
+  ID decimal(8,0) NOT NULL,
+  USER_NAME varchar(50) NOT NULL,
+  PASSWORD varchar(255) NOT NULL,
+  PRIMARY KEY (ID),
+  UNIQUE (ID),
+  UNIQUE (USER_NAME)
 );
 
-create table ANALYSE_ENTITY (
-  ANALYSE_ID numeric(8,0) NOT NULL ,
+create table ANALYSES (
+  ID decimal(8,0) NOT NULL,
   ANALYSE_TIME datetime,
   ANALYSE_NAME varchar(50),
   ANALYSE_COMMENT varchar(150),
   SUMMARY_FILE_CONTENT mediumblob,
-  PRIMARY KEY (ANALYSE_ID)
+  USER_ID decimal(8,0),
+  PRIMARY KEY (ID),
+  FOREIGN KEY (USER_ID) REFERENCES USERS(ID),
+  UNIQUE (ID)
 );

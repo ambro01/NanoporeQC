@@ -13,13 +13,12 @@
     "test": "npm run unit && npm run e2e"
   },
   "dependencies": {
-    "axios": "^0.18.0",
-    "babel-helper-vue-jsx-merge-props": "^2.0.3",
     "bootstrap": "^3.3.7",
     "chart.js": "^2.7.2",
     "chartist": "^0.11.0",
     "v-click-outside": "0.0.8",
     "vue": "^2.5.16",
+    "vue-axios": "^2.1.1",
     "vue-chartjs": "^3.3.0",
     "vue-good-table": "^2.4.3",
     "vue-nav-tabs": "^0.5.7",

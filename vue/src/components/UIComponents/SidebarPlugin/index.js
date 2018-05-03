@@ -6,37 +6,42 @@ const SidebarStore = {
     {
       name: 'Dashboard',
       icon: 'ti-panel',
-      path: '/admin/overview'
+      path: '/view/overview'
     },
     {
       name: 'User Profile',
       icon: 'ti-user',
-      path: '/admin/stats'
+      path: '/view/stats'
     },
     {
       name: 'Table List',
       icon: 'ti-view-list-alt',
-      path: '/admin/table-list'
+      path: '/view/table-list'
     },
     {
       name: 'Typography',
       icon: 'ti-text',
-      path: '/admin/typography'
+      path: '/view/typography'
     },
     {
       name: 'New Analyse',
-      icon: 'ti-pencil-alt2',
-      path: '/admin/new-analyse'
+      icon: 'ti-pencil',
+      path: '/view/new-analyse'
+    },
+    {
+      name: 'My Analyses',
+      icon: 'ti-archive',
+      path: '/view/my-analyses'
     },
     {
       name: 'Maps',
       icon: 'ti-map',
-      path: '/admin/maps'
+      path: '/view/maps'
     },
     {
       name: 'Notifications',
       icon: 'ti-bell',
-      path: '/admin/notifications'
+      path: '/view/notifications'
     }
   ],
   displaySidebar (value) {

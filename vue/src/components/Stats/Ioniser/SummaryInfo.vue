@@ -8,10 +8,12 @@
 </template>
 
 <script>
-  import { AXIOS } from 'src/http-common'
-
   export default {
     components: {},
+    props: [
+      'id',
+      'reloadData'
+    ],
     data () {
       return {
         columns: ['id', 'fileName', 'channelIndex', 'strandIndexInChannel', 'eventsNo', 'startTime', 'duration',
@@ -46,7 +48,10 @@
           pagination: {
             edge: false
           },
-          columnsDropdown: true
+          columnsDropdown: true,
+          texts: {
+            filter: 'Search in names:'
+          }
         }
       }
     },
@@ -54,13 +59,19 @@
       // this.chartData is created in the mixin and contains all the data needed to build the chart.
       this.getSummaryInfo()
     },
+    watch: {
+      id: function (newVal, oldVal) {
+      },
+      reloadData: function (newVal, oldVal) {
+        if (!oldVal && newVal) {
+          this.getSummaryInfo()
+          this.$emit('reloadData')
+        }
+      }
+    },
     methods: {
       getSummaryInfo () {
-        AXIOS.get(`api/r/info/0`, {
-          params: {
-            id: 0
-          }
-        }).then(response => {
+        this.$http.get(`api/r/info`).then(response => {
           this.data = response.data
         }).catch(e => {
           console.error(e)

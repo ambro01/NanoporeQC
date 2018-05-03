@@ -9,18 +9,20 @@ import Notifications from 'src/components/Dashboard/Views/Notifications.vue'
 import NewAnalyse from 'src/components/Dashboard/Views/NewAnalyse.vue'
 import Maps from 'src/components/Dashboard/Views/Charts.vue'
 import Typography from 'src/components/Dashboard/Views/Typography.vue'
-import TableList from 'src/components/Dashboard/Views/SummaryInfo.vue'
+import Icons from 'src/components/Dashboard/Views/Icons.vue'
+import MyAnalyses from 'src/components/Dashboard/Views/MyAnalyses.vue'
+import Login from 'src/components/Login/login.vue'
 
 const routes = [
   {
     path: '/',
-    component: DashboardLayout,
-    redirect: '/admin/overview'
+    name: 'login',
+    component: Login
   },
   {
-    path: '/admin',
+    path: '/view',
     component: DashboardLayout,
-    redirect: '/admin/stats',
+    redirect: '/view/stats',
     children: [
       {
         path: 'overview',
@@ -43,6 +45,11 @@ const routes = [
         component: NewAnalyse
       },
       {
+        path: 'my-analyses',
+        name: 'my-analyses',
+        component: MyAnalyses
+      },
+      {
         path: 'maps',
         name: 'maps',
         component: Maps
@@ -53,20 +60,20 @@ const routes = [
         component: Typography
       },
       {
-        path: 'table-list',
-        name: 'table-list',
-        component: TableList
+        path: 'icons',
+        name: 'icons',
+        component: Icons
       }
     ]
   },
-  { path: '*', component: NotFound }
+  {path: '*', component: NotFound}
 ]
 
 /**
  * Asynchronously load view (Webpack Lazy loading compatible)
  * The specified component must be inside the Views folder
  * @param  {string} name  the filename (basename) of the view to load.
-function view(name) {
+ function view(name) {
    var res= require('../components/Dashboard/Views/' + name + '.vue');
    return res;
 };**/

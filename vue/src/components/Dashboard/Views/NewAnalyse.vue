@@ -4,7 +4,7 @@
     <!--<attachment-list></attachment-list>-->
     <analyse-save @runAnalyse="onRunAnalyse" v-if=this.showSaveAndRun></analyse-save>
     <div class="card" v-if=this.showReport>
-      <report-charts :id=0 :updateTrigger="this.showReport" v-if=this.showReport></report-charts>
+      <report-stats :id=0 :updateTrigger="this.showReport" v-if=this.showReport></report-stats>
     </div>
   </div>
 </template>
@@ -12,13 +12,13 @@
 <script>
   import FilesManagement from 'src/components/UIComponents/Inputs/FilesManagement.vue'
   import AnalyseSave from 'src/components/UIComponents/Inputs/AnalyseSave.vue'
-  import ReportCharts from 'src/components/Dashboard/Views/ReportCharts.vue'
+  import ReportStats from 'src/components/Dashboard/Views/ReportStats.vue'
 
   export default {
     components: {
       FilesManagement,
       AnalyseSave,
-      ReportCharts
+      ReportStats
     },
     data () {
       return {

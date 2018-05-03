@@ -1,8 +1,8 @@
 package com.nanoporeqc.rTest;
 
+import com.nanoporeqc.Config;
 import com.nanoporeqc.config.IntegrationTest;
-import com.nanoporeqc.fast5.consts.FileConsts;
-import com.nanoporeqc.r.config.RConfiguration;
+import com.nanoporeqc.fast5file.consts.FileConsts;
 import com.nanoporeqc.r.consts.RScriptsConst;
 import com.nanoporeqc.r.domain.RVariable;
 import com.nanoporeqc.r.service.RService;
@@ -69,7 +69,7 @@ public class IoniserTest {
     @Test
     public void testRScripts() {
         RScriptsConst.RScriptsMap.values().forEach(rScript -> {
-            URL rScriptPath = RConfiguration.class.getResource("/r_scripts/" + rScript.getName().getFileName());
+            URL rScriptPath = Config.class.getResource("/r_scripts/" + rScript.getName().getFileName());
 
             try {
                 connection.eval(String.format("source('%s')", getScriptFilePath(rScriptPath)));

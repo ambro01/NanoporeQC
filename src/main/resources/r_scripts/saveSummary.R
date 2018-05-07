@@ -1,1 +1,0 @@
-saveRDS(summaryData, summaryName)

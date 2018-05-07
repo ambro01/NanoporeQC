@@ -1,1 +1,0 @@
-summaryData <- readFast5Summary(files)

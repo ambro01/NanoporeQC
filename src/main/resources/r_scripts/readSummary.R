@@ -1,1 +1,0 @@
-summaryData <- readRDS(summaryName)

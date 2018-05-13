@@ -27,16 +27,14 @@ public class FileService {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileService.class);
 
     public void saveFiles(final MultipartFile[] files) throws IOException {
+        cleanDirectory(FileConsts.FILES_DIR);
+        LOGGER.info("Saving files from user");
         for (MultipartFile file : files) {
-            final String filePath = FileConsts.FAST5FILES_DIR + file.getOriginalFilename();
-
-            LOGGER.info("Saving file " + filePath);
+            final String filePath = FileConsts.FILES_DIR + file.getOriginalFilename();
 
             File destination = new File(filePath);
             if (destination.createNewFile()) {
-                LOGGER.info("Empty file was created");
                 file.transferTo(destination);
-                LOGGER.info("File content was saved");
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.nanoporeqc.r.service;
 
-import com.nanoporeqc.fast5analyse.service.StatsService;
+import com.nanoporeqc.fast5analysis.domain.Type;
+import com.nanoporeqc.fast5analysis.service.StatsService;
 import com.nanoporeqc.fast5file.consts.FileConsts;
 import com.nanoporeqc.fast5file.service.FileService;
 import com.nanoporeqc.r.domain.RVariable;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,6 +29,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class RService {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(StatsService.class);
 
     private final ObjectFactory<RConnection> rConnection;
@@ -76,15 +80,30 @@ public class RService {
         }
     }
 
-    private List getDataSetFromR(RVariable rVariable) {
+    private List getDataSetFromR(final RVariable rVariable) {
         try {
             switch (rVariable.getType()) {
                 case LOGICAL:
-                    return Arrays.stream(eval(rVariable.getName()).asIntegers()).boxed().collect(Collectors.toList());
+                    return Arrays.stream(eval(rVariable.getName()).asIntegers())
+                            .boxed()
+                            .collect(Collectors.toList());
                 case DOUBLE:
-                    return Arrays.stream(eval(rVariable.getName()).asDoubles()).boxed().collect(Collectors.toList());
+                    return Arrays.stream(eval(rVariable.getName()).asDoubles())
+                            .boxed()
+                            .map(aDouble -> {
+                                        if (rVariable.getPrecision() != null) {
+                                            return BigDecimal.valueOf(aDouble)
+                                                    .setScale(rVariable.getPrecision(), RoundingMode.HALF_UP)
+                                                    .doubleValue();
+                                        }
+                                        return aDouble;
+                                    }
+                            )
+                            .collect(Collectors.toList());
                 case NUMERIC:
-                    return Arrays.stream(eval(rVariable.getName()).asIntegers()).boxed().collect(Collectors.toList());
+                    return Arrays.stream(eval(rVariable.getName()).asIntegers())
+                            .boxed()
+                            .collect(Collectors.toList());
                 case CHARACTER:
                     return Arrays.asList(eval(rVariable.getName()).asStrings());
                 default:
@@ -96,11 +115,14 @@ public class RService {
         return Collections.emptyList();
     }
 
-    public void readFast5FilesFromDir(String filesDir) {
+    public void loadFilesFromDirToR(final String filesDir, final RScriptEnum rScriptEnum) {
         lock.lock();
         try {
+            if (RScriptEnum.READ_FASTQ_SUMMARY_FROM_FAST5_SUMMARY.equals(rScriptEnum)) {
+                eval("filePath <- " + "'" + FileConsts.FASTQ_FILE_FROM_FAST5 + "'");
+            }
             eval("dirPath <- " + "'" + filesDir + "'");
-            eval(String.format("source('%s')", fileService.getRScriptPath(RScriptEnum.READ_FAST5_SUMMARY_FROM_DIR)));
+            eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
         } catch (RserveException e) {
             e.printStackTrace();
         } finally {
@@ -120,11 +142,22 @@ public class RService {
         }
     }
 
-    public void loadSummaryFromFile() {
+    public void loadSummaryFromFile(final String type) {
+        RScriptEnum rScriptEnum;
+        switch (Type.valueOf(type)) {
+            case Fast5:
+                rScriptEnum = RScriptEnum.READ_SUMMARY;
+                break;
+            case FastQ:
+                rScriptEnum = RScriptEnum.READ_QA_SUMMARY;
+                break;
+            default:
+                rScriptEnum = RScriptEnum.READ_SUMMARY;
+        }
         lock.lock();
         try {
             eval("summaryName <- " + "'" + FileConsts.SUMMARY_FILE + "'");
-            eval(String.format("source('%s')", fileService.getRScriptPath(RScriptEnum.READ_SUMMARY)));
+            eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
         } catch (RserveException e) {
             e.printStackTrace();
         } finally {

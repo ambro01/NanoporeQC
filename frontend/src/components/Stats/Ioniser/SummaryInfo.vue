@@ -71,7 +71,7 @@
     },
     methods: {
       getSummaryInfo () {
-        this.$http.get(`api/analyse/info`).then(response => {
+        this.$http.get(`api/analysis/stats/info`).then(response => {
           this.data = response.data
         }).catch(e => {
           console.error(e)

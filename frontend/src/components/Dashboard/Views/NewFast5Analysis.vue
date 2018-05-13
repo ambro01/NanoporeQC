@@ -1,0 +1,64 @@
+<template>
+  <div>
+    <files-management v-on:filesupload="onFilesUploaded" v-if="!this.showSave && !this.showReport"></files-management>
+    <!--<attachment-list></attachment-list>-->
+    <analysis-save :analysisType="this.type" @savedAnalysis="onSavedAnalysis" v-if=this.showSave></analysis-save>
+    <div class="card" v-if=this.showReport>
+      <report-stats-fast5 :id=0 :updateTrigger="this.showReport" v-if=this.showReport></report-stats-fast5>
+    </div>
+  </div>
+</template>
+
+<script>
+  import FilesManagement from 'src/components/UIComponents/Inputs/FilesManagement.vue'
+  import AnalysisSave from 'src/components/UIComponents/Inputs/AnalysisSave.vue'
+  import ReportStatsFast5 from 'src/components/Dashboard/Views/ReportStatsFast5.vue'
+
+  export default {
+    components: {
+      FilesManagement,
+      AnalysisSave,
+      ReportStatsFast5
+    },
+    data () {
+      return {
+        typeName: 'Fast5',
+        loading: false,
+        percent: null,
+        showReport: false,
+        showSave: false
+      }
+    },
+    methods: {
+      onSavedAnalysis () {
+        this.showSave = false
+      },
+      onFilesUploaded () {
+        this.$http.post(`api/analysis/run-new`, {
+          type: this.typeName
+        }).then(response => {
+          if (response.status === 200) {
+            this.showSave = true
+            this.showReport = true
+          } else {
+            this.errors = response.data.errors
+          }
+        })
+      }
+    },
+    watch: {
+      percent: function (percent) {
+        console.log('Received Upload Percent Status!')
+        this.percent = percent
+      },
+      loading_on: function () {
+        console.log('Received Loading ON Event!')
+        this.loading = true
+      },
+      loading_off: function () {
+        console.log('Received Loading OFF Event!')
+        this.loading = false
+      }
+    }
+  }
+</script>

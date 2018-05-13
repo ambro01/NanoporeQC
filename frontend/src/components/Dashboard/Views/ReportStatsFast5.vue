@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <div class="header">
-      <h4 class="title">Report of analyse</h4>
+      <h4 class="title">Report of analysis</h4>
     </div>
     <div class="content">
       <vue-tabs active-tab-color="#f4f3ef" @tab-change="handleTabChange">
@@ -32,7 +32,7 @@
       </div>
       <div v-if="this.tabIndex === 4">
         <read-category-quality :chart-data="this.dataReadCategoryQuality"></read-category-quality>
-        <label class="control-label">A quality summary of an analyse. Min, max, max and median values, broken down into the strand categories</label>
+        <label class="control-label">A quality summary of an analysis. Min, max, max and median values, broken down into the strand categories</label>
       </div>
       <div v-if="this.tabIndex === 5">
         <read-category-counts :chart-data="this.dataReadCategoryCounts"></read-category-counts>
@@ -55,14 +55,14 @@
 </template>
 
 <script>
-  import ReadAccumulation from 'src/components/Charts/Ioniser/ReadAccumulation.vue'
-  import ActiveChannels from 'src/components/Charts/Ioniser/ActiveChannels.vue'
-  import ReadQuality from 'src/components/Charts/Ioniser/ReadQuality.vue'
-  import ReadCategoryQuality from 'src/components/Charts/Ioniser/ReadCategoryQuality.vue'
-  import ReadCategoryCounts from 'src/components/Charts/Ioniser/ReadCategoryCounts.vue'
-  import EventsCounts from 'src/components/Charts/Ioniser/EventsCounts.vue'
-  import ReadsPerChannel from 'src/components/Charts/Ioniser/ReadsPerChannel.vue'
-  import KbPerChannel from 'src/components/Charts/Ioniser/KbPerChannel.vue'
+  import ReadAccumulation from 'src/components/Charts/Ioniser/fast5/ReadAccumulation.vue'
+  import ActiveChannels from 'src/components/Charts/Ioniser/fast5/ActiveChannels.vue'
+  import ReadQuality from 'src/components/Charts/Ioniser/fast5/ReadQuality.vue'
+  import ReadCategoryQuality from 'src/components/Charts/Ioniser/fast5/ReadCategoryQuality.vue'
+  import ReadCategoryCounts from 'src/components/Charts/Ioniser/fast5/ReadCategoryCounts.vue'
+  import EventsCounts from 'src/components/Charts/Ioniser/fast5/EventsCounts.vue'
+  import ReadsPerChannel from 'src/components/Charts/Ioniser/fast5/ReadsPerChannel.vue'
+  import KbPerChannel from 'src/components/Charts/Ioniser/fast5/KbPerChannel.vue'
   import SummaryInfo from 'src/components/Stats/Ioniser/SummaryInfo.vue'
   import StatsCard from '../../UIComponents/Cards/StatsCard.vue'
 
@@ -146,7 +146,9 @@
         }
       },
       loadData () {
-        this.$http.get(`api/analyse/` + this.id).then(response => {
+        this.$http.get(`api/analysis/` + this.id, {
+          type: 'Fast5'
+        }).then(response => {
           this.reloadData = true
         }).catch(e => {
           console.error(e)
@@ -156,7 +158,7 @@
         this.reloadData = false
       },
       getReadAccumulation () {
-        this.$http.get(`api/analyse/charts/readAccumulation/`, {
+        this.$http.get(`api/analysis/stats/readAccumulation/`, {
           params: {
             xName: 'minute',
             yNames: ['accumulation']
@@ -168,7 +170,8 @@
               {
                 label: 'Reads accumulation in time',
                 backgroundColor: '#f87979',
-                data: response.data.yvaluesList[0]
+                data: response.data.yvaluesList[0],
+                pointRadius: 0
               }
             ]
           }
@@ -177,7 +180,7 @@
         })
       },
       getActiveChannels () {
-        this.$http.get(`api/analyse/charts/activeChannels`, {
+        this.$http.get(`api/analysis/stats/activeChannels`, {
           params: {
             xName: 'minute',
             yNames: ['channels']
@@ -202,7 +205,7 @@
         })
       },
       getReadCategoryCounts () {
-        this.$http.get(`api/analyse/charts/readCategoryCounts`, {
+        this.$http.get(`api/analysis/stats/readCategoryCounts`, {
           params: {
             xName: 'category',
             yNames: ['files_count', 'template_count', 'complement_count', 'full_2d_count']
@@ -238,7 +241,7 @@
         })
       },
       getReadCategoryQuality () {
-        this.$http.get(`api/analyse/charts/readCategoryQuality`, {
+        this.$http.get(`api/analysis/stats/readCategoryQuality`, {
           params: {
             xName: 'category',
             yNames: ['min', 'max', 'mean', 'median']
@@ -274,7 +277,7 @@
         })
       },
       getEventsCounts () {
-        this.$http.get(`api/analyse/charts/eventsCounts`, {
+        this.$http.get(`api/analysis/stats/eventsCounts`, {
           params: {
             xName: 'time',
             yNames: ['events']
@@ -300,7 +303,7 @@
         })
       },
       getReadQuality () {
-        this.$http.get(`api/analyse/charts/readQuality`, {
+        this.$http.get(`api/analysis/stats/readQuality`, {
           params: {
             xName: 'id',
             yNames: ['quality', 'min_', 'max_', 'mean_', 'median_']
@@ -350,7 +353,7 @@
         })
       },
       getReadsPerChannel () {
-        this.$http.get(`api/analyse/charts/readsPerChannel`, {
+        this.$http.get(`api/analysis/stats/readsPerChannel`, {
           params: {
             xName: 'channel',
             yNames: ['reads']
@@ -370,7 +373,7 @@
         })
       },
       getKbPerChannel () {
-        this.$http.get(`api/analyse/charts/kbPerChannel`, {
+        this.$http.get(`api/analysis/stats/kbPerChannel`, {
           params: {
             xName: 'channel',
             yNames: ['kb']

@@ -1,11 +1,10 @@
 package com.nanoporeqc.user.domain;
 
-import com.nanoporeqc.fast5analyse.domain.Analyse;
+import com.nanoporeqc.fast5analysis.domain.Analysis;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.catalina.LifecycleState;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -22,6 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity(name = "USERS")
 public class ApplicationUser {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -32,5 +32,6 @@ public class ApplicationUser {
     private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Analyse> analyses;
+    private List<Analysis> analyses;
+
 }

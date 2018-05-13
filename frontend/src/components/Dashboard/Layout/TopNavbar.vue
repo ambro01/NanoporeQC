@@ -1,34 +1,19 @@
 <template>
   <nav class="navbar navbar-default">
     <div class="container-fluid">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" :class="{toggled: $sidebar.showSidebar}" @click="toggleSidebar">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar bar1"></span>
-          <span class="icon-bar bar2"></span>
-          <span class="icon-bar bar3"></span>
-        </button>
-        <a class="navbar-brand">{{routeName}}</a>
-      </div>
       <div class="navbar-right-menu">
         <ul class="nav navbar-nav navbar-right">
-          <li class="open">
-            <a href="#" class="dropdown-toggle btn-magnify" data-toggle="dropdown">
-              <i class="ti-panel"></i>
-              <p>Stats</p>
-            </a>
-          </li>
           <li>
-            <a href="#" class="btn-rotate">
-              <i class="ti-settings"></i>
+            <a class="btn-rotate">
+              <i class="ti-user"></i>
               <p>
-                Settings
+                {{this.userName}}
               </p>
             </a>
           </li>
           <li>
             <a href="#" class="btn-rotate" v-on:click="logout">
-              <i class="ti-user"></i>
+              <i class="ti-close"></i>
               <p>
                 Log out
               </p>
@@ -49,8 +34,18 @@
     },
     data () {
       return {
+        userName: '',
         activeNotifications: false
       }
+    },
+    mounted () {
+      this.$http.get(`api/users/current-user`).then(response => {
+        if (response.status === 200) {
+          this.userName = response.data
+        } else {
+          this.errors = response.data.errors
+        }
+      })
     },
     methods: {
       capitalizeFirstLetter (string) {
@@ -72,6 +67,7 @@
         delete localStorage.getItem('token')
         this.$session.destroy()
         this.$router.replace('/')
+        this.userName = ''
       }
     }
   }

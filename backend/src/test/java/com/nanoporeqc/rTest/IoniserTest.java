@@ -45,7 +45,7 @@ public class IoniserTest {
         fileMap.put("5.fast5", new File(IoniserTest.class.getResource("/src/main/resources/test/r_test/5.fast5").getFile()));
 
         fileMap.forEach((s, file) -> {
-            String filePath = FileConsts.FAST5FILES_DIR + s;
+            String filePath = FileConsts.FILES_DIR + s;
             File destination = new File(filePath);
             try {
                 if (destination.createNewFile()) {

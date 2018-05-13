@@ -24,12 +24,12 @@ const SidebarStore = {
       path: '/view/typography'
     },
     {
-      name: 'New Analyse',
+      name: 'New Analysis',
       icon: 'ti-pencil',
-      path: '/view/new-analyse'
+      path: '/view/new-analysis'
     },
     {
-      name: 'My Analyses',
+      name: 'My Analysiss',
       icon: 'ti-archive',
       path: '/view/my-analyses'
     },

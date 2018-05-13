@@ -12,7 +12,7 @@
               <fg-input v-model="email" type="email" label="Email" placeholder="Email address" required
                         autofocus></fg-input>
               <fg-input v-model="password" type="password" label="Password" placeholder="Password" required></fg-input>
-              <button class="btn btn-lg btn-primary btn-block">Log in</button>
+              <button class="btn btn-lg btn-primary btn-block" :disabled="this.loginPending">Log in</button>
             </form>
           </div>
         </div>
@@ -26,6 +26,7 @@
     name: 'Login',
     data () {
       return {
+        loginPending: false,
         email: '',
         password: '',
         error: false
@@ -33,6 +34,7 @@
     },
     methods: {
       login () {
+        this.loginPending = true
         this.$http.post(`login`, {username: this.email, password: this.password})
           .then(response => this.loginSuccessful(response))
           .catch(() => this.loginFailed())
@@ -46,10 +48,12 @@
         this.$session.set('jwt', res.headers.token)
         this.error = false
         this.$router.replace('/view/overview')
+        this.loginPending = false
       },
       loginFailed () {
         this.error = 'Login failed!'
         delete localStorage.token
+        this.loginPending = false
       }
     }
   }

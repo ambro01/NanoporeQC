@@ -3,7 +3,7 @@
     <ul>
       <li><router-link to="/">Home</router-link></li>
       <li><router-link to="/chartjs">vue-chartjs</router-link></li>
-      <li><router-link to="/charts">vue-charts</router-link></li>
+      <li><router-link to="/stats">vue-charts</router-link></li>
       <li><router-link to="/chartkick">vue-chartkick</router-link></li>
     </ul>
     <h1>Demo examples of vue-chartjs</h1>
@@ -50,7 +50,7 @@
       }
     },
     created () {
-      this.$http.get(`api/analyse/charts/readAccumulation/minute/accumulation`)
+      this.$http.get(`api/analysis/stats/readAccumulation/minute/accumulation`)
         .then(response => {
           this.datacollection = {
             labels: response.data.xvalues,

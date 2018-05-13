@@ -100,6 +100,41 @@ public class RScriptsConst {
             "mean_", new RVariable("mean_", RVariableTypeEnum.DOUBLE),
             "median_", new RVariable("median_", RVariableTypeEnum.DOUBLE)));
 
+    private static final RScript DUPLICATED_READS = new RScript(RScriptEnum.DUPLICATED_READS, Map.of(
+            "sequence", new RVariable("sequence", RVariableTypeEnum.CHARACTER),
+            "count", new RVariable("count", RVariableTypeEnum.NUMERIC)));
+
+    private static final RScript NUCLEOTIDE_COUNTS = new RScript(RScriptEnum.NUCLEOTIDE_COUNTS, Map.of(
+            "counts", new RVariable("counts", RVariableTypeEnum.NUMERIC),
+            "A", new RVariable("A", RVariableTypeEnum.NUMERIC),
+            "C", new RVariable("C", RVariableTypeEnum.NUMERIC),
+            "G", new RVariable("G", RVariableTypeEnum.NUMERIC),
+            "T", new RVariable("T", RVariableTypeEnum.NUMERIC),
+            "N", new RVariable("N", RVariableTypeEnum.NUMERIC)));
+
+    private static final RScript PER_CYCLE_BASE_CALL = new RScript(RScriptEnum.PER_CYCLE_BASE_CALL, Map.of(
+            "cycle", new RVariable("cycle", RVariableTypeEnum.NUMERIC),
+            "countA", new RVariable("countA", RVariableTypeEnum.NUMERIC),
+            "countC", new RVariable("countC", RVariableTypeEnum.NUMERIC),
+            "countG", new RVariable("countG", RVariableTypeEnum.NUMERIC),
+            "countT", new RVariable("countT", RVariableTypeEnum.NUMERIC)));
+
+    private static final RScript PER_CYCLE_QUALITY = new RScript(RScriptEnum.PER_CYCLE_QUALITY, Map.of(
+            "cycle", new RVariable("cycle", RVariableTypeEnum.NUMERIC),
+            "mean_", new RVariable("mean_", RVariableTypeEnum.DOUBLE),
+            "median_", new RVariable("median_", RVariableTypeEnum.DOUBLE),
+            "q25", new RVariable("q25", RVariableTypeEnum.DOUBLE),
+            "q50", new RVariable("q50", RVariableTypeEnum.DOUBLE),
+            "q75", new RVariable("q75", RVariableTypeEnum.DOUBLE)));
+
+    private static final RScript READ_QUALITY_SCORE = new RScript(RScriptEnum.READ_QUALITY_SCORE, Map.of(
+            "quality", new RVariable("quality", RVariableTypeEnum.DOUBLE,2),
+            "density", new RVariable("density", RVariableTypeEnum.DOUBLE, 2)));
+
+    private static final RScript READ_DISTRIBUTION = new RScript(RScriptEnum.READ_DISTRIBUTION, Map.of(
+            "cumulative", new RVariable("cumulative", RVariableTypeEnum.DOUBLE),
+            "occurrences", new RVariable("occurrences", RVariableTypeEnum.DOUBLE)));
+
     public static final Map<RScriptEnum, RScript> RScriptsMap = Map.ofEntries(
             Map.entry(RScriptEnum.READ_INFO, READ_INFO),
             Map.entry(RScriptEnum.BASE_CALLED, BASE_CALLED),
@@ -115,5 +150,11 @@ public class RScriptsConst {
             Map.entry(RScriptEnum.EVENTS_DATA, EVENTS_DATA),
             Map.entry(RScriptEnum.BASE_CALLED_TEMPLATE, BASE_CALLED_TEMPLATE),
             Map.entry(RScriptEnum.BASE_CALLED_COMPLEMENT, BASE_CALLED_COMPLEMENT),
-            Map.entry(RScriptEnum.READ_QUALITY, READ_QUALITY));
+            Map.entry(RScriptEnum.READ_QUALITY, READ_QUALITY),
+            Map.entry(RScriptEnum.DUPLICATED_READS, DUPLICATED_READS),
+            Map.entry(RScriptEnum.NUCLEOTIDE_COUNTS, NUCLEOTIDE_COUNTS),
+            Map.entry(RScriptEnum.PER_CYCLE_BASE_CALL, PER_CYCLE_BASE_CALL),
+            Map.entry(RScriptEnum.READ_QUALITY_SCORE, READ_QUALITY_SCORE),
+            Map.entry(RScriptEnum.READ_DISTRIBUTION, READ_DISTRIBUTION),
+            Map.entry(RScriptEnum.PER_CYCLE_QUALITY, PER_CYCLE_QUALITY));
 }

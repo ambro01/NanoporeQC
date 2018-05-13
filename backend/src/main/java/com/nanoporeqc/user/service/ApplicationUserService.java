@@ -38,7 +38,7 @@ public class ApplicationUserService {
         return applicationUserRepository.findByUsername(getCurrentUserName());
     }
 
-    private String getCurrentUserName() throws UserNotFoundException {
+    public String getCurrentUserName() throws UserNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             return authentication.getName();

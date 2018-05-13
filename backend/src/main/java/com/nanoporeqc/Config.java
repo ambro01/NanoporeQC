@@ -1,7 +1,6 @@
 package com.nanoporeqc;
 
 import org.modelmapper.ModelMapper;
-import org.rosuda.REngine.REngine;
 import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
 import org.springframework.context.annotation.Bean;

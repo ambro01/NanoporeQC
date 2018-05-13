@@ -13,9 +13,10 @@ create table USERS (
 
 create table ANALYSES (
   ID decimal(8,0) NOT NULL,
-  ANALYSE_TIME datetime,
-  ANALYSE_NAME varchar(50),
-  ANALYSE_COMMENT varchar(150),
+  RUN_TIME datetime,
+  NAME varchar(50),
+  COMMENT varchar(150),
+  TYPE varchar(10),
   SUMMARY_FILE_CONTENT mediumblob,
   USER_ID decimal(8,0),
   PRIMARY KEY (ID),

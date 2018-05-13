@@ -27,7 +27,16 @@ public enum RScriptEnum {
     READ_SUMMARY("readSummary"),
     COMMON("common"),
     ALL_FUNCTIONS("allFunctions"),
-    READ_FAST5_SUMMARY_FROM_DIR("readFast5SummaryFromDir");
+    READ_FAST5_SUMMARY_FROM_DIR("readFast5SummaryFromDir"),
+    READ_FASTQ_SUMMARY_FROM_DIR("readFastQSummaryFromDir"),
+    DUPLICATED_READS("duplicatedReads"),
+    NUCLEOTIDE_COUNTS("nucleotideCounts"),
+    PER_CYCLE_BASE_CALL("perCycleBaseCall"),
+    PER_CYCLE_QUALITY("perCycleQuality"),
+    READ_QUALITY_SCORE("readQualityScore"),
+    READ_DISTRIBUTION("readDistribution"),
+    READ_QA_SUMMARY("readQaSummary"),
+    READ_FASTQ_SUMMARY_FROM_FAST5_SUMMARY("readFastQSummaryFromFast5Summary");
 
     private String value;
 

@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <div class="header">
-      <h4 class="title">Files to analyse</h4>
+      <h4 class="title">Analysis files</h4>
     </div>
     <div class="content">
       <form>
@@ -9,7 +9,7 @@
           <div class="col-md-12">
             <div class="attachment-holder animated fadeIn" v-cloak v-for="(attachment, index) in attachments">
               <span
-                class="label label-primary">{{ attachment.name + ' (' + Number((attachment.size / 1024 / 1024).toFixed(1)) + 'MB)'}}</span>
+                class="label label-default">{{ attachment.name + ' (' + Number((attachment.size / 1024 / 1024).toFixed(1)) + 'MB)'}}</span>
               <span class="" @click="removeAttachment(attachment)"><button
                 class="btn btn-xs btn-danger">Remove</button></span>
             </div>

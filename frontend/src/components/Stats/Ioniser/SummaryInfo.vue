@@ -24,7 +24,7 @@
             id: 'Id',
             fileName: 'File name',
             channelIndex: 'Channel',
-            strandIndexInChannel: 'StrandNo',
+            strandIndexInChannel: 'Strand no',
             eventsNo: 'Events',
             startTime: 'Start time',
             hasTemplate: 'T',
@@ -43,7 +43,7 @@
             hasComplement: 'Complement strand',
             is2d: 'Full 2d strand (template & complement)'
           },
-          sortable: ['id', 'channelIndex', 'strandIndexInChannel', 'eventsNo', 'startTime', 'duration'],
+          sortable: ['id', 'fileName', 'channelIndex', 'strandIndexInChannel', 'eventsNo', 'startTime', 'duration'],
           filterable: ['fileName'],
           pagination: {
             edge: false

@@ -16,7 +16,8 @@
           scales: {
             yAxes: [{
               ticks: {
-                beginAtZero: true
+                beginAtZero: true,
+                stepSize: 1
               },
               gridLines: {
                 display: true
@@ -34,7 +35,7 @@
             }]
           },
           legend: {
-            display: true
+            display: false
           },
           responsive: true,
           maintainAspectRatio: false

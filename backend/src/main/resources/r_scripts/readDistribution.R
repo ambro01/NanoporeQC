@@ -1,9 +1,7 @@
 df <- qaSummary[["sequenceDistribution"]]
 
-cumulative <- tapply(df$nOccurrences * df$nReads, df$lane,
-function(elt) {
-    cs <- cumsum(elt)
-    (cs - cs[1] + 1)/(diff(range(cs)) + 1L)
-})
+occurrences <- df$nOccurrences
 
-occurrences <- log10(df$nOccurrences)
+reads <- df$nReads
+
+file_name <- df$lane

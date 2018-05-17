@@ -1,17 +1,16 @@
 package com.nanoporeqc.fast5analysis.service;
 
+import com.nanoporeqc.fast5analysis.dto.ChartDto;
 import com.nanoporeqc.fast5analysis.dto.DuplicatedSequenceDto;
 import com.nanoporeqc.fast5analysis.dto.ReadDistributionDto;
+import com.nanoporeqc.fast5analysis.dto.SummaryInfoDto;
 import com.nanoporeqc.r.consts.RScriptsConst;
 import com.nanoporeqc.r.domain.RScript;
 import com.nanoporeqc.r.domain.RVariable;
-import com.nanoporeqc.fast5analysis.dto.ChartDto;
-import com.nanoporeqc.fast5analysis.dto.SummaryInfoDto;
 import com.nanoporeqc.r.enumeration.RScriptEnum;
 import com.nanoporeqc.r.service.RService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,7 +28,6 @@ public class StatsService {
 
     private final ReentrantLock lock = new ReentrantLock();
 
-    @Autowired
     public StatsService(final RService rService) {
         this.rService = rService;
     }
@@ -116,7 +114,7 @@ public class StatsService {
             final ReadDistributionDto readDistributionDto = ReadDistributionDto.builder()
                     .occurrences((Integer) getValueFromRDataSet(rScript, "occurrences", i))
                     .reads((Integer) getValueFromRDataSet(rScript, "reads", i))
-                    .fileName((String) getValueFromRDataSet(rScript, "fileName", i))
+                    .fileName((String) getValueFromRDataSet(rScript, "file_name", i))
                     .build();
 
             readDistributionDtoList.add(readDistributionDto);

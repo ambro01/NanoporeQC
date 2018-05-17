@@ -9,26 +9,32 @@
         <v-tab title="Read quality"></v-tab>
         <v-tab title="Cycle base call"></v-tab>
         <v-tab title="Cycle quality"></v-tab>
+        <v-tab title="Reads distribution"></v-tab>
         <v-tab title="Duplicated reads"></v-tab>
       </vue-tabs>
       <div v-if="this.tabIndex === 0">
         <nucleotide-counts :chart-data="this.dataNucleotideCounts"></nucleotide-counts>
-        <label class="control-label">zzz</label>
+        <label class="control-label">Number of each nucleotide (N - undefined)</label>
       </div>
       <div v-if="this.tabIndex === 1">
         <read-quality-score :chart-data="this.dataReadQualityScore"></read-quality-score>
-        <label class="control-label">zz</label>
+        <label class="control-label">Proportion of reads per average base quality</label>
       </div>
       <div v-if="this.tabIndex === 2">
         <per-cycle-base-call :chart-data="this.dataCycleBaseCall"></per-cycle-base-call>
-        <label class="control-label">zzz</label>
+        <label class="control-label">Number of nucleotides read per each cycle</label>
       </div>
       <div v-if="this.tabIndex === 3">
         <per-cycle-quality :chart-data="this.dataCycleQuality"></per-cycle-quality>
-        <label class="control-label">zzz</label>
+        <label class="control-label">Quality factors per each cycle</label>
       </div>
       <div v-if="this.tabIndex === 4">
-        <duplicated-reads :id="this.id" :reloadData="this.reloadData" @reloadData='resetReloadData'></duplicated-reads>
+        <read-distribution :id="this.id" :reloadData="this.reloadDataReadDistribution"
+                           @reloadData='resetReloadDataReadDistribution'></read-distribution>
+      </div>
+      <div v-if="this.tabIndex === 5">
+        <duplicated-reads :id="this.id" :reloadData="this.reloadDataDuplicatedReads"
+                          @reloadData='resetReloadDataDuplicatedReads'></duplicated-reads>
       </div>
     </div>
   </div>
@@ -38,8 +44,8 @@
   import NucleotideCounts from 'src/components/Charts/Ioniser/fastq/NucleotideCounts.vue'
   import PerCycleBaseCall from 'src/components/Charts/Ioniser/fastq/PerCycleBaseCall.vue'
   import PerCycleQuality from 'src/components/Charts/Ioniser/fastq/PerCycleQuality.vue'
-  import ReadDistribution from 'src/components/Charts/Ioniser/fastq/ReadDistribution.vue'
   import ReadQualityScore from 'src/components/Charts/Ioniser/fastq/ReadQualityScore.vue'
+  import ReadDistribution from 'src/components/Stats/Ioniser/ReadDistribution.vue'
   import DuplicatedReads from 'src/components/Stats/Ioniser/DuplicatedReads.vue'
   import StatsCard from '../../UIComponents/Cards/StatsCard.vue'
 
@@ -60,7 +66,8 @@
     ],
     data () {
       return {
-        reloadData: false,
+        reloadDataDuplicatedReads: false,
+        reloadDataReadDistribution: false,
         dataNucleotideCounts: null,
         dataCycleBaseCall: null,
         dataCycleQuality: null,
@@ -103,7 +110,10 @@
             this.getCycleQuality()
             break
           case 4:
-            this.reloadData = true
+            this.reloadDataReadDistribution = true
+            break
+          case 5:
+            this.reloadDataDuplicatedReads = true
             break
         }
       },
@@ -116,8 +126,11 @@
           console.error(e)
         })
       },
-      resetReloadData () {
-        this.reloadData = false
+      resetReloadDataDuplicatedReads () {
+        this.reloadDataDuplicatedReads = false
+      },
+      resetReloadDataReadDistribution () {
+        this.reloadDataReadDistribution = false
       },
       getNucleotideCounts () {
         this.$http.get(`api/analysis/stats/nucleotideCounts/`, {
@@ -127,6 +140,7 @@
           }
         }).then(response => {
           this.dataNucleotideCounts = {
+            labels: ['counts'],
             datasets: [
               {
                 label: 'A',
@@ -170,7 +184,6 @@
             labels: response.data.xvalues,
             datasets: [
               {
-                label: 'Proportion of reads per average base quality',
                 backgroundColor: '#f87979',
                 data: response.data.yvaluesList[0],
                 pointRadius: 0

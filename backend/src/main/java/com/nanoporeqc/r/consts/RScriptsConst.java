@@ -18,22 +18,22 @@ public class RScriptsConst {
     private static final RScript BASE_CALLED = new RScript(RScriptEnum.BASE_CALLED, Map.of(
             "id_full", new RVariable("id_full", RVariableTypeEnum.NUMERIC),
             "num_events_full", new RVariable("num_events_full", RVariableTypeEnum.NUMERIC),
-            "duration_full", new RVariable("duration_full", RVariableTypeEnum.DOUBLE),
-            "start_time_full", new RVariable("start_time_full", RVariableTypeEnum.DOUBLE),
+            "duration_full", new RVariable("duration_full", RVariableTypeEnum.DOUBLE, 0),
+            "start_time_full", new RVariable("start_time_full", RVariableTypeEnum.DOUBLE, 0),
             "strand_full", new RVariable("strand_full", RVariableTypeEnum.CHARACTER),
             "full_2D_full", new RVariable("full_2D_full", RVariableTypeEnum.LOGICAL)));
 
     private static final RScript EVENTS_COUNTS = new RScript(RScriptEnum.EVENTS_COUNTS, Map.of(
-            "time", new RVariable("time", RVariableTypeEnum.DOUBLE),
+            "time", new RVariable("time", RVariableTypeEnum.DOUBLE, 0),
             "events", new RVariable("events", RVariableTypeEnum.NUMERIC)));
 
     private static final RScript EVENTS_DATA = new RScript(RScriptEnum.EVENTS_DATA, Map.of(
-            "start_time", new RVariable("start_time", RVariableTypeEnum.DOUBLE),
-            "duration", new RVariable("duration", RVariableTypeEnum.DOUBLE),
+            "start_time", new RVariable("start_time", RVariableTypeEnum.DOUBLE, 0),
+            "duration", new RVariable("duration", RVariableTypeEnum.DOUBLE, 0),
             "num_events", new RVariable("num_events", RVariableTypeEnum.NUMERIC)));
 
     private static final RScript READ_ACCUMULATION = new RScript(RScriptEnum.READ_ACCUMULATION, Map.of(
-            "minute", new RVariable("minute", RVariableTypeEnum.DOUBLE),
+            "minute", new RVariable("minute", RVariableTypeEnum.DOUBLE, 0),
             "new_reads", new RVariable("new_reads", RVariableTypeEnum.NUMERIC),
             "accumulation", new RVariable("accumulation", RVariableTypeEnum.NUMERIC)));
 
@@ -44,8 +44,8 @@ public class RScriptsConst {
     private static final RScript BASE_PRODUCTION_RATE = new RScript(RScriptEnum.BASE_PRODUCTION_RATE, Map.of(
             "id", new RVariable("id", RVariableTypeEnum.NUMERIC),
             "num_events", new RVariable("num_events", RVariableTypeEnum.NUMERIC),
-            "duration", new RVariable("duration", RVariableTypeEnum.DOUBLE),
-            "start_time", new RVariable("start_time", RVariableTypeEnum.DOUBLE),
+            "duration", new RVariable("duration", RVariableTypeEnum.DOUBLE, 0),
+            "start_time", new RVariable("start_time", RVariableTypeEnum.DOUBLE, 0),
             "strand", new RVariable("strand", RVariableTypeEnum.CHARACTER),
             "full_2D", new RVariable("full_2D", RVariableTypeEnum.LOGICAL),
             "bases_called", new RVariable("bases_called", RVariableTypeEnum.NUMERIC)));
@@ -60,10 +60,10 @@ public class RScriptsConst {
 
     private static final RScript READ_CATEGORY_QUALITY = new RScript(RScriptEnum.READ_CATEGORY_QUALITY, Map.of(
             "category", new RVariable("category", RVariableTypeEnum.CHARACTER),
-            "min", new RVariable("min", RVariableTypeEnum.DOUBLE),
-            "max", new RVariable("max", RVariableTypeEnum.DOUBLE),
-            "mean", new RVariable("mean", RVariableTypeEnum.DOUBLE),
-            "median", new RVariable("median", RVariableTypeEnum.DOUBLE)));
+            "min", new RVariable("min", RVariableTypeEnum.DOUBLE, 2),
+            "max", new RVariable("max", RVariableTypeEnum.DOUBLE, 2),
+            "mean", new RVariable("mean", RVariableTypeEnum.DOUBLE, 2),
+            "median", new RVariable("median", RVariableTypeEnum.DOUBLE, 2)));
 
     private static final RScript READ_TYPE_PRODUCTION = new RScript(RScriptEnum.READ_TYPE_PRODUCTION, Map.of(
             "time_group", new RVariable("time_group", RVariableTypeEnum.DOUBLE),
@@ -93,12 +93,12 @@ public class RScriptsConst {
             "full_2D_c", new RVariable("full_2D_c", RVariableTypeEnum.LOGICAL)));
 
     private static final RScript READ_QUALITY = new RScript(RScriptEnum.READ_QUALITY, Map.of(
-            "id", new RVariable("id", RVariableTypeEnum.DOUBLE),
-            "quality", new RVariable("quality", RVariableTypeEnum.DOUBLE),
-            "min_", new RVariable("min_", RVariableTypeEnum.DOUBLE),
-            "max_", new RVariable("max_", RVariableTypeEnum.DOUBLE),
-            "mean_", new RVariable("mean_", RVariableTypeEnum.DOUBLE),
-            "median_", new RVariable("median_", RVariableTypeEnum.DOUBLE)));
+            "id", new RVariable("id", RVariableTypeEnum.DOUBLE, 0),
+            "quality", new RVariable("quality", RVariableTypeEnum.DOUBLE, 2),
+            "min_", new RVariable("min_", RVariableTypeEnum.DOUBLE, 2),
+            "max_", new RVariable("max_", RVariableTypeEnum.DOUBLE, 2),
+            "mean_", new RVariable("mean_", RVariableTypeEnum.DOUBLE, 2),
+            "median_", new RVariable("median_", RVariableTypeEnum.DOUBLE, 2)));
 
     private static final RScript DUPLICATED_READS = new RScript(RScriptEnum.DUPLICATED_READS, Map.of(
             "sequence", new RVariable("sequence", RVariableTypeEnum.CHARACTER),
@@ -121,19 +121,20 @@ public class RScriptsConst {
 
     private static final RScript PER_CYCLE_QUALITY = new RScript(RScriptEnum.PER_CYCLE_QUALITY, Map.of(
             "cycle", new RVariable("cycle", RVariableTypeEnum.NUMERIC),
-            "mean_", new RVariable("mean_", RVariableTypeEnum.DOUBLE),
-            "median_", new RVariable("median_", RVariableTypeEnum.DOUBLE),
-            "q25", new RVariable("q25", RVariableTypeEnum.DOUBLE),
-            "q50", new RVariable("q50", RVariableTypeEnum.DOUBLE),
-            "q75", new RVariable("q75", RVariableTypeEnum.DOUBLE)));
+            "mean_", new RVariable("mean_", RVariableTypeEnum.DOUBLE, 2),
+            "median_", new RVariable("median_", RVariableTypeEnum.DOUBLE, 2),
+            "q25", new RVariable("q25", RVariableTypeEnum.DOUBLE, 2),
+            "q50", new RVariable("q50", RVariableTypeEnum.DOUBLE, 2),
+            "q75", new RVariable("q75", RVariableTypeEnum.DOUBLE, 2)));
 
     private static final RScript READ_QUALITY_SCORE = new RScript(RScriptEnum.READ_QUALITY_SCORE, Map.of(
             "quality", new RVariable("quality", RVariableTypeEnum.DOUBLE,2),
             "density", new RVariable("density", RVariableTypeEnum.DOUBLE, 2)));
 
     private static final RScript READ_DISTRIBUTION = new RScript(RScriptEnum.READ_DISTRIBUTION, Map.of(
-            "cumulative", new RVariable("cumulative", RVariableTypeEnum.DOUBLE),
-            "occurrences", new RVariable("occurrences", RVariableTypeEnum.DOUBLE)));
+            "occurrences", new RVariable("occurrences", RVariableTypeEnum.NUMERIC),
+            "reads", new RVariable("reads", RVariableTypeEnum.NUMERIC),
+            "file_name", new RVariable("file_name", RVariableTypeEnum.CHARACTER)));
 
     public static final Map<RScriptEnum, RScript> RScriptsMap = Map.ofEntries(
             Map.entry(RScriptEnum.READ_INFO, READ_INFO),

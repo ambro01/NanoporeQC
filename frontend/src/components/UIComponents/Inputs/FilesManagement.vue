@@ -16,8 +16,10 @@
             <hr>
             <div class="col-md-2">
               <label class="btn btn-secondary btn-fill btn-wd" for="attachments">
-                <input type="file" multiple="multiple" id="attachments" @change="uploadFieldChange"
-                       style="display:none;">
+                <input type="file" accept=".fast5" multiple="multiple" id="attachments" @change="uploadFieldChange"
+                       style="display:none;" v-if="this.analysisType === 'Fast5'">
+                <input type="file" accept=".fastq,.fastq.gz" multiple="multiple" id="attachments" @change="uploadFieldChange"
+                       style="display:none;" v-if="this.analysisType === 'FastQ'">
                 Browse files ...
               </label>
             </div>
@@ -33,7 +35,8 @@
 <script>
   export default {
     props: [
-      'settings'
+      'settings',
+      'analysisType'
     ],
     data () {
       return {

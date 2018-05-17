@@ -9,7 +9,7 @@
       <div class="logo">
         <a href="#" class="simple-text">
             <div class="logo-img">
-                <img src="static/img/vue-logo.png" alt="">
+                <img src="static/img/qc-logo.png" alt="">
             </div>
           Nanopore QC
         </a>

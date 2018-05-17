@@ -28,11 +28,11 @@
       </div>
       <div v-if="this.tabIndex === 3">
         <read-quality :chart-data="this.dataReadQuality"></read-quality>
-        <label class="control-label">Mean qualities of file with mean factors of all files</label>
+        <label class="control-label">Mean reads' qualities of each file</label>
       </div>
       <div v-if="this.tabIndex === 4">
         <read-category-quality :chart-data="this.dataReadCategoryQuality"></read-category-quality>
-        <label class="control-label">A quality summary of an analysis. Min, max, max and median values, broken down into the strand categories</label>
+        <label class="control-label">A quality summary of an analysis. Min, mean, median and max values, broken down into the strand categories</label>
       </div>
       <div v-if="this.tabIndex === 5">
         <read-category-counts :chart-data="this.dataReadCategoryCounts"></read-category-counts>
@@ -168,7 +168,6 @@
             labels: response.data.xvalues,
             datasets: [
               {
-                label: 'Reads accumulation in time',
                 backgroundColor: '#f87979',
                 data: response.data.yvaluesList[0],
                 pointRadius: 0
@@ -190,11 +189,12 @@
             labels: response.data.xvalues,
             datasets: [
               {
-                label: 'Active channels in time',
                 backgroundColor: '#0096f8',
                 pointBackgroundColor: '#0096f8',
+                showLine: true,
+                borderColor: '#0096f8',
+                steppedLine: true,
                 fill: false,
-                showLine: false,
                 lineTension: 0,
                 data: response.data.yvaluesList[0]
               }
@@ -212,7 +212,7 @@
           }
         }).then(response => {
           this.dataReadCategoryCounts = {
-            labels: [],
+            labels: ['counts'],
             datasets: [
               {
                 label: 'files',
@@ -284,7 +284,6 @@
           }
         }).then(response => {
           this.dataEventsCounts = {
-            labels: response.data.xvalues,
             datasets: [
               {
                 label: 'Events in time',

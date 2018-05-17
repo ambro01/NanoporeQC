@@ -31,7 +31,6 @@ public class AnalysisController {
     private final AnalysisService analysisService;
     private final StatsService statsService;
 
-    @Autowired
     public AnalysisController(final AnalysisService analysisService,
                               final StatsService statsService) {
         this.analysisService = analysisService;

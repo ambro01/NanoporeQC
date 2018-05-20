@@ -70,22 +70,51 @@
         })
       },
       onShowDetails (row) {
+        console.log(row)
         this.detailsId = row.id
         this.analysisType = row.type
       },
       onDeleteRow (rowId, analyseId) {
         this.$http.post(`api/analysis/delete/` + analyseId).then(response => {
-          this.data.splice(rowId - 1, 1)
+          if (response.status === 200) {
+            this.data.splice(rowId - 1, 1)
+            this.$toast.success({
+              title: 'Success',
+              message: 'Successful removing'
+            })
+          } else {
+            this.$toast.error({
+              title: 'Error',
+              message: 'Removing failed'
+            })
+          }
         }).catch(e => {
-          console.error(e)
+          this.$toast.error({
+            title: 'Error',
+            message: 'Removing failed'
+          })
         })
       },
       onRunAnalysis (row) {
         this.$http.get(`api/analysis/from-fast5/` + row.id).then(response => {
-          this.detailsId = row.id
-          this.analysisType = 'FastQ'
+          if (response.status === 200) {
+            this.detailsId = row.id
+            this.analysisType = 'FastQ'
+            this.$toast.success({
+              title: 'Success',
+              message: 'Successful running'
+            })
+          } else {
+            this.$toast.error({
+              title: 'Error',
+              message: 'Running failed'
+            })
+          }
         }).catch(e => {
-          console.error(e)
+          this.$toast.error({
+            title: 'Error',
+            message: 'Running failed'
+          })
         })
       }
     }

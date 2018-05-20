@@ -55,10 +55,6 @@
         }
       }
     },
-    mounted () {
-      // this.chartData is created in the mixin and contains all the data needed to build the chart.
-      this.getSummaryInfo()
-    },
     watch: {
       id: function (newVal, oldVal) {
       },

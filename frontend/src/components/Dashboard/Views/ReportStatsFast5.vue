@@ -112,6 +112,12 @@
         }
       }
     },
+    mounted () {
+      if (this.id > 0) {
+        this.loadData()
+      }
+      this.reloadData = true
+    },
     methods: {
       handleTabChange (tabIndex, newTab, oldTab) {
         this.tabIndex = tabIndex
@@ -147,11 +153,27 @@
       },
       loadData () {
         this.$http.get(`api/analysis/` + this.id, {
-          type: 'Fast5'
+          params: {
+            type: 'Fast5'
+          }
         }).then(response => {
-          this.reloadData = true
+          if (response.status === 200) {
+            this.reloadData = true
+            this.$toast.success({
+              title: 'Success',
+              message: 'Successful data loading'
+            })
+          } else {
+            this.$toast.error({
+              title: 'Error',
+              message: 'Data loading failed'
+            })
+          }
         }).catch(e => {
-          console.error(e)
+          this.$toast.error({
+            title: 'Error',
+            message: 'Data loading failed'
+          })
         })
       },
       resetReloadData () {

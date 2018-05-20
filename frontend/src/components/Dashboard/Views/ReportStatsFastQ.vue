@@ -91,6 +91,9 @@
       }
     },
     mounted () {
+      if (this.id > 0) {
+        this.loadData()
+      }
       this.getNucleotideCounts()
     },
     methods: {
@@ -118,12 +121,29 @@
         }
       },
       loadData () {
+        console.log('aaa')
         this.$http.get(`api/analysis/` + this.id, {
-          type: 'FastQ'
+          params: {
+            type: 'FastQ'
+          }
         }).then(response => {
-          this.reloadData = true
+          if (response.status === 200) {
+            this.reloadData = true
+            this.$toast.success({
+              title: 'Success',
+              message: 'Successful data loading'
+            })
+          } else {
+            this.$toast.error({
+              title: 'Error',
+              message: 'Data loading failed'
+            })
+          }
         }).catch(e => {
-          console.error(e)
+          this.$toast.error({
+            title: 'Error',
+            message: 'Data loading failed'
+          })
         })
       },
       resetReloadDataDuplicatedReads () {

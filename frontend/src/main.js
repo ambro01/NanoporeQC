@@ -5,6 +5,8 @@ import { ClientTable } from 'vue-tables-2'
 import VueTabs from 'vue-nav-tabs'
 import VueSession from 'vue-session'
 import VueLocalStorage from 'vue-localstorage'
+import VueCookies from 'vue-cookies'
+import CxltToastr from 'cxlt-vue2-toastr'
 import 'vue-nav-tabs/themes/vue-tabs.css'
 
 // Plugins
@@ -22,6 +24,7 @@ import Chartist from 'chartist'
 import 'bootstrap/dist/css/bootstrap.css'
 import './assets/sass/paper-dashboard.scss'
 import 'es6-promise/auto'
+import 'cxlt-vue2-toastr/dist/css/cxlt-vue2-toastr.css'
 
 // plugin setup
 Vue.use(VueRouter)
@@ -32,12 +35,19 @@ Vue.use(SideBar)
 Vue.use(VueTabs)
 Vue.use(ClientTable)
 Vue.use(VueLocalStorage)
+Vue.use(VueCookies)
 
-var options = {
+var optionsVueSession = {
   persist: true
 }
 
-Vue.use(VueSession, options)
+Vue.use(VueSession, optionsVueSession)
+
+var toastrConfigs = {
+  position: 'bottom right',
+  showDuration: 2000
+}
+Vue.use(CxltToastr, toastrConfigs)
 
 // configure router
 const router = new VueRouter({

@@ -39,13 +39,14 @@
       }
     },
     mounted () {
-      this.$http.get(`api/users/current-user`).then(response => {
-        if (response.status === 200) {
-          this.userName = response.data
-        } else {
-          this.errors = response.data.errors
-        }
-      })
+      if (!this.$cookies.isKey('user')) {
+        this.$http.get(`api/users/current-user`).then(response => {
+          if (response.status === 200) {
+            this.userName = response.data
+          }
+        })
+      }
+      this.userName = this.$cookies.get('user')
     },
     methods: {
       capitalizeFirstLetter (string) {
@@ -68,6 +69,7 @@
         this.$session.destroy()
         this.$router.replace('/')
         this.userName = ''
+        this.$cookies.remove('user')
       }
     }
   }

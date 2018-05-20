@@ -1,7 +1,6 @@
 <template>
   <div>
-    <files-management v-on:filesupload="onFilesUploaded" v-if="!this.showSave && !this.showReport"></files-management>
-    <!--<attachment-list></attachment-list>-->
+    <files-management :analysisType="this.typeName" v-on:filesupload="onFilesUploaded" v-if="!this.showSave && !this.showReport"></files-management>
     <analysis-save :analysisType="this.typeName" @savedAnalysis="onSavedAnalysis" v-if=this.showSave></analysis-save>
     <div class="card" v-if=this.showReport>
       <report-stats-fast5 :id=0 :updateTrigger="this.showReport" v-if=this.showReport></report-stats-fast5>

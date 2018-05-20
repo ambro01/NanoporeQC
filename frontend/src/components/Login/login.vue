@@ -40,6 +40,10 @@
           .catch(() => this.loginFailed())
       },
       loginSuccessful (res) {
+        this.$toast.success({
+          title: 'Success',
+          message: 'Login successful'
+        })
         if (!res.headers.token) {
           this.loginFailed()
           return
@@ -49,8 +53,17 @@
         this.error = false
         this.$router.replace('/view/overview')
         this.loginPending = false
+        this.$http.get(`api/users/current-user`).then(response => {
+          if (response.status === 200) {
+            this.$cookies.set('user', response.data)
+          }
+        })
       },
       loginFailed () {
+        this.$toast.error({
+          title: 'Error',
+          message: 'Login failed'
+        })
         this.error = 'Login failed!'
         delete localStorage.token
         this.loginPending = false

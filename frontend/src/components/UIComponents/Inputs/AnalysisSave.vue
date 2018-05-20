@@ -66,19 +66,22 @@
           type: this.analysisType
         }).then(response => {
           if (response.status === 200) {
-            // toastr.success('Files Uploaded!', 'Success')
             this.resetData()
             this.$emit('savedAnalysis')
+            this.$toast.success({
+              title: 'Success',
+              message: 'Successful saving'
+            })
           } else {
-            this.errors = response.data.errors
+            this.$toast.error({
+              title: 'Error',
+              message: 'Saving failed'
+            })
           }
         })
-        // .bind(this) // Make sure we bind Vue Component object to this funtion so we get a handle of it in order to call its other methods
       },
-      // We want to clear the FormData object on every upload so we can re-calculate new files again.
-      // Keep in mind that we can delete files as well so in the future we will need to keep track of that as well
       resetData () {
-        this.analyseName = '' // Reset it completely
+        this.analyseName = ''
         this.comment = ''
       }
     }

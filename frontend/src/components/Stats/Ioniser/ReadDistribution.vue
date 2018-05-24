@@ -41,9 +41,9 @@
       id: function (newVal, oldVal) {
       },
       reloadData: function (newVal, oldVal) {
-        if (!oldVal && newVal) {
+        if (newVal) {
           this.getReadsDistribution()
-          this.$emit('reloadData')
+          this.$emit('reloadDataEvent')
         }
       }
     },

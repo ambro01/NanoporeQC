@@ -55,13 +55,16 @@
         }
       }
     },
+    mounted () {
+      this.getSummaryInfo()
+    },
     watch: {
       id: function (newVal, oldVal) {
       },
       reloadData: function (newVal, oldVal) {
-        if (!oldVal && newVal) {
+        if (newVal) {
           this.getSummaryInfo()
-          this.$emit('reloadData')
+          this.$emit('reloadDataEvent')
         }
       }
     },

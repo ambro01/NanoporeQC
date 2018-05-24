@@ -41,13 +41,13 @@
       },
       reloadData: function (newVal, oldVal) {
         if (!oldVal && newVal) {
-          this.getDuplicatedReadso()
-          this.$emit('reloadData')
+          this.getDuplicatedReads()
+          this.$emit('reloadDataEvent')
         }
       }
     },
     methods: {
-      getDuplicatedReadso () {
+      getDuplicatedReads () {
         this.$http.get(`api/analysis/stats/duplicated-sequences`, {
           params: {
             xName: 'sequence',

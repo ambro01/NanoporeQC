@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <div class="header">
-      <h4 class="title">Analysis files</h4>
+      <h4 class="title">Files of analysis</h4>
     </div>
     <div class="content">
       <form>
@@ -16,16 +16,19 @@
             <hr>
             <div class="col-md-2">
               <label class="btn btn-secondary btn-fill btn-wd" for="attachments">
-                <input type="file" accept=".fast5" multiple="multiple" id="attachments" @change="uploadFieldChange"
-                       style="display:none;" v-if="this.analysisType === 'Fast5'">
-                <input type="file" accept=".fastq,.fastq.gz" multiple="multiple" id="attachments"
+                <input type="file"
+                       multiple="multiple"
+                       id="attachments"
                        @change="uploadFieldChange"
-                       style="display:none;" v-if="this.analysisType === 'FastQ'">
+                       style="display:none;">
                 Browse files ...
               </label>
             </div>
             <div class="col-md-2">
-              <button class="btn btn-primary btn-fill btn-wd" v-if=this.attachments.length @click.prevent="submit">
+              <button class="btn btn-primary btn-fill btn-wd"
+                      v-if=this.attachments.length
+                      @click.prevent="submit"
+                      :disabled="this.uploadPending">
                 Upload
               </button>
             </div>
@@ -43,11 +46,22 @@
     ],
     data () {
       return {
+        uploadPending: false,
         // You can store all your files here
         attachments: [],
         // Each file will need to be sent as FormData element
         data: new FormData(),
         percentCompleted: 0 // You can store upload progress 0-100 in value, and show it on the screen
+      }
+    },
+    mounted () {
+      switch (this.analysisType) {
+        case 'Fast5':
+          document.getElementById('attachments').accept = '.fast5'
+          break
+        case 'FastQ':
+          document.getElementById('attachments').accept = '.fastq,.fastq.gz'
+          break
       }
     },
     methods: {
@@ -82,6 +96,7 @@
         document.getElementById('attachments').value = []
       },
       submit () {
+        this.uploadPending = true
         this.prepareFields()
         var config = {
           headers: {'Content-Type': 'multipart/form-data'},
@@ -97,7 +112,7 @@
               this.$emit('filesupload')
               this.$toast.success({
                 title: 'Success',
-                message: 'Successful upload'
+                message: 'Successful upload. Please wait'
               })
             } else {
               this.$toast.error({
@@ -105,6 +120,7 @@
                 message: 'Upload failed'
               })
             }
+            this.uploadPending = false
           })
       },
       // We want to clear the FormData object on every upload so we can re-calculate new files again.

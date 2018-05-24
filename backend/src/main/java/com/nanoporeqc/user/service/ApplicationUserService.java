@@ -3,7 +3,7 @@ package com.nanoporeqc.user.service;
 import com.nanoporeqc.user.domain.ApplicationUser;
 import com.nanoporeqc.user.repository.ApplicationUserRepository;
 import com.nanoporeqc.user.dto.UserDto;
-import com.nanoporeqc.user.exceptions.UserNotFoundException;
+import com.nanoporeqc.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,7 +26,7 @@ public class ApplicationUserService {
     }
 
     public void save(final UserDto userDto) {
-        ApplicationUser user = ApplicationUser.builder()
+        final ApplicationUser user = ApplicationUser.builder()
                 .username(userDto.getUsername())
                 .password(bCryptPasswordEncoder.encode(userDto.getPassword()))
                 .build();
@@ -34,12 +34,12 @@ public class ApplicationUserService {
         applicationUserRepository.save(user);
     }
 
-    public ApplicationUser getCurrentUser() throws UserNotFoundException {
+    public ApplicationUser getCurrentUser() {
         return applicationUserRepository.findByUsername(getCurrentUserName());
     }
 
-    public String getCurrentUserName() throws UserNotFoundException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public String getCurrentUserName() {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             return authentication.getName();
         } else {

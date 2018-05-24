@@ -1,9 +1,11 @@
 package com.nanoporeqc.r.service;
 
-import com.nanoporeqc.fast5analysis.domain.Type;
-import com.nanoporeqc.fast5analysis.service.StatsService;
-import com.nanoporeqc.fast5file.consts.FileConsts;
-import com.nanoporeqc.fast5file.service.FileService;
+import com.nanoporeqc.analysis.domain.Type;
+import com.nanoporeqc.exceptions.NotSupportedAnalysisTypeException;
+import com.nanoporeqc.exceptions.REvaluatingException;
+import com.nanoporeqc.analysis.service.StatsService;
+import com.nanoporeqc.file.consts.FileConsts;
+import com.nanoporeqc.file.service.FileService;
 import com.nanoporeqc.r.domain.RVariable;
 import com.nanoporeqc.r.enumeration.RScriptEnum;
 import org.rosuda.REngine.REXP;
@@ -60,24 +62,19 @@ public class RService {
         rCon.close();
     }
 
-    private REXP eval(String cmd) throws RserveException {
+    private REXP eval(String cmd) {
         basicLock.lock();
         try {
             return rConnection.getObject().eval(cmd);
+        } catch (RserveException e) {
+            throw new REvaluatingException();
         } finally {
             basicLock.unlock();
         }
     }
 
     public void evaluateRScript(final RScriptEnum rScriptEnum) {
-        lock.lock();
-        try {
-            eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
-        } catch (RserveException e) {
-            e.printStackTrace();
-        } finally {
-            lock.unlock();
-        }
+        eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
     }
 
     private List getDataSetFromR(final RVariable rVariable) {
@@ -109,25 +106,34 @@ public class RService {
                 default:
                     break;
             }
-        } catch (REXPMismatchException | RserveException e) {
+        } catch (REXPMismatchException e) {
             e.printStackTrace();
         }
         return Collections.emptyList();
     }
 
-    public void loadFilesFromDirToR(final String filesDir, final RScriptEnum rScriptEnum) {
+    public void loadFilesFromDirToR(final RScriptEnum rScriptEnum) {
         lock.lock();
         try {
-            if (RScriptEnum.READ_FASTQ_SUMMARY_FROM_FAST5_SUMMARY.equals(rScriptEnum)) {
-                eval("filePath <- " + "'" + FileConsts.FASTQ_FILE_FROM_FAST5 + "'");
-            }
-            eval("dirPath <- " + "'" + filesDir + "'");
+            eval("dirPath <- " + "'" + FileConsts.FILES_DIR + "'");
             eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
-        } catch (RserveException e) {
-            e.printStackTrace();
         } finally {
             lock.unlock();
         }
+        fileService.cleanDirectory(FileConsts.FILES_DIR);
+    }
+
+    public void loadSummaryAFromSummaryB() {
+        final RScriptEnum rScriptEnum = RScriptEnum.READ_FASTQ_SUMMARY_FROM_FAST5_SUMMARY;
+        lock.lock();
+        try {
+            eval("filePath <- " + "'" + FileConsts.FASTQ_FILE_FROM_FAST5 + "'");
+            eval("dirPath <- " + "'" + FileConsts.FILES_DIR + "'");
+            eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
+        } finally {
+            lock.unlock();
+        }
+        fileService.cleanDirectory(FileConsts.FILES_DIR);
     }
 
     public void saveSummaryToFile() {
@@ -135,15 +141,13 @@ public class RService {
         try {
             eval("summaryName <- " + "'" + FileConsts.SUMMARY_FILE + "'");
             eval(String.format("source('%s')", fileService.getRScriptPath(RScriptEnum.SAVE_SUMMARY)));
-        } catch (RserveException e) {
-            e.printStackTrace();
         } finally {
             lock.unlock();
         }
     }
 
     public void loadSummaryFromFile(final String type) {
-        RScriptEnum rScriptEnum;
+        final RScriptEnum rScriptEnum;
         switch (Type.valueOf(type)) {
             case Fast5:
                 rScriptEnum = RScriptEnum.READ_SUMMARY;
@@ -152,14 +156,12 @@ public class RService {
                 rScriptEnum = RScriptEnum.READ_QA_SUMMARY;
                 break;
             default:
-                rScriptEnum = RScriptEnum.READ_SUMMARY;
+                throw new NotSupportedAnalysisTypeException();
         }
         lock.lock();
         try {
             eval("summaryName <- " + "'" + FileConsts.SUMMARY_FILE + "'");
             eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
-        } catch (RserveException e) {
-            e.printStackTrace();
         } finally {
             lock.unlock();
         }

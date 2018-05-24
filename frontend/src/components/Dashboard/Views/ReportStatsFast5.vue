@@ -16,7 +16,7 @@
         <v-tab title="kb per channel"></v-tab>
       </vue-tabs>
       <div v-if="this.tabIndex === 0">
-        <summary-info :id="this.id" :reloadData="this.reloadData" @reloadData='resetReloadData'></summary-info>
+        <summary-info :id="this.id" :reloadData="this.reloadDataSummaryInfo" @reloadDataEvent='resetReloadDataSummaryInfo'></summary-info>
       </div>
       <div v-if="this.tabIndex === 1">
         <read-accumulation :chart-data="this.dataReadAccumulation"></read-accumulation>
@@ -86,7 +86,7 @@
     ],
     data () {
       return {
-        reloadData: false,
+        reloadDataSummaryInfo: false,
         dataReadAccumulation: null,
         dataActiveChannels: null,
         dataReadCategoryCounts: null,
@@ -116,14 +116,14 @@
       if (this.id > 0) {
         this.loadData()
       }
-      this.reloadData = true
+      this.reloadDataSummaryInfo = true
     },
     methods: {
       handleTabChange (tabIndex, newTab, oldTab) {
         this.tabIndex = tabIndex
         switch (tabIndex) {
           case 0:
-            this.reloadData = true
+            this.reloadDataSummaryInfo = true
             break
           case 1:
             this.getReadAccumulation()
@@ -176,8 +176,8 @@
           })
         })
       },
-      resetReloadData () {
-        this.reloadData = false
+      resetReloadDataSummaryInfo () {
+        this.reloadDataSummaryInfo = false
       },
       getReadAccumulation () {
         this.$http.get(`api/analysis/stats/readAccumulation/`, {

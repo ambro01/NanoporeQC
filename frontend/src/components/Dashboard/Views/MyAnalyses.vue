@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <h3>Analysiss repository</h3>
+      <h3>Analysis repository</h3>
       <p class="category">* Use shift key to enable multi sorting</p>
       <v-client-table :columns="columns" :data="data" :options="options">
         <a slot="viewResults" slot-scope="props">
@@ -70,7 +70,6 @@
         })
       },
       onShowDetails (row) {
-        console.log(row)
         this.detailsId = row.id
         this.analysisType = row.type
       },

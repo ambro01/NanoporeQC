@@ -13,9 +13,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RVariable {
+
     private String name;
+
     private RVariableTypeEnum type;
+
     private List rDataSet;
+
     private Integer precision;
 
     public RVariable(String name, RVariableTypeEnum type) {

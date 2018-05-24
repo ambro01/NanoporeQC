@@ -22,21 +22,21 @@ import java.util.Date;
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private AuthenticationManager authenticationManager;
 
-    public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public JWTAuthenticationFilter(final AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest req,
-                                                HttpServletResponse res) throws AuthenticationException {
+    public Authentication attemptAuthentication(final HttpServletRequest req,
+                                                final HttpServletResponse res) throws AuthenticationException {
         try {
-            UserDto creds = new ObjectMapper()
+            final UserDto userDto = new ObjectMapper()
                     .readValue(req.getInputStream(), UserDto.class);
 
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            creds.getUsername(),
-                            creds.getPassword(),
+                            userDto.getUsername(),
+                            userDto.getPassword(),
                             new ArrayList<>())
             );
         } catch (IOException e) {
@@ -45,12 +45,12 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest req,
-                                            HttpServletResponse res,
-                                            FilterChain chain,
-                                            Authentication auth) throws IOException, ServletException {
+    protected void successfulAuthentication(final HttpServletRequest req,
+                                            final HttpServletResponse res,
+                                            final FilterChain chain,
+                                            final Authentication auth) throws IOException, ServletException {
 
-        String token = Jwts.builder()
+        final String token = Jwts.builder()
                 .setSubject(((User) auth.getPrincipal()).getUsername())
                 .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS512, SecurityConstants.SECRET.getBytes())

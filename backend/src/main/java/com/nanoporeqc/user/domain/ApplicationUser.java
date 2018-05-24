@@ -1,6 +1,6 @@
 package com.nanoporeqc.user.domain;
 
-import com.nanoporeqc.fast5analysis.domain.Analysis;
+import com.nanoporeqc.analysis.domain.Analysis;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

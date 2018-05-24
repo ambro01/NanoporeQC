@@ -30,11 +30,11 @@
       </div>
       <div v-if="this.tabIndex === 4">
         <read-distribution :id="this.id" :reloadData="this.reloadDataReadDistribution"
-                           @reloadData='resetReloadDataReadDistribution'></read-distribution>
+                           @reloadDataEvent='resetReloadDataReadDistribution'></read-distribution>
       </div>
       <div v-if="this.tabIndex === 5">
         <duplicated-reads :id="this.id" :reloadData="this.reloadDataDuplicatedReads"
-                          @reloadData='resetReloadDataDuplicatedReads'></duplicated-reads>
+                          @reloadDataEvent='resetReloadDataDuplicatedReads'></duplicated-reads>
       </div>
     </div>
   </div>

@@ -10,5 +10,7 @@ import java.util.stream.Collectors;
 
 @Data
 public class RFast5Resource {
+
     private List<URL> filesUrls;
+
 }

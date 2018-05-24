@@ -14,11 +14,6 @@ const SidebarStore = {
       path: '/view/stats'
     },
     {
-      name: 'Table List',
-      icon: 'ti-view-list-alt',
-      path: '/view/table-list'
-    },
-    {
       name: 'Typography',
       icon: 'ti-text',
       path: '/view/typography'
@@ -29,19 +24,9 @@ const SidebarStore = {
       path: '/view/new-analysis'
     },
     {
-      name: 'My Analysiss',
+      name: 'My Analyses',
       icon: 'ti-archive',
       path: '/view/my-analyses'
-    },
-    {
-      name: 'Maps',
-      icon: 'ti-map',
-      path: '/view/maps'
-    },
-    {
-      name: 'Notifications',
-      icon: 'ti-bell',
-      path: '/view/notifications'
     }
   ],
   displaySidebar (value) {

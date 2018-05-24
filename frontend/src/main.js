@@ -11,7 +11,6 @@ import 'vue-nav-tabs/themes/vue-tabs.css'
 
 // Plugins
 import GlobalComponents from './gloablComponents'
-import Notifications from './components/UIComponents/NotificationPlugin'
 import SideBar from './components/UIComponents/SidebarPlugin'
 import App from './App'
 
@@ -30,7 +29,6 @@ import 'cxlt-vue2-toastr/dist/css/cxlt-vue2-toastr.css'
 Vue.use(VueRouter)
 Vue.use(GlobalComponents)
 Vue.use(vClickOutside)
-Vue.use(Notifications)
 Vue.use(SideBar)
 Vue.use(VueTabs)
 Vue.use(ClientTable)

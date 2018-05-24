@@ -34,8 +34,7 @@
     },
     data () {
       return {
-        userName: '',
-        activeNotifications: false
+        userName: ''
       }
     },
     mounted () {
@@ -49,21 +48,6 @@
       this.userName = this.$cookies.get('user')
     },
     methods: {
-      capitalizeFirstLetter (string) {
-        return string.charAt(0).toUpperCase() + string.slice(1)
-      },
-      toggleNotificationDropDown () {
-        this.activeNotifications = !this.activeNotifications
-      },
-      closeDropDown () {
-        this.activeNotifications = false
-      },
-      toggleSidebar () {
-        this.$sidebar.displaySidebar(!this.$sidebar.showSidebar)
-      },
-      hideSidebar () {
-        this.$sidebar.displaySidebar(false)
-      },
       logout () {
         delete localStorage.getItem('token')
         this.$session.destroy()

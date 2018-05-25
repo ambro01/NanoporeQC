@@ -4,6 +4,7 @@
     Bar,
     mixins
   } from 'vue-chartjs'
+  import zoom from 'chartjs-plugin-zoom'
   // Exporting this so it can be used in other components
   const {reactiveProp} = mixins
   export default {
@@ -32,13 +33,22 @@
             display: true
           },
           responsive: true,
-          maintainAspectRatio: false
+          maintainAspectRatio: false,
+          pan: {
+            enabled: true,
+            mode: 'xy'
+          },
+          zoom: {
+            enabled: true,
+            mode: 'xy',
+            drag: false
+          }
         }
       }
     },
 
     mounted () {
-      // this.chartData is created in the mixin and contains all the data needed to build the chart.
+      this.addPlugin(zoom)
       this.renderChart(this.chartData, this.options)
     }
   }

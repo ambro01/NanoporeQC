@@ -115,9 +115,9 @@ public class RService {
     public void loadFilesFromDirToR(final RScriptEnum rScriptEnum) {
         lock.lock();
         try {
-            fileService.cleanDirectory(FileConsts.FILES_DIR);
             eval("dirPath <- " + "'" + FileConsts.FILES_DIR + "'");
             eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
+            fileService.cleanDirectory(FileConsts.FILES_DIR);
         } finally {
             lock.unlock();
         }
@@ -127,10 +127,10 @@ public class RService {
         final RScriptEnum rScriptEnum = RScriptEnum.READ_FASTQ_SUMMARY_FROM_FAST5_SUMMARY;
         lock.lock();
         try {
-            fileService.cleanDirectory(FileConsts.FILES_DIR);
             eval("filePath <- " + "'" + FileConsts.FASTQ_FILE_FROM_FAST5 + "'");
             eval("dirPath <- " + "'" + FileConsts.FILES_DIR + "'");
             eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
+            fileService.cleanDirectory(FileConsts.FILES_DIR);
         } finally {
             lock.unlock();
         }
@@ -141,7 +141,6 @@ public class RService {
         lock.lock();
         try {
             eval("summaryName <- " + "'" + FileConsts.SUMMARY_FILE + "'");
-
             eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
         } finally {
             lock.unlock();
@@ -154,6 +153,7 @@ public class RService {
         try {
             eval("summaryName <- " + "'" + FileConsts.SUMMARY_FILE + "'");
             eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
+            fileService.cleanDirectory(FileConsts.SUMMARY_DIR);
         } finally {
             lock.unlock();
         }

@@ -9,11 +9,12 @@
             <h3 class="tittle" align="center">Which analysis do you want to perform?</h3>
           </div>
           <div class="content">
+            <br>
             <form>
               <div class="col-md-1"></div>
               <div class="col-md-4">
                 <div class="text-center">
-                  <button class="my-select-button btn btn-lg btn-block" @click.prevent="showFast5">
+                  <button class="btn btn-lg select-button" @click.prevent="showFast5">
                     Fast5
                   </button>
                 </div>
@@ -21,13 +22,15 @@
               <div class="col-md-2"></div>
               <div class="col-md-4">
                 <div class="text-center">
-                  <button class="btn btn-lg" @click.prevent="showFastQ">
+                  <button class="btn btn-lg select-button" @click.prevent="showFastQ">
                     FastQ
                   </button>
                 </div>
               </div>
               <div class="clearfix"></div>
             </form>
+            <br>
+            <br>
           </div>
         </div>
       </div>
@@ -64,7 +67,9 @@
 </script>
 
 <style lang="css" scoped>
-  .btn.btn-lg {
-    padding: 30px 100px;
+  .select-button {
+    font-size: 30px;
+    width: 300px;
+    height: 150px;
   }
 </style>

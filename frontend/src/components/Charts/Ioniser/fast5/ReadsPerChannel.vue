@@ -1,14 +1,14 @@
 <script>
   // Importing Bar class from the vue-chartjs wrapper
   import {
-    Bar,
+    Line,
     mixins
   } from 'vue-chartjs'
   import zoom from 'chartjs-plugin-zoom'
   // Exporting this so it can be used in other components
   const {reactiveProp} = mixins
   export default {
-    extends: Bar,
+    extends: Line,
     mixins: [reactiveProp],
     data () {
       return {
@@ -17,16 +17,18 @@
           scales: {
             yAxes: [{
               ticks: {
-                beginAtZero: true,
-                stepSize: 1
+                maxTicksLimit: 20
               },
               gridLines: {
                 display: true
               }
             }],
             xAxes: [{
+              ticks: {
+                maxTicksLimit: 50
+              },
               gridLines: {
-                display: false
+                display: true
               }
             }]
           },

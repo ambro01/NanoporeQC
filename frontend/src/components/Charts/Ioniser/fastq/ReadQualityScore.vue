@@ -17,13 +17,16 @@
           scales: {
             yAxes: [{
               ticks: {
-                beginAtZero: true
+                maxTicksLimit: 20
               },
               gridLines: {
                 display: true
               }
             }],
             xAxes: [{
+              ticks: {
+                maxTicksLimit: 50
+              },
               gridLines: {
                 display: true
               }

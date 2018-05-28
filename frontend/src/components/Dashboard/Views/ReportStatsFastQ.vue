@@ -2,6 +2,7 @@
   <div class="card">
     <div class="header">
       <h4 class="title">Report of analysis</h4>
+      <button class="btn btn-primary btn-wd refresh-button" @click.prevent="refreshData">Refresh</button>
     </div>
     <div class="content">
       <vue-tabs active-tab-color="#f4f3ef" @tab-change="handleTabChange">
@@ -15,39 +16,27 @@
       <div v-if="this.tabIndex === 0">
         <nucleotide-counts :chart-data="this.dataNucleotideCounts"></nucleotide-counts>
         <label class="control-label">Number of each nucleotide (N - undefined)</label>
-        <br>
-        <button class="btn btn-primary btn-wd" @click.prevent="getNucleotideCounts">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 1">
         <read-quality-score :chart-data="this.dataReadQualityScore"></read-quality-score>
         <label class="control-label">Proportion of reads per average base quality</label>
-        <br>
-        <button class="btn btn-primary btn-wd" @click.prevent="getReadQuality">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 2">
         <per-cycle-base-call :chart-data="this.dataCycleBaseCall"></per-cycle-base-call>
         <label class="control-label">Number of nucleotides read per each cycle</label>
-        <br>
-        <button class="btn btn-primary btn-wd" @click.prevent="getCycleBaseCall">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 3">
         <per-cycle-quality :chart-data="this.dataCycleQuality"></per-cycle-quality>
         <label class="control-label">Quality factors per each cycle</label>
-        <br>
-        <button class="btn btn-primary btn-wd" @click.prevent="getCycleQuality">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 4">
         <read-distribution :sourceData="this.dataReadsDistribution"
                            v-if="this.dataReadsDistribution != null"></read-distribution>
         <label class="control-label">Reads distribution</label>
-        <br>
-        <button class="btn btn-primary btn-wd" @click.prevent="getReadsDistribution">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 5">
         <duplicated-reads :sourceData="this.dataDuplicatedReads" v-if="dataDuplicatedReads != null"></duplicated-reads>
         <label class="control-label">Duplicated reads</label>
-        <br>
-        <button class="btn btn-primary btn-wd" @click.prevent="getDuplicatedReads">Refresh</button>
       </div>
     </div>
   </div>
@@ -155,7 +144,8 @@
               {
                 backgroundColor: '#f87979',
                 data: response.data.yvaluesList[0],
-                pointRadius: 0
+                pointRadius: 0,
+                steppedLine: false
               }
             ]
           }
@@ -178,28 +168,32 @@
                 borderColor: '#f87979',
                 fill: false,
                 data: response.data.yvaluesList[0],
-                pointRadius: 0
+                pointRadius: 0,
+                borderWidth: 1
               },
               {
                 label: 'G',
                 borderColor: '#f8ac5f',
                 fill: false,
                 data: response.data.yvaluesList[1],
-                pointRadius: 0
+                pointRadius: 0,
+                borderWidth: 1
               },
               {
                 label: 'C',
                 borderColor: '#47f889',
                 fill: false,
                 data: response.data.yvaluesList[2],
-                pointRadius: 0
+                pointRadius: 0,
+                borderWidth: 1
               },
               {
                 label: 'T',
                 borderColor: '#82c3f8',
                 fill: false,
                 data: response.data.yvaluesList[3],
-                pointRadius: 0
+                pointRadius: 0,
+                borderWidth: 1
               }
             ]
           }
@@ -222,35 +216,40 @@
                 borderColor: '#f87979',
                 fill: false,
                 data: response.data.yvaluesList[0],
-                pointRadius: 0
+                pointRadius: 0,
+                borderWidth: 1
               },
               {
                 label: 'median',
                 borderColor: '#82c3f8',
                 fill: false,
                 data: response.data.yvaluesList[1],
-                pointRadius: 0
+                pointRadius: 0,
+                borderWidth: 1
               },
               {
                 label: 'quantile 25',
                 borderColor: '#47f889',
                 fill: false,
                 data: response.data.yvaluesList[2],
-                pointRadius: 0
+                pointRadius: 0,
+                borderWidth: 1
               },
               {
                 label: 'quantile 50',
                 borderColor: '#f8ac5f',
                 fill: false,
                 data: response.data.yvaluesList[3],
-                pointRadius: 0
+                pointRadius: 0,
+                borderWidth: 1
               },
               {
                 label: 'quantile 75',
                 borderColor: '#8f8792',
                 fill: false,
                 data: response.data.yvaluesList[3],
-                pointRadius: 0
+                pointRadius: 0,
+                borderWidth: 1
               }
             ]
           }
@@ -290,12 +289,35 @@
         this.getCycleQuality()
         this.getReadsDistribution()
         this.getDuplicatedReads()
+      },
+
+      refreshData () {
+        switch (this.tabIndex) {
+          case 0:
+            this.getNucleotideCounts()
+            break
+          case 1:
+            this.getReadQuality()
+            break
+          case 2:
+            this.getCycleBaseCall()
+            break
+          case 3:
+            this.getCycleQuality()
+            break
+          case 4:
+            this.getReadsDistribution()
+            break
+          case 5:
+            this.getDuplicatedReads()
+            break
+        }
       }
     }
   }
 </script>
 
-<style scoped>
+<style lang="css" scoped>
   ul {
     list-style-type: none;
     padding: 0;
@@ -308,5 +330,9 @@
 
   a {
     color: #42b983;
+  }
+
+  .refresh-button {
+    float: right;
   }
 </style>

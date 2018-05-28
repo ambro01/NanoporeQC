@@ -4,7 +4,7 @@ import NotFound from '../components/GeneralViews/NotFoundPage.vue'
 
 // Admin pages
 import Overview from 'src/components/Dashboard/Views/Overview.vue'
-import UserProfile from 'src/components/Dashboard/Views/UserProfile.vue'
+import UserPanel from 'src/components/Dashboard/Views/UserProfile.vue'
 import NewAnalysis from 'src/components/Dashboard/Views/NewAnalysis.vue'
 import Typography from 'src/components/Dashboard/Views/Typography.vue'
 import Icons from 'src/components/Dashboard/Views/Icons.vue'
@@ -28,9 +28,9 @@ const routes = [
         component: Overview
       },
       {
-        path: 'stats',
-        name: 'stats',
-        component: UserProfile
+        path: 'user-panel',
+        name: 'user-panel',
+        component: UserPanel
       },
       {
         path: 'new-analysis',

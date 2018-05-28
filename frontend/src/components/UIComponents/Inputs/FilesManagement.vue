@@ -107,20 +107,19 @@
         }
         this.$http.post(`api/files`, this.data, config)
           .then(response => {
-            if (response.status === 200) {
-              this.resetData()
-              this.$emit('filesupload')
-              this.$toast.success({
-                title: 'Success',
-                message: 'Successful upload. Please wait'
-              })
-            } else {
-              this.$toast.error({
-                title: 'Error',
-                message: 'Upload failed'
-              })
-            }
+            this.resetData()
+            this.$emit('filesupload')
+            this.$toast.success({
+              title: 'Success',
+              message: 'Successful upload. Please wait'
+            })
             this.uploadPending = false
+          })
+          .catch(e => {
+            this.$toast.error({
+              title: 'Error',
+              message: 'Upload failed'
+            })
           })
       },
       // We want to clear the FormData object on every upload so we can re-calculate new files again.

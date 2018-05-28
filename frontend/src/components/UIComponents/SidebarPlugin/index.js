@@ -4,19 +4,9 @@ const SidebarStore = {
   showSidebar: false,
   sidebarLinks: [
     {
-      name: 'Dashboard',
+      name: 'Overview',
       icon: 'ti-panel',
       path: '/view/overview'
-    },
-    {
-      name: 'User Profile',
-      icon: 'ti-user',
-      path: '/view/stats'
-    },
-    {
-      name: 'Typography',
-      icon: 'ti-text',
-      path: '/view/typography'
     },
     {
       name: 'New Analysis',
@@ -25,8 +15,13 @@ const SidebarStore = {
     },
     {
       name: 'My Analyses',
-      icon: 'ti-archive',
+      icon: 'ti-server',
       path: '/view/my-analyses'
+    },
+    {
+      name: 'User panel',
+      icon: 'ti-user',
+      path: '/view/user-panel'
     }
   ],
   displaySidebar (value) {

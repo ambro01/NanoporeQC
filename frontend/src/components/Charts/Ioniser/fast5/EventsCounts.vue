@@ -18,7 +18,7 @@
           scales: {
             yAxes: [{
               ticks: {
-                beginAtZero: true
+                maxTicksLimit: 20
               },
               gridLines: {
                 display: true
@@ -26,6 +26,7 @@
             }],
             xAxes: [{
               ticks: {
+                maxTicksLimit: 50,
                 callback: function (value, index, values) {
                   return value + '\''
                 }

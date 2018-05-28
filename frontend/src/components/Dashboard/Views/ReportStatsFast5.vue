@@ -2,6 +2,7 @@
   <div class="card">
     <div class="header">
       <h4 class="title">Report of analysis</h4>
+      <button class="btn btn-primary btn-wd refresh-button" @click.prevent="refreshData">Refresh</button>
     </div>
     <div class="content">
       <vue-tabs active-tab-color="#f4f3ef" @tab-change="handleTabChange">
@@ -18,56 +19,38 @@
       <div v-if="this.tabIndex === 0">
         <summary-info :sourceData="this.dataSummaryInfo" v-if="this.dataSummaryInfo != null"></summary-info>
         <label class="control-label">Summary information about files of analysis</label>
-        <br>
-        <button class="btn btn-primary btn-wd" @click.prevent="getSummaryInfo">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 1">
         <read-accumulation :chart-data="this.dataReadAccumulation"></read-accumulation>
         <label class="control-label">An accumulation of reads over the duration of an experiment</label>
-        <br>
-        <button class="btn btn-primary btn-wd" @click.prevent="getReadAccumulation">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 2">
         <active-channels :chart-data="this.dataActiveChannels"></active-channels>
         <label class="control-label">A number of active channels for each minute of run time</label>
-        <br>
-        <button class="btn btn-primary btn-wd" @click.prevent="getActiveChannels">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 3">
         <read-quality :chart-data="this.dataReadQuality"></read-quality>
         <label class="control-label">Mean reads' qualities of each file</label>
-        <br>
-        <button class="btn btn-primary btn-wd" @click.prevent="getReadQuality">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 4">
         <read-category-quality :chart-data="this.dataReadCategoryQuality"></read-category-quality>
         <label class="control-label">A quality summary of an analysis. Min, mean, median and max values, broken down into the strand categories</label>
-        <br>
-        <button class="btn btn-primary btn-wd" @click.prevent="getReadCategoryQuality">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 5">
         <read-category-counts :chart-data="this.dataReadCategoryCounts"></read-category-counts>
         <label class="control-label">A strand classification with numbers of readings</label>
-        <br>
-        <button class="btn btn-primary btn-wd" @click.prevent="getReadCategoryCounts">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 6">
         <events-counts :chart-data="this.dataEventsCounts"></events-counts>
         <label class="control-label">Number of events over the duration of an experiment</label>
-        <br>
-        <button class="btn btn-primary btn-wd" @click.prevent="getEventsCounts">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 7">
         <reads-per-channel :chart-data="this.dataReadsPerChannel"></reads-per-channel>
         <label class="control-label">Number of reads read for each channel</label>
-        <br>
-        <button class="btn btn-primary btn-wd" @click.prevent="getReadsPerChannel">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 8">
         <kb-per-channel :chart-data="this.dataKbPerChannel"></kb-per-channel>
         <label class="control-label">The amount of data (kilobytes) read for each channel</label>
-        <br>
-        <button class="btn btn-primary btn-wd" @click.prevent="getKbPerChannel">Refresh</button>
       </div>
     </div>
   </div>
@@ -176,7 +159,7 @@
                 borderColor: '#0096f8',
                 steppedLine: true,
                 fill: false,
-                lineTension: 0,
+                pointRadius: 0,
                 data: response.data.yvaluesList[0]
               }
             ]
@@ -272,7 +255,7 @@
                 fill: false,
                 showLine: true,
                 borderColor: '#f8ac5f',
-                lineTension: 0,
+                pointRadius: 0,
                 steppedLine: true,
                 data: response.data.yvaluesList[0]
               }
@@ -296,35 +279,41 @@
                 label: 'quality',
                 borderColor: '#f87979',
                 fill: false,
-                data: response.data.yvaluesList[0]
+                data: response.data.yvaluesList[0],
+                pointRadius: 0,
+                borderWidth: 1
               },
               {
                 label: 'min',
                 borderColor: '#d392f8',
                 pointRadius: 0,
                 fill: false,
-                data: response.data.yvaluesList[1]
+                data: response.data.yvaluesList[1],
+                borderWidth: 1
               },
               {
                 label: 'max',
                 borderColor: '#f8ac5f',
                 pointRadius: 0,
                 fill: false,
-                data: response.data.yvaluesList[2]
+                data: response.data.yvaluesList[2],
+                borderWidth: 1
               },
               {
                 label: 'mean',
                 borderColor: '#47f889',
                 pointRadius: 0,
                 fill: false,
-                data: response.data.yvaluesList[3]
+                data: response.data.yvaluesList[3],
+                borderWidth: 1
               },
               {
                 label: 'median',
                 borderColor: '#82c3f8',
                 pointRadius: 0,
                 fill: false,
-                data: response.data.yvaluesList[4]
+                data: response.data.yvaluesList[4],
+                borderWidth: 1
               }
             ]
           }
@@ -343,8 +332,10 @@
             labels: response.data.xvalues,
             datasets: [
               {
-                backgroundColor: '#82c3f8',
-                data: response.data.yvaluesList[0]
+                borderColor: '#47f889',
+                data: response.data.yvaluesList[0],
+                pointRadius: 0,
+                fill: false
               }
             ]
           }
@@ -363,8 +354,10 @@
             labels: response.data.xvalues,
             datasets: [
               {
-                backgroundColor: '#f8ac5f',
-                data: response.data.yvaluesList[0]
+                borderColor: '#f8ac5f',
+                data: response.data.yvaluesList[0],
+                pointRadius: 0,
+                fill: false
               }
             ]
           }
@@ -383,12 +376,44 @@
         this.getReadQuality()
         this.getReadsPerChannel()
         this.getKbPerChannel()
+      },
+
+      refreshData () {
+        switch (this.tabIndex) {
+          case 0:
+            this.getSummaryInfo()
+            break
+          case 1:
+            this.getReadAccumulation()
+            break
+          case 2:
+            this.getActiveChannels()
+            break
+          case 3:
+            this.getReadQuality()
+            break
+          case 4:
+            this.getReadCategoryQuality()
+            break
+          case 5:
+            this.getReadCategoryCounts()
+            break
+          case 6:
+            this.getEventsCounts()
+            break
+          case 7:
+            this.getReadsPerChannel()
+            break
+          case 8:
+            this.getKbPerChannel()
+            break
+        }
       }
     }
   }
 </script>
 
-<style scoped>
+<style lang="css" scoped>
   ul {
     list-style-type: none;
     padding: 0;
@@ -401,5 +426,9 @@
 
   a {
     color: #42b983;
+  }
+
+  .refresh-button {
+    float: right;
   }
 </style>

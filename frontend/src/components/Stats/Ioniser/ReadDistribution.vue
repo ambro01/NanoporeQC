@@ -2,7 +2,7 @@
   <div>
     <p class="category">* Use shift key to enable multi sorting</p>
     <br>
-    <v-client-table :columns="columns" :data="data" :options="options"></v-client-table>
+    <v-client-table :columns="columns" :data="this.sourceData" :options="options"></v-client-table>
   </div>
 </template>
 
@@ -10,8 +10,7 @@
   export default {
     components: {},
     props: [
-      'id',
-      'reloadData'
+      'sourceData'
     ],
     data () {
       return {
@@ -32,33 +31,6 @@
             filter: 'Search in file names:'
           }
         }
-      }
-    },
-    mounted () {
-      this.getReadsDistribution()
-    },
-    watch: {
-      id: function (newVal, oldVal) {
-      },
-      reloadData: function (newVal, oldVal) {
-        if (newVal) {
-          this.getReadsDistribution()
-          this.$emit('reloadDataEvent')
-        }
-      }
-    },
-    methods: {
-      getReadsDistribution () {
-        this.$http.get(`api/analysis/stats/reads-distribution`, {
-          params: {
-            xName: 'sequence',
-            yNames: ['count']
-          }
-        }).then(response => {
-          this.data = response.data
-        }).catch(e => {
-          console.error(e)
-        })
       }
     }
   }

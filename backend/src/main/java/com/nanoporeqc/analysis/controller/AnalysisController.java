@@ -51,7 +51,7 @@ public class AnalysisController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping(value = "/from-fast5/{id}")
+    @PostMapping(value = "/from-fast5/{id}")
     public ResponseEntity runFastQFromFast5(@PathVariable("id") Long id) {
         analysisService.runFastQFromFast5(id);
         return new ResponseEntity(HttpStatus.OK);

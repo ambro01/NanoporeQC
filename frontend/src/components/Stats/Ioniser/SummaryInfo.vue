@@ -3,7 +3,7 @@
     <h3>Summary information about .fast5 files</h3>
     <p class="category">* Use shift key to enable multi sorting</p>
     <br>
-    <v-client-table :columns="columns" :data="data" :options="options"></v-client-table>
+    <v-client-table :columns="columns" :data="this.sourceData" :options="options"></v-client-table>
   </div>
 </template>
 
@@ -11,8 +11,7 @@
   export default {
     components: {},
     props: [
-      'id',
-      'reloadData'
+      'sourceData'
     ],
     data () {
       return {
@@ -53,28 +52,6 @@
             filter: 'Search in names:'
           }
         }
-      }
-    },
-    mounted () {
-      this.getSummaryInfo()
-    },
-    watch: {
-      id: function (newVal, oldVal) {
-      },
-      reloadData: function (newVal, oldVal) {
-        if (newVal) {
-          this.getSummaryInfo()
-          this.$emit('reloadDataEvent')
-        }
-      }
-    },
-    methods: {
-      getSummaryInfo () {
-        this.$http.get(`api/analysis/stats/info`).then(response => {
-          this.data = response.data
-        }).catch(e => {
-          console.error(e)
-        })
       }
     }
   }

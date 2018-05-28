@@ -3,15 +3,15 @@ package com.nanoporeqc.analysis.service;
 import com.nanoporeqc.analysis.domain.Analysis;
 import com.nanoporeqc.analysis.domain.Type;
 import com.nanoporeqc.analysis.dto.AnalysisDto;
+import com.nanoporeqc.analysis.repository.AnalysisRepository;
 import com.nanoporeqc.exceptions.AnalysisCannotBeSavedException;
 import com.nanoporeqc.exceptions.AnalysisNotFoundException;
-import com.nanoporeqc.analysis.repository.AnalysisRepository;
 import com.nanoporeqc.exceptions.NotSupportedAnalysisTypeException;
+import com.nanoporeqc.exceptions.UserNotFoundException;
 import com.nanoporeqc.file.consts.FileConsts;
 import com.nanoporeqc.file.service.FileService;
 import com.nanoporeqc.r.enumeration.RScriptEnum;
 import com.nanoporeqc.r.service.RService;
-import com.nanoporeqc.exceptions.UserNotFoundException;
 import com.nanoporeqc.user.service.ApplicationUserService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -38,7 +38,7 @@ public class AnalysisService {
     private final AnalysisRepository analysisRepository;
     private final ApplicationUserService applicationUserService;
     private final ModelMapper modelMapper;
-    private ReentrantLock lockAnalysis = new ReentrantLock();
+    private final ReentrantLock lockAnalysis = new ReentrantLock();
 
     @Autowired
     public AnalysisService(final RService rService,
@@ -54,17 +54,9 @@ public class AnalysisService {
     }
 
     public void runNewAnalysis(final AnalysisDto analysisDto) {
+        final RScriptEnum rScriptEnum = rService.getSummaryFromDirScript(analysisDto.getType());
         LOGGER.info("Analysis: Running new analyse of type: " + analysisDto.getType());
-        switch (Type.valueOf(analysisDto.getType())) {
-            case Fast5:
-                rService.loadFilesFromDirToR(RScriptEnum.READ_FAST5_SUMMARY_FROM_DIR);
-                break;
-            case FastQ:
-                rService.loadFilesFromDirToR(RScriptEnum.READ_FASTQ_SUMMARY_FROM_DIR);
-                break;
-            default:
-                throw new NotSupportedAnalysisTypeException();
-        }
+        rService.loadFilesFromDirToR(rScriptEnum);
     }
 
     public void saveNewAnalysis(final AnalysisDto analysisDto) {
@@ -72,7 +64,7 @@ public class AnalysisService {
         try {
             fileService.cleanDirectory(FileConsts.SUMMARY_DIR);
             LOGGER.info("Analysis: Saving summary file of type: " + analysisDto.getType());
-            rService.saveSummaryToFile();
+            rService.saveSummaryToFile(analysisDto.getType());
             saveAnalysis(analysisDto);
         } finally {
             lockAnalysis.unlock();

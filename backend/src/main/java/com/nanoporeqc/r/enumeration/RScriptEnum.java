@@ -23,8 +23,8 @@ public enum RScriptEnum {
     BASE_CALLED_COMPLEMENT("baseCalledComplement"),
     READ_QUALITY("readQuality"),
     LOAD_LIBRARIES("loadLibraries"),
-    SAVE_SUMMARY("saveSummary"),
-    READ_SUMMARY("readSummary"),
+    SAVE_SUMMARY_FAST5("saveSummaryFast5"),
+    READ_SUMMARY_FAST5("readSummaryFast5"),
     COMMON("common"),
     ALL_FUNCTIONS("allFunctions"),
     READ_FAST5_SUMMARY_FROM_DIR("readFast5SummaryFromDir"),
@@ -35,8 +35,9 @@ public enum RScriptEnum {
     PER_CYCLE_QUALITY("perCycleQuality"),
     READ_QUALITY_SCORE("readQualityScore"),
     READ_DISTRIBUTION("readDistribution"),
-    READ_QA_SUMMARY("readQaSummary"),
-    READ_FASTQ_SUMMARY_FROM_FAST5_SUMMARY("readFastQSummaryFromFast5Summary");
+    READ_FASTQ_SUMMARY_FROM_FAST5_SUMMARY("readFastQSummaryFromFast5Summary"),
+    READ_SUMMARY_FASTQ("readSummaryFastQ"),
+    SAVE_SUMMARY_FASTQ("saveSummaryFastQ");
 
     private String value;
 
@@ -50,11 +51,11 @@ public enum RScriptEnum {
         }
     }
 
-    public static RScriptEnum getEnumByValue(String value){
+    public static RScriptEnum getEnumByValue(final String value){
         return map.get(value);
     }
 
-    RScriptEnum(String value) {
+    RScriptEnum(final String value) {
         this.value = value;
     }
 

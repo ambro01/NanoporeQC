@@ -15,26 +15,39 @@
       <div v-if="this.tabIndex === 0">
         <nucleotide-counts :chart-data="this.dataNucleotideCounts"></nucleotide-counts>
         <label class="control-label">Number of each nucleotide (N - undefined)</label>
+        <br>
+        <button class="btn btn-primary btn-wd" @click.prevent="getNucleotideCounts">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 1">
         <read-quality-score :chart-data="this.dataReadQualityScore"></read-quality-score>
         <label class="control-label">Proportion of reads per average base quality</label>
+        <br>
+        <button class="btn btn-primary btn-wd" @click.prevent="getReadQuality">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 2">
         <per-cycle-base-call :chart-data="this.dataCycleBaseCall"></per-cycle-base-call>
         <label class="control-label">Number of nucleotides read per each cycle</label>
+        <br>
+        <button class="btn btn-primary btn-wd" @click.prevent="getCycleBaseCall">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 3">
         <per-cycle-quality :chart-data="this.dataCycleQuality"></per-cycle-quality>
         <label class="control-label">Quality factors per each cycle</label>
+        <br>
+        <button class="btn btn-primary btn-wd" @click.prevent="getCycleQuality">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 4">
-        <read-distribution :id="this.id" :reloadData="this.reloadDataReadDistribution"
-                           @reloadDataEvent='resetReloadDataReadDistribution'></read-distribution>
+        <read-distribution :sourceData="this.dataReadsDistribution"
+                           v-if="this.dataReadsDistribution != null"></read-distribution>
+        <label class="control-label">Reads distribution</label>
+        <br>
+        <button class="btn btn-primary btn-wd" @click.prevent="getReadsDistribution">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 5">
-        <duplicated-reads :id="this.id" :reloadData="this.reloadDataDuplicatedReads"
-                          @reloadDataEvent='resetReloadDataDuplicatedReads'></duplicated-reads>
+        <duplicated-reads :sourceData="this.dataDuplicatedReads" v-if="dataDuplicatedReads != null"></duplicated-reads>
+        <label class="control-label">Duplicated reads</label>
+        <br>
+        <button class="btn btn-primary btn-wd" @click.prevent="getDuplicatedReads">Refresh</button>
       </div>
     </div>
   </div>
@@ -61,96 +74,32 @@
       DuplicatedReads
     },
     props: [
-      'id',
-      'updateTrigger'
+      'id'
     ],
     data () {
       return {
-        reloadDataDuplicatedReads: false,
-        reloadDataReadDistribution: false,
         dataNucleotideCounts: null,
         dataCycleBaseCall: null,
         dataCycleQuality: null,
-        dataReadDistribution: null,
         dataReadQualityScore: null,
+        dataReadsDistribution: null,
+        dataDuplicatedReads: null,
         tabIndex: 0
       }
     },
     watch: {
       id: function (newVal, oldVal) {
-        if (oldVal !== newVal) {
-          if (newVal > 0) {
-            this.loadData()
-          }
-        }
-      },
-      updateTrigger: function (newVal, oldVal) {
-        if (!oldVal && newVal) {
-          this.loadData()
+        if (oldVal !== newVal && newVal > 0) {
+          this.getAllData()
         }
       }
     },
     mounted () {
-      if (this.id > 0) {
-        this.loadData()
-      }
-      this.getNucleotideCounts()
+      this.getAllData()
     },
     methods: {
       handleTabChange (tabIndex, newTab, oldTab) {
         this.tabIndex = tabIndex
-        switch (tabIndex) {
-          case 0:
-            this.getNucleotideCounts()
-            break
-          case 1:
-            this.getReadQuality()
-            break
-          case 2:
-            this.getCycleBaseCall()
-            break
-          case 3:
-            this.getCycleQuality()
-            break
-          case 4:
-            this.reloadDataReadDistribution = true
-            break
-          case 5:
-            this.reloadDataDuplicatedReads = true
-            break
-        }
-      },
-      loadData () {
-        console.log('aaa')
-        this.$http.get(`api/analysis/` + this.id, {
-          params: {
-            type: 'FastQ'
-          }
-        }).then(response => {
-          if (response.status === 200) {
-            this.reloadData = true
-            this.$toast.success({
-              title: 'Success',
-              message: 'Successful data loading'
-            })
-          } else {
-            this.$toast.error({
-              title: 'Error',
-              message: 'Data loading failed'
-            })
-          }
-        }).catch(e => {
-          this.$toast.error({
-            title: 'Error',
-            message: 'Data loading failed'
-          })
-        })
-      },
-      resetReloadDataDuplicatedReads () {
-        this.reloadDataDuplicatedReads = false
-      },
-      resetReloadDataReadDistribution () {
-        this.reloadDataReadDistribution = false
       },
       getNucleotideCounts () {
         this.$http.get(`api/analysis/stats/nucleotideCounts/`, {
@@ -308,6 +257,39 @@
         }).catch(e => {
           console.error(e)
         })
+      },
+      getReadsDistribution () {
+        this.$http.get(`api/analysis/stats/reads-distribution`, {
+          params: {
+            xName: 'sequence',
+            yNames: ['count']
+          }
+        }).then(response => {
+          this.dataReadsDistribution = response.data
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      getDuplicatedReads () {
+        this.$http.get(`api/analysis/stats/duplicated-sequences`, {
+          params: {
+            xName: 'sequence',
+            yNames: ['count']
+          }
+        }).then(response => {
+          this.dataDuplicatedReads = response.data
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+
+      getAllData () {
+        this.getNucleotideCounts()
+        this.getReadQuality()
+        this.getCycleBaseCall()
+        this.getCycleQuality()
+        this.getReadsDistribution()
+        this.getDuplicatedReads()
       }
     }
   }

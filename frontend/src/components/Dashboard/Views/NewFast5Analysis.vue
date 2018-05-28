@@ -1,9 +1,10 @@
 <template>
   <div>
-    <files-management :analysisType="this.typeName" v-on:filesupload="onFilesUploaded" v-if="!this.showSave && !this.showReport"></files-management>
+    <files-management :analysisType="this.typeName" v-on:filesupload="onFilesUploaded"
+                      v-if="!this.showSave && !this.showReport"></files-management>
     <analysis-save :analysisType="this.typeName" @savedAnalysis="onSavedAnalysis" v-if=this.showSave></analysis-save>
     <div class="card" v-if=this.showReport>
-      <report-stats-fast5 :id=0 :updateTrigger="this.showReport" v-if=this.showReport></report-stats-fast5>
+      <report-stats-fast5 :id=0 v-if=this.showReport></report-stats-fast5>
     </div>
   </div>
 </template>
@@ -36,12 +37,37 @@
         this.$http.post(`api/analysis/run-new`, {
           type: this.typeName
         }).then(response => {
-          if (response.status === 200) {
-            this.showSave = true
-            this.showReport = true
-          } else {
-            this.errors = response.data.errors
+          this.$toast.success({
+            title: 'Success',
+            message: 'Successful data loading'
+          })
+          this.showSave = true
+          this.showReport = true
+        }).catch(e => {
+          this.$toast.error({
+            title: 'Error',
+            message: 'Files loading failed'
+          })
+        })
+      },
+      loadAnalysis () {
+        this.$http.get(`api/analysis/0`, {
+          params: {
+            type: 'Fast5'
           }
+        }).then(response => {
+          this.reloadData = true
+          this.$toast.success({
+            title: 'Success',
+            message: 'Successful data loading'
+          })
+          this.showSave = true
+          this.showReport = true
+        }).catch(e => {
+          this.$toast.error({
+            title: 'Error',
+            message: 'Data loading failed'
+          })
         })
       }
     },

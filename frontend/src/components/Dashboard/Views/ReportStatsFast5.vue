@@ -16,39 +16,58 @@
         <v-tab title="kb per channel"></v-tab>
       </vue-tabs>
       <div v-if="this.tabIndex === 0">
-        <summary-info :id="this.id" :reloadData="this.reloadDataSummaryInfo" @reloadDataEvent='resetReloadDataSummaryInfo'></summary-info>
+        <summary-info :sourceData="this.dataSummaryInfo" v-if="this.dataSummaryInfo != null"></summary-info>
+        <label class="control-label">Summary information about files of analysis</label>
+        <br>
+        <button class="btn btn-primary btn-wd" @click.prevent="getSummaryInfo">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 1">
         <read-accumulation :chart-data="this.dataReadAccumulation"></read-accumulation>
         <label class="control-label">An accumulation of reads over the duration of an experiment</label>
+        <br>
+        <button class="btn btn-primary btn-wd" @click.prevent="getReadAccumulation">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 2">
         <active-channels :chart-data="this.dataActiveChannels"></active-channels>
         <label class="control-label">A number of active channels for each minute of run time</label>
+        <br>
+        <button class="btn btn-primary btn-wd" @click.prevent="getActiveChannels">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 3">
         <read-quality :chart-data="this.dataReadQuality"></read-quality>
         <label class="control-label">Mean reads' qualities of each file</label>
+        <br>
+        <button class="btn btn-primary btn-wd" @click.prevent="getReadQuality">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 4">
         <read-category-quality :chart-data="this.dataReadCategoryQuality"></read-category-quality>
         <label class="control-label">A quality summary of an analysis. Min, mean, median and max values, broken down into the strand categories</label>
+        <br>
+        <button class="btn btn-primary btn-wd" @click.prevent="getReadCategoryQuality">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 5">
         <read-category-counts :chart-data="this.dataReadCategoryCounts"></read-category-counts>
         <label class="control-label">A strand classification with numbers of readings</label>
+        <br>
+        <button class="btn btn-primary btn-wd" @click.prevent="getReadCategoryCounts">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 6">
         <events-counts :chart-data="this.dataEventsCounts"></events-counts>
         <label class="control-label">Number of events over the duration of an experiment</label>
+        <br>
+        <button class="btn btn-primary btn-wd" @click.prevent="getEventsCounts">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 7">
         <reads-per-channel :chart-data="this.dataReadsPerChannel"></reads-per-channel>
         <label class="control-label">Number of reads read for each channel</label>
+        <br>
+        <button class="btn btn-primary btn-wd" @click.prevent="getReadsPerChannel">Refresh</button>
       </div>
       <div v-if="this.tabIndex === 8">
         <kb-per-channel :chart-data="this.dataKbPerChannel"></kb-per-channel>
         <label class="control-label">The amount of data (kilobytes) read for each channel</label>
+        <br>
+        <button class="btn btn-primary btn-wd" @click.prevent="getKbPerChannel">Refresh</button>
       </div>
     </div>
   </div>
@@ -81,12 +100,12 @@
       SummaryInfo
     },
     props: [
-      'id',
-      'updateTrigger'
+      'id'
     ],
     data () {
       return {
         reloadDataSummaryInfo: false,
+        dataSummaryInfo: null,
         dataReadAccumulation: null,
         dataActiveChannels: null,
         dataReadCategoryCounts: null,
@@ -100,84 +119,24 @@
     },
     watch: {
       id: function (newVal, oldVal) {
-        if (oldVal !== newVal) {
-          if (newVal > 0) {
-            this.loadData()
-          }
-        }
-      },
-      updateTrigger: function (newVal, oldVal) {
-        if (!oldVal && newVal) {
-          this.loadData()
+        if (oldVal !== newVal && newVal > 0) {
+          this.getAllData()
         }
       }
     },
     mounted () {
-      if (this.id > 0) {
-        this.loadData()
-      }
-      this.reloadDataSummaryInfo = true
+      this.getAllData()
     },
     methods: {
       handleTabChange (tabIndex, newTab, oldTab) {
         this.tabIndex = tabIndex
-        switch (tabIndex) {
-          case 0:
-            this.reloadDataSummaryInfo = true
-            break
-          case 1:
-            this.getReadAccumulation()
-            break
-          case 2:
-            this.getActiveChannels()
-            break
-          case 3:
-            this.getReadQuality()
-            break
-          case 4:
-            this.getReadCategoryQuality()
-            break
-          case 5:
-            this.getReadCategoryCounts()
-            break
-          case 6:
-            this.getEventsCounts()
-            break
-          case 7:
-            this.getReadsPerChannel()
-            break
-          case 8:
-            this.getKbPerChannel()
-            break
-        }
       },
-      loadData () {
-        this.$http.get(`api/analysis/` + this.id, {
-          params: {
-            type: 'Fast5'
-          }
-        }).then(response => {
-          if (response.status === 200) {
-            this.reloadData = true
-            this.$toast.success({
-              title: 'Success',
-              message: 'Successful data loading'
-            })
-          } else {
-            this.$toast.error({
-              title: 'Error',
-              message: 'Data loading failed'
-            })
-          }
+      getSummaryInfo () {
+        this.$http.get(`api/analysis/stats/info`).then(response => {
+          this.dataSummaryInfo = response.data
         }).catch(e => {
-          this.$toast.error({
-            title: 'Error',
-            message: 'Data loading failed'
-          })
+          console.error(e)
         })
-      },
-      resetReloadDataSummaryInfo () {
-        this.reloadDataSummaryInfo = false
       },
       getReadAccumulation () {
         this.$http.get(`api/analysis/stats/readAccumulation/`, {
@@ -412,6 +371,18 @@
         }).catch(e => {
           console.error(e)
         })
+      },
+
+      getAllData () {
+        this.getSummaryInfo()
+        this.getReadAccumulation()
+        this.getActiveChannels()
+        this.getReadCategoryCounts()
+        this.getReadCategoryQuality()
+        this.getEventsCounts()
+        this.getReadQuality()
+        this.getReadsPerChannel()
+        this.getKbPerChannel()
       }
     }
   }

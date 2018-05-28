@@ -65,13 +65,19 @@
       getAnalysisForCurrentUser () {
         this.$http.get(`api/analysis/current-user`).then(response => {
           this.data = response.data
+          this.$toast.success({
+            title: 'Success',
+            message: 'Successful loading saved analyses'
+          })
         }).catch(e => {
-          console.error(e)
+          this.$toast.error({
+            title: 'Error',
+            message: 'Running failed'
+          })
         })
       },
       onShowDetails (row) {
-        this.detailsId = row.id
-        this.analysisType = row.type
+        this.loadAnalysis(row.id, row.type)
       },
       onDeleteRow (rowId, analyseId) {
         this.$http.post(`api/analysis/delete/` + analyseId).then(response => {
@@ -95,24 +101,37 @@
         })
       },
       onRunAnalysis (row) {
-        this.$http.get(`api/analysis/from-fast5/` + row.id).then(response => {
-          if (response.status === 200) {
-            this.detailsId = row.id
-            this.analysisType = 'FastQ'
-            this.$toast.success({
-              title: 'Success',
-              message: 'Successful running'
-            })
-          } else {
-            this.$toast.error({
-              title: 'Error',
-              message: 'Running failed'
-            })
-          }
+        this.$http.post(`api/analysis/from-fast5/` + row.id).then(response => {
+          this.$toast.success({
+            title: 'Success',
+            message: 'Successful running'
+          })
+          this.detailsId = row.id
+          this.analysisType = 'FastQ'
         }).catch(e => {
           this.$toast.error({
             title: 'Error',
             message: 'Running failed'
+          })
+        })
+      },
+      loadAnalysis (id, type) {
+        this.$http.get(`api/analysis/` + id, {
+          params: {
+            type: type
+          }
+        }).then(response => {
+          this.reloadData = true
+          this.$toast.success({
+            title: 'Success',
+            message: 'Successful data loading'
+          })
+          this.detailsId = id
+          this.analysisType = type
+        }).catch(e => {
+          this.$toast.error({
+            title: 'Error',
+            message: 'Data loading failed'
           })
         })
       }

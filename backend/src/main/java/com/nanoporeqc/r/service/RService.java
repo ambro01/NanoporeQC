@@ -1,9 +1,9 @@
 package com.nanoporeqc.r.service;
 
 import com.nanoporeqc.analysis.domain.Type;
+import com.nanoporeqc.analysis.service.StatsService;
 import com.nanoporeqc.exceptions.NotSupportedAnalysisTypeException;
 import com.nanoporeqc.exceptions.REvaluatingException;
-import com.nanoporeqc.analysis.service.StatsService;
 import com.nanoporeqc.file.consts.FileConsts;
 import com.nanoporeqc.file.service.FileService;
 import com.nanoporeqc.r.domain.RVariable;
@@ -38,9 +38,9 @@ public class RService {
 
     private final FileService fileService;
 
-    private ReentrantLock lock = new ReentrantLock();
+    private final ReentrantLock lock = new ReentrantLock();
 
-    private ReentrantLock basicLock = new ReentrantLock();
+    private final ReentrantLock basicLock = new ReentrantLock();
 
     @Autowired
     public RService(final ObjectFactory<RConnection> rConnection,
@@ -115,49 +115,41 @@ public class RService {
     public void loadFilesFromDirToR(final RScriptEnum rScriptEnum) {
         lock.lock();
         try {
+            fileService.cleanDirectory(FileConsts.FILES_DIR);
             eval("dirPath <- " + "'" + FileConsts.FILES_DIR + "'");
             eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
         } finally {
             lock.unlock();
         }
-        fileService.cleanDirectory(FileConsts.FILES_DIR);
     }
 
     public void loadSummaryAFromSummaryB() {
         final RScriptEnum rScriptEnum = RScriptEnum.READ_FASTQ_SUMMARY_FROM_FAST5_SUMMARY;
         lock.lock();
         try {
+            fileService.cleanDirectory(FileConsts.FILES_DIR);
             eval("filePath <- " + "'" + FileConsts.FASTQ_FILE_FROM_FAST5 + "'");
             eval("dirPath <- " + "'" + FileConsts.FILES_DIR + "'");
             eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
         } finally {
             lock.unlock();
         }
-        fileService.cleanDirectory(FileConsts.FILES_DIR);
     }
 
-    public void saveSummaryToFile() {
+    public void saveSummaryToFile(final String type) {
+        final RScriptEnum rScriptEnum = getSaveSummaryScript(type);
         lock.lock();
         try {
             eval("summaryName <- " + "'" + FileConsts.SUMMARY_FILE + "'");
-            eval(String.format("source('%s')", fileService.getRScriptPath(RScriptEnum.SAVE_SUMMARY)));
+
+            eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
         } finally {
             lock.unlock();
         }
     }
 
     public void loadSummaryFromFile(final String type) {
-        final RScriptEnum rScriptEnum;
-        switch (Type.valueOf(type)) {
-            case Fast5:
-                rScriptEnum = RScriptEnum.READ_SUMMARY;
-                break;
-            case FastQ:
-                rScriptEnum = RScriptEnum.READ_QA_SUMMARY;
-                break;
-            default:
-                throw new NotSupportedAnalysisTypeException();
-        }
+        final RScriptEnum rScriptEnum = getReadSummaryScript(type);
         lock.lock();
         try {
             eval("summaryName <- " + "'" + FileConsts.SUMMARY_FILE + "'");
@@ -182,4 +174,38 @@ public class RService {
             lock.unlock();
         }
     }
+
+    public RScriptEnum getSummaryFromDirScript(final String type) {
+        switch (Type.valueOf(type)) {
+            case Fast5:
+                return RScriptEnum.READ_FAST5_SUMMARY_FROM_DIR;
+            case FastQ:
+                return RScriptEnum.READ_FASTQ_SUMMARY_FROM_DIR;
+            default:
+                throw new NotSupportedAnalysisTypeException();
+        }
+    }
+
+    private RScriptEnum getReadSummaryScript(final String type) {
+        switch (Type.valueOf(type)) {
+            case Fast5:
+                return RScriptEnum.READ_SUMMARY_FAST5;
+            case FastQ:
+                return RScriptEnum.READ_SUMMARY_FASTQ;
+            default:
+                throw new NotSupportedAnalysisTypeException();
+        }
+    }
+
+    private RScriptEnum getSaveSummaryScript(final String type) {
+        switch (Type.valueOf(type)) {
+            case Fast5:
+                return RScriptEnum.SAVE_SUMMARY_FAST5;
+            case FastQ:
+                return RScriptEnum.SAVE_SUMMARY_FASTQ;
+            default:
+                throw new NotSupportedAnalysisTypeException();
+        }
+    }
+
 }

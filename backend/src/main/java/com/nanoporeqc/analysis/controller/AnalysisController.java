@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -88,4 +89,15 @@ public class AnalysisController {
     public List<ReadDistributionDto> getReadsDistribution() {
         return statsService.getReadsDistribution();
     }
+
+    @GetMapping(value = "/amount/{type}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Long getAnalysesAmount(@PathVariable("type") String type) {
+        return analysisService.getAnalysesAmount(type);
+    }
+
+    @GetMapping(value = "/last/{type}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getLastAnalysisTime(@PathVariable("type") String type) {
+        return analysisService.getLastAnalysisTime(type);
+    }
+
 }

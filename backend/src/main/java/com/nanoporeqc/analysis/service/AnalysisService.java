@@ -107,6 +107,15 @@ public class AnalysisService {
         rService.loadSummaryAFromSummaryB();
     }
 
+    public Long getAnalysesAmount(final String type) {
+        return analysisRepository.countByType(Type.valueOf(type));
+    }
+
+    public String getLastAnalysisTime(final String type) {
+        final LocalDateTime analysisTime = analysisRepository.findFirstByTypeOrderByRunTimeDesc(Type.valueOf(type)).getRunTime();
+        return analysisTime.format(DATE_TIME_FORMATTER);
+    }
+
     private AnalysisDto convertAnalysisToDto(final Analysis analysis) {
         final AnalysisDto analysisDto = modelMapper.map(analysis, AnalysisDto.class);
         analysisDto.setRunTime(convertLocalDateTimeToString(analysis.getRunTime()));

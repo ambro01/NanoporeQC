@@ -1,7 +1,5 @@
 <template>
   <div>
-
-    <!--Stats cards-->
     <div class="row">
       <div class="col-lg-3 col-sm-6" v-for="stats in statsCardsFast5">
         <stats-card>
@@ -18,7 +16,6 @@
         </stats-card>
       </div>
     </div>
-
     <div class="row">
       <div class="col-lg-3 col-sm-6" v-for="stats in statsCardsFastQ">
         <stats-card>
@@ -35,8 +32,7 @@
         </stats-card>
       </div>
     </div>
-
-    <div>
+    <div class="main-card">
       <div class="col-md-3">
       </div>
       <div class="col-md-6">
@@ -69,20 +65,18 @@
             <br>
           </div>
         </div>
-
       </div>
     </div>
-
   </div>
 </template>
 <script>
   import StatsCard from 'components/UIComponents/Cards/StatsCard.vue'
-  import ChartCard from 'components/UIComponents/Cards/ChartCard.vue'
 
+  const fast5 = 'Fast5'
+  const fastQ = 'FastQ'
   export default {
     components: {
-      StatsCard,
-      ChartCard
+      StatsCard
     },
     /**
      * Chart data used to render stats, charts. Should be replaced with server data
@@ -94,7 +88,7 @@
             type: 'info',
             icon: 'ti-archive',
             title: 'Fast5 analyses',
-            value: '105GB'
+            value: null
           },
           {
             type: 'warning',
@@ -119,8 +113,8 @@
           {
             type: 'info',
             icon: 'ti-archive',
-            title: 'Fast5 analyses',
-            value: '105GB'
+            title: 'FastQ analyses',
+            value: null
           },
           {
             type: 'warning',
@@ -143,12 +137,46 @@
         ]
       }
     },
+    mounted () {
+      this.getAnalysesAmount(fast5)
+      this.getAnalysesAmount(fastQ)
+      this.getLastAnalysisTime(fast5)
+      this.getLastAnalysisTime(fastQ)
+    },
     methods: {
       goToNewAnalysis () {
         this.$router.push('new-analysis')
       },
       goToSavedAnalyses () {
         this.$router.push('my-analyses')
+      },
+      getAnalysesAmount (type) {
+        this.$http.get(`api/analysis/amount/` + type)
+          .then(response => {
+            if (type === fast5) {
+              this.statsCardsFast5[0].value = response.data
+            }
+            if (type === fastQ) {
+              this.statsCardsFastQ[0].value = response.data
+            }
+          })
+          .catch(e => {
+            console.error(e)
+          })
+      },
+      getLastAnalysisTime (type) {
+        this.$http.get(`api/analysis/last/` + type)
+          .then(response => {
+            if (type === fast5) {
+              this.statsCardsFast5[1].value = response.data
+            }
+            if (type === fastQ) {
+              this.statsCardsFastQ[1].value = response.data
+            }
+          })
+          .catch(e => {
+            console.error(e)
+          })
       }
     }
   }
@@ -160,5 +188,9 @@
     font-size: 30px;
     width: 300px;
     height: 150px;
+  }
+
+  .main-card {
+    padding-top: 100px;
   }
 </style>

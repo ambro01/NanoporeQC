@@ -1,12 +1,12 @@
 package com.nanoporeqc.analysis.controller;
 
 import com.nanoporeqc.analysis.dto.AnalysisDto;
+import com.nanoporeqc.analysis.dto.ChartDto;
 import com.nanoporeqc.analysis.dto.DuplicatedSequenceDto;
 import com.nanoporeqc.analysis.dto.ReadDistributionDto;
+import com.nanoporeqc.analysis.dto.SummaryInfoDto;
 import com.nanoporeqc.analysis.service.AnalysisService;
 import com.nanoporeqc.analysis.service.StatsService;
-import com.nanoporeqc.analysis.dto.ChartDto;
-import com.nanoporeqc.analysis.dto.SummaryInfoDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController

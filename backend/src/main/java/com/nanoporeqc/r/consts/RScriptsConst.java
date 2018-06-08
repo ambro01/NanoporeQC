@@ -5,7 +5,10 @@ import com.nanoporeqc.r.domain.RVariable;
 import com.nanoporeqc.r.enumeration.RScriptEnum;
 import com.nanoporeqc.r.enumeration.RVariableTypeEnum;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class RScriptsConst {
 
@@ -158,4 +161,14 @@ public class RScriptsConst {
             Map.entry(RScriptEnum.READ_QUALITY_SCORE, READ_QUALITY_SCORE),
             Map.entry(RScriptEnum.READ_DISTRIBUTION, READ_DISTRIBUTION),
             Map.entry(RScriptEnum.PER_CYCLE_QUALITY, PER_CYCLE_QUALITY));
+
+    public static final List<String> DUPLICATED_READS_VARIABLES = List.of("sequence", "coubt");
+
+    public static final List<String> READ_DISTRIBUTION_VARIABLES = List.of("fileName", "occurrences", "reads");
+
+    public static final List<String> SUMMARY_INFO_VARIABLES =  Stream.of(
+            "id", "fileName", "strandIndexInChannel", "channelIndex", "startTime", "duration", "eventsNo", "hasTemplate",
+            "eventsNoTemplate", "hasComplement", "eventsNoComplement", "is2d")
+            .collect(Collectors.toList());
+
 }

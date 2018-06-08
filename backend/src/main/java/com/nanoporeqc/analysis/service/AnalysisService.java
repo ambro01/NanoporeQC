@@ -6,7 +6,6 @@ import com.nanoporeqc.analysis.dto.AnalysisDto;
 import com.nanoporeqc.analysis.repository.AnalysisRepository;
 import com.nanoporeqc.exceptions.AnalysisCannotBeSavedException;
 import com.nanoporeqc.exceptions.AnalysisNotFoundException;
-import com.nanoporeqc.exceptions.NotSupportedAnalysisTypeException;
 import com.nanoporeqc.exceptions.UserNotFoundException;
 import com.nanoporeqc.file.consts.FileConsts;
 import com.nanoporeqc.file.service.FileService;

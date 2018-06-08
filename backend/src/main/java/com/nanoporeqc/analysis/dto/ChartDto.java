@@ -17,6 +17,4 @@ public class ChartDto {
 
     private List<List> yValuesList;
 
-    private List<List> zValuesList;
-
 }

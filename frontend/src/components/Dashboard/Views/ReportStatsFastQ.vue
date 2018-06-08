@@ -2,7 +2,8 @@
   <div class="card">
     <div class="header">
       <h4 class="title">Report of analysis</h4>
-      <button class="btn btn-primary btn-wd refresh-button" @click.prevent="refreshData">Refresh</button>
+      <button class="btn btn-primary btn-wd refresh-button left-margin" @click.prevent="exportCsv">Export CSV</button>
+      <button class="btn btn-primary btn-wd refresh-button left-margin" @click.prevent="refreshData">Refresh</button>
     </div>
     <div class="content">
       <vue-tabs active-tab-color="#f4f3ef" @tab-change="handleTabChange">
@@ -91,7 +92,7 @@
         this.tabIndex = tabIndex
       },
       getNucleotideCounts () {
-        this.$http.get(`api/analysis/stats/nucleotideCounts/`, {
+        this.$http.get(`api/analysis/stats/nucleotideCounts`, {
           params: {
             xName: 'counts',
             yNames: ['A', 'G', 'C', 'T', 'N']
@@ -131,7 +132,7 @@
           console.error(e)
         })
       },
-      getReadQuality () {
+      getReadQualityScore () {
         this.$http.get(`api/analysis/stats/readQualityScore`, {
           params: {
             xName: 'quality',
@@ -284,7 +285,7 @@
 
       getAllData () {
         this.getNucleotideCounts()
-        this.getReadQuality()
+        this.getReadQualityScore()
         this.getCycleBaseCall()
         this.getCycleQuality()
         this.getReadsDistribution()
@@ -297,7 +298,7 @@
             this.getNucleotideCounts()
             break
           case 1:
-            this.getReadQuality()
+            this.getReadQualityScore()
             break
           case 2:
             this.getCycleBaseCall()
@@ -310,6 +311,126 @@
             break
           case 5:
             this.getDuplicatedReads()
+            break
+        }
+      },
+
+      csvNucleotideCounts () {
+        this.$http.get(`api/csv/nucleotideCounts`, {
+          params: {
+            xName: 'counts',
+            yNames: ['A', 'G', 'C', 'T', 'N']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'nucleotide_counts.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      csvReadQualityScore () {
+        this.$http.get(`api/csv/readQualityScore`, {
+          params: {
+            xName: 'quality',
+            yNames: ['density']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'read_quality_score.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      csvCycleBaseCall () {
+        this.$http.get(`api/csv/perCycleBaseCall`, {
+          params: {
+            xName: 'cycle',
+            yNames: ['countA', 'countG', 'countC', 'countT']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'per_cycle_base_call.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      csvCycleQuality () {
+        this.$http.get(`api/csv/perCycleQuality`, {
+          params: {
+            xName: 'cycle',
+            yNames: ['mean_', 'median_', 'q25', 'q50', 'q75']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'per_cycle_quality.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      csvReadsDistribution () {
+        this.$http.get(`api/csv/reads-distribution`, {
+          params: {
+            xName: 'sequence',
+            yNames: ['count']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'reads_distribution.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      csvDuplicatedReads () {
+        this.$http.get(`api/csv/duplicated-sequences`, {
+          params: {
+            xName: 'sequence',
+            yNames: ['count']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'duplicated_sequences.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+
+      exportCsv () {
+        switch (this.tabIndex) {
+          case 0:
+            this.csvNucleotideCounts()
+            break
+          case 1:
+            this.csvReadQualityScore()
+            break
+          case 2:
+            this.csvCycleBaseCall()
+            break
+          case 3:
+            this.csvCycleQuality()
+            break
+          case 4:
+            this.csvReadsDistribution()
+            break
+          case 5:
+            this.csvDuplicatedReads()
             break
         }
       }
@@ -334,5 +455,9 @@
 
   .refresh-button {
     float: right;
+  }
+
+  .left-margin {
+    margin-left: 20px;
   }
 </style>

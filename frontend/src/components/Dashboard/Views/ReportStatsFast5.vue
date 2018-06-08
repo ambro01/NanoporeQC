@@ -2,7 +2,8 @@
   <div class="card">
     <div class="header">
       <h4 class="title">Report of analysis</h4>
-      <button class="btn btn-primary btn-wd refresh-button" @click.prevent="refreshData">Refresh</button>
+      <button class="btn btn-primary btn-wd refresh-button left-margin" @click.prevent="exportCsv">Export CSV</button>
+      <button class="btn btn-primary btn-wd refresh-button left-margin" @click.prevent="refreshData">Refresh</button>
     </div>
     <div class="content">
       <vue-tabs active-tab-color="#f4f3ef" @tab-change="handleTabChange">
@@ -67,6 +68,10 @@
   import KbPerChannel from 'src/components/Charts/Ioniser/fast5/KbPerChannel.vue'
   import SummaryInfo from 'src/components/Stats/Ioniser/SummaryInfo.vue'
   import StatsCard from '../../UIComponents/Cards/StatsCard.vue'
+
+  const ARRAY_BUFFER = 'arraybuffer'
+  const TEMP = 'temp'
+  const TEXT_CSV = 'text/csv'
 
   export default {
     name: 'VueChartJS',
@@ -408,7 +413,181 @@
             this.getKbPerChannel()
             break
         }
+      },
+
+      csvSummaryInfo () {
+        this.$http.get(`api/csv/info`)
+          .then(response => {
+            const blob = new Blob([response.data], {type: TEXT_CSV})
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(blob)
+            link.download = 'summary_info.csv'
+            link.click()
+          }).catch(e => {
+          console.error(e)
+        })
+      },
+      csvReadAccumulation () {
+        this.$http.get(`api/csv/readAccumulation`, {
+          params: {
+            xName: 'minute',
+            yNames: ['accumulation']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'read_accumulation.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      csvActiveChannels () {
+        this.$http.pgetost(`api/csv/activeChannels`, {
+          params: {
+            xName: 'minute',
+            yNames: ['channels']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'active_channels.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      csvReadCategoryCounts () {
+        this.$http.get(`api/csv/readCategoryCounts`, {
+          params: {
+            xName: 'category',
+            yNames: ['files_count', 'template_count', 'complement_count', 'full_2d_count']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'read_category_counts.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      csvReadCategoryQuality () {
+        this.$http.get(`api/csv/readCategoryQuality`, {
+          params: {
+            xName: 'category',
+            yNames: ['min', 'max', 'mean', 'median']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'read_category_quality.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      csvEventsCounts () {
+        this.$http.get(`api/csv/eventsCounts`, {
+          params: {
+            xName: 'time',
+            yNames: ['events']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'events_counts.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      csvReadQuality () {
+        this.$http.get(`api/csv/readQuality`, {
+          params: {
+            xName: 'id',
+            yNames: ['quality', 'min_', 'max_', 'mean_', 'median_']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'read_quality.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      csvReadsPerChannel () {
+        this.$http.get(`api/csv/readsPerChannel`, {
+          params: {
+            xName: 'channel',
+            yNames: ['reads']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'reads_per_channel.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      csvKbPerChannel () {
+        this.$http.get(`api/csv/kbPerChannel`, {
+          params: {
+            xName: 'channel',
+            yNames: ['kb']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'kb_per_channel.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+
+      exportCsv () {
+        switch (this.tabIndex) {
+          case 0:
+            this.csvSummaryInfo()
+            break
+          case 1:
+            this.csvReadAccumulation()
+            break
+          case 2:
+            this.csvActiveChannels()
+            break
+          case 3:
+            this.csvReadQuality()
+            break
+          case 4:
+            this.csvReadCategoryQuality()
+            break
+          case 5:
+            this.csvReadCategoryCounts()
+            break
+          case 6:
+            this.csvEventsCounts()
+            break
+          case 7:
+            this.csvReadsPerChannel()
+            break
+          case 8:
+            this.csvKbPerChannel()
+            break
+        }
       }
+
     }
   }
 </script>
@@ -430,5 +609,9 @@
 
   .refresh-button {
     float: right;
+  }
+
+  .left-margin {
+    margin-left: 20px;
   }
 </style>

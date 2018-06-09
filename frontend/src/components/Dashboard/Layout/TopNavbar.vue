@@ -50,7 +50,7 @@
     methods: {
       logout () {
         delete localStorage.getItem('token')
-        this.$session.destroy()
+        delete localStorage.token
         this.$router.replace('/')
         this.userName = ''
         this.$cookies.remove('user')

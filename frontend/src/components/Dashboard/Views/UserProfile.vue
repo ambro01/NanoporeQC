@@ -1,26 +1,25 @@
 <template>
-    <div class="row">
-      <div class="col-lg-4 col-md-5">
-        <user-card>
-
-        </user-card>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="col-md-1">
       </div>
-      <div class="col-lg-8 col-md-7">
-        <edit-profile-form>
-
-        </edit-profile-form>
+      <change-password-form>
+      </change-password-form>
+      <div class="col-md-2">
       </div>
+      <add-user-form>
+      </add-user-form>
     </div>
+  </div>
 </template>
 <script>
-  import EditProfileForm from './UserProfile/EditProfileForm.vue'
-  import UserCard from './UserProfile/UserCard.vue'
-  import MembersCard from './UserProfile/MembersCard.vue'
+  import ChangePasswordForm from './UserProfile/ChangePasswordForm.vue'
+  import AddUserForm from './UserProfile/AddUserForm.vue'
+
   export default {
     components: {
-      EditProfileForm,
-      UserCard,
-      MembersCard
+      ChangePasswordForm,
+      AddUserForm
     }
   }
 

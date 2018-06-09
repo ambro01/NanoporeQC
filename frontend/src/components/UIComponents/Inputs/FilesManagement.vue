@@ -1,40 +1,47 @@
 <template>
-  <div class="card">
-    <div class="header">
-      <h4 class="title">Files of analysis</h4>
+  <div class="col-md-12">
+    <div class="col-md-3">
     </div>
-    <div class="content">
-      <form>
-        <div class="row">
-          <div class="col-md-12">
-            <div class="attachment-holder animated fadeIn" v-cloak v-for="(attachment, index) in attachments">
-              <span
-                class="label label-default">{{ attachment.name + ' (' + Number((attachment.size / 1024 / 1024).toFixed(1)) + 'MB)'}}</span>
-              <span class="" @click="removeAttachment(attachment)"><button
-                class="btn btn-xs btn-danger">Remove</button></span>
-            </div>
+    <div class="card col-md-5">
+      <div class="header">
+        <h4 class="title">Files of analysis</h4>
+      </div>
+      <hr>
+      <div class="content">
+        <form>
+          <div class="row" align="center">
+            <table>
+              <tr v-for="(attachment, index) in attachments">
+                <td>
+              <span class="label label-default my-label">
+                {{ attachment.name + ' (' + Number((attachment.size / 1024 / 1024).toFixed(1)) + 'MB)'}}
+              </span>
+                </td>
+                <td>
+                <span class="margin-left-10" @click="removeAttachment(attachment)">
+                  <button class="btn btn-xs btn-danger">Remove</button>
+                </span>
+                </td>
+              </tr>
+            </table>
             <hr>
-            <div class="col-md-2">
-              <label class="btn btn-secondary btn-fill btn-wd" for="attachments">
-                <input type="file"
-                       multiple="multiple"
-                       id="attachments"
-                       @change="uploadFieldChange"
-                       style="display:none;">
-                Browse files ...
-              </label>
-            </div>
-            <div class="col-md-2">
-              <button class="btn btn-primary btn-fill btn-wd"
-                      v-if=this.attachments.length
-                      @click.prevent="submit"
-                      :disabled="this.uploadPending">
-                Upload
-              </button>
-            </div>
+            <label class="btn btn-secondary btn-fill btn-wd" for="attachments">
+              <input type="file"
+                     multiple="multiple"
+                     id="attachments"
+                     @change="uploadFieldChange"
+                     style="display:none;">
+              Browse files ...
+            </label>
+            <button class="btn btn-primary btn-fill btn-wd margin-left-100"
+                    v-if=this.attachments.length
+                    @click.prevent="submit"
+                    :disabled="this.uploadPending">
+              Upload
+            </button>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   </div>
 </template>
@@ -130,3 +137,20 @@
     }
   }
 </script>
+
+<style lang="css" scoped>
+  .my-label {
+    font-size: 90%;
+    line-height: 2;
+    font-weight: normal;
+    background-color: #9a9a9a;
+  }
+
+  .margin-left-10 {
+    margin-left: 10px;
+  }
+
+  .margin-left-100 {
+    margin-left: 100px;
+  }
+</style>

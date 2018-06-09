@@ -52,6 +52,8 @@
   import DuplicatedReads from 'src/components/Stats/Ioniser/DuplicatedReads.vue'
   import StatsCard from '../../UIComponents/Cards/StatsCard.vue'
 
+  const TEXT_CSV = 'text/csv'
+
   export default {
     name: 'VueChartJS',
     components: {

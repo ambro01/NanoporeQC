@@ -3,7 +3,6 @@ import VueRouter from 'vue-router'
 import vClickOutside from 'v-click-outside'
 import { ClientTable } from 'vue-tables-2'
 import VueTabs from 'vue-nav-tabs'
-import VueSession from 'vue-session'
 import VueLocalStorage from 'vue-localstorage'
 import VueCookies from 'vue-cookies'
 import CxltToastr from 'cxlt-vue2-toastr'
@@ -34,12 +33,6 @@ Vue.use(VueTabs)
 Vue.use(ClientTable)
 Vue.use(VueLocalStorage)
 Vue.use(VueCookies)
-
-var optionsVueSession = {
-  persist: true
-}
-
-Vue.use(VueSession, optionsVueSession)
 
 var toastrConfigs = {
   position: 'bottom right',

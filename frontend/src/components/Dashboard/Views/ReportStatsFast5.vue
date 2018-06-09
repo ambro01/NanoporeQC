@@ -69,8 +69,6 @@
   import SummaryInfo from 'src/components/Stats/Ioniser/SummaryInfo.vue'
   import StatsCard from '../../UIComponents/Cards/StatsCard.vue'
 
-  const ARRAY_BUFFER = 'arraybuffer'
-  const TEMP = 'temp'
   const TEXT_CSV = 'text/csv'
 
   export default {
@@ -416,14 +414,13 @@
       },
 
       csvSummaryInfo () {
-        this.$http.get(`api/csv/info`)
-          .then(response => {
-            const blob = new Blob([response.data], {type: TEXT_CSV})
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(blob)
-            link.download = 'summary_info.csv'
-            link.click()
-          }).catch(e => {
+        this.$http.get(`api/csv/info`).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'summary_info.csv'
+          link.click()
+        }).catch(e => {
           console.error(e)
         })
       },

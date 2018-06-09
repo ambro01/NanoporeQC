@@ -1,6 +1,7 @@
 import DashboardLayout from '../components/Dashboard/Layout/DashboardLayout.vue'
 // GeneralViews
 import NotFound from '../components/GeneralViews/NotFoundPage.vue'
+import SessionEnd from '../components/GeneralViews/SessionEnd.vue'
 
 // Admin pages
 import Overview from 'src/components/Dashboard/Views/Overview.vue'
@@ -16,6 +17,15 @@ const routes = [
     path: '/',
     name: 'login',
     component: Login
+  },
+  {
+    path: '/session-end',
+    name: 'session-end',
+    component: SessionEnd
+  },
+  {
+    path: '*',
+    component: NotFound
   },
   {
     path: '/view',
@@ -53,8 +63,7 @@ const routes = [
         component: Icons
       }
     ]
-  },
-  {path: '*', component: NotFound}
+  }
 ]
 
 /**

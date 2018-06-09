@@ -1,6 +1,7 @@
 package com.nanoporeqc.user.service;
 
 import com.nanoporeqc.user.domain.ApplicationUser;
+import com.nanoporeqc.user.dto.ChangePasswordUserDto;
 import com.nanoporeqc.user.repository.ApplicationUserRepository;
 import com.nanoporeqc.user.dto.UserDto;
 import com.nanoporeqc.exceptions.UserNotFoundException;
@@ -44,6 +45,15 @@ public class ApplicationUserService {
             return authentication.getName();
         } else {
             throw new UserNotFoundException();
+        }
+    }
+
+    public void changePassword(final ChangePasswordUserDto changePasswordUserDto) {
+        final ApplicationUser user = applicationUserRepository.findByUsername(changePasswordUserDto.getUsername());
+        final String encodePassword = bCryptPasswordEncoder.encode(changePasswordUserDto.getOldPassword());
+        if (user != null && user.getPassword().equals(encodePassword)) {
+            user.setPassword(bCryptPasswordEncoder.encode(changePasswordUserDto.getNewPassword()));
+            applicationUserRepository.save(user);
         }
     }
 

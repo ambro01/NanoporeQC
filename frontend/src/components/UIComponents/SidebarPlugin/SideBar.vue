@@ -14,9 +14,6 @@
           Nanopore QC
         </a>
       </div>
-      <slot>
-
-      </slot>
       <ul :class="navClasses">
         <!--By default vue-router adds an active class to each route link. This way the links are colored when clicked-->
         <router-link v-for="(link,index) in sidebarLinks" :to="link.path" tag="li" :ref="link.name">
@@ -28,14 +25,10 @@
           </a>
         </router-link>
       </ul>
-      <moving-arrow :move-y="arrowMovePx">
-
-      </moving-arrow>
     </div>
   </div>
 </template>
 <script>
-  import MovingArrow from './MovingArrow.vue'
   export default {
     props: {
       type: {
@@ -66,9 +59,6 @@
         type: Array,
         default: () => []
       }
-    },
-    components: {
-      MovingArrow
     },
     computed: {
       sidebarClasses () {

@@ -48,8 +48,7 @@
           this.loginFailed()
           return
         }
-        this.$session.start()
-        this.$session.set('jwt', res.headers.token)
+        localStorage.setItem('token', res.headers.token)
         this.error = false
         this.$router.replace('/view/overview')
         this.loginPending = false

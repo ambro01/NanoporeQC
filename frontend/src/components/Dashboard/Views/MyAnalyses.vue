@@ -78,14 +78,10 @@
       getAnalysisForCurrentUser () {
         this.$http.get(`api/analysis/current-user`).then(response => {
           this.data = response.data
-          this.$toast.success({
-            title: 'Success',
-            message: 'Successful loading saved analyses'
-          })
         }).catch(e => {
           this.$toast.error({
             title: 'Error',
-            message: 'Running failed'
+            message: 'Analyses loading failed'
           })
         })
       },

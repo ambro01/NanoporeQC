@@ -24,6 +24,10 @@
                 </td>
               </tr>
             </table>
+            <div v-if="this.uploadPending">
+              <hr>
+              <b-progress :value="percentCompleted" :max="100" show-progress animated></b-progress>
+            </div>
             <hr>
             <label class="btn btn-secondary btn-fill btn-wd" for="attachments">
               <input type="file"
@@ -105,7 +109,7 @@
       submit () {
         this.uploadPending = true
         this.prepareFields()
-        var config = {
+        const config = {
           headers: {'Content-Type': 'multipart/form-data'},
           onUploadProgress: function (progressEvent) {
             this.percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)

@@ -8,11 +8,15 @@
           <div class="login-wrapper border border-light">
             <form class="form-signin" @submit.prevent="login">
               <h2>Please log in</h2>
+              <hr>
               <div class="alert alert-danger" v-if="error">{{ error }}</div>
               <fg-input v-model="email" type="email" label="Email" placeholder="Email address" required
                         autofocus></fg-input>
               <fg-input v-model="password" type="password" label="Password" placeholder="Password" required></fg-input>
-              <button class="btn btn-lg btn-primary btn-block" :disabled="this.loginPending">Log in</button>
+              <button class="btn btn-lg btn-primary btn-block"
+                      :disabled="this.email === '' || this.password === '' || this.loginPending">
+                Log in
+              </button>
             </form>
           </div>
         </div>
@@ -99,19 +103,11 @@
     margin: 0 auto;
   }
 
-  .form-control {
-    background-color: #E3E3E3;
-    position: relative;
-    height: auto;
-    padding: 10px;
-    font-size: 16px;
-  }
-
   .form-signin input[type="email"] {
     margin-bottom: 10px;
   }
 
   .form-signin input[type="password"] {
-    margin-bottom: 10px;
+    margin-bottom: 40px;
   }
 </style>

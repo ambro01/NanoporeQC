@@ -4,26 +4,27 @@
       <h4 class="title">Change password</h4>
     </div>
     <div class="content">
-      <form>
-        <fg-input type="text"
-                  label="Username"
+      <form @submit.prevent="changePassword">
+        <fg-input type="email"
+                  label="Username / email"
                   :disabled="true"
-                  v-model="this.userName">
+                  v-model="userName">
         </fg-input>
-        <fg-input type="text"
+        <fg-input type="password"
                   label="Old password"
-                  v-model="this.oldPassword">
+                  v-model="oldPassword">
         </fg-input>
-        <fg-input type="text"
+        <fg-input type="password"
                   label="New password"
-                  v-model="this.newPassword">
+                  v-model="newPassword">
         </fg-input>
-        <fg-input type="text"
+        <fg-input type="password"
                   label="Confirm password"
-                  v-model="this.confirmedPassword">
+                  v-model="confirmedPassword">
         </fg-input>
         <div class="text-center">
-          <button type="submit" class="btn btn-info btn-fill btn-wd" @click.prevent="changePassword">
+          <button class="btn btn-info btn-fill btn-wd"
+                  :disabled="this.newPassword === '' || this.oldPassword === '' || this.confirmedPassword === ''">
             Change password
           </button>
         </div>
@@ -37,17 +38,14 @@
     data () {
       return {
         userName: this.$cookies.get('user'),
-        oldPassword: null,
-        newPassword: null,
-        confirmedPassword: null
+        oldPassword: '',
+        newPassword: '',
+        confirmedPassword: ''
       }
     },
     methods: {
       changePassword () {
-        if (this.userName !== null && this.userName !== '' &&
-          this.newPassword !== null && this.newPassword !== '' &&
-          this.oldPassword !== null && this.oldPassword !== '' &&
-          this.newPassword === this.confirmedPassword) {
+        if (this.newPassword === this.confirmedPassword) {
           this.$http.post(`api/users/change-password`, {
             username: this.userName,
             oldPassword: this.oldPassword,
@@ -65,10 +63,14 @@
               })
             }
           })
+          this.userName = ''
+          this.newPassword = ''
+          this.oldPassword = ''
+          this.confirmedPassword = ''
         } else {
           this.$toast.error({
             title: 'Error',
-            message: 'Password changing not allowed'
+            message: 'Passwords are not equal'
           })
         }
       }

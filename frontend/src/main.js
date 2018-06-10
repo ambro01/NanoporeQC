@@ -6,6 +6,7 @@ import VueTabs from 'vue-nav-tabs'
 import VueLocalStorage from 'vue-localstorage'
 import VueCookies from 'vue-cookies'
 import CxltToastr from 'cxlt-vue2-toastr'
+import BootstrapVue from 'bootstrap-vue'
 import 'vue-nav-tabs/themes/vue-tabs.css'
 
 // Plugins
@@ -23,6 +24,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 import './assets/sass/paper-dashboard.scss'
 import 'es6-promise/auto'
 import 'cxlt-vue2-toastr/dist/css/cxlt-vue2-toastr.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 // plugin setup
 Vue.use(VueRouter)
@@ -33,6 +35,7 @@ Vue.use(VueTabs)
 Vue.use(ClientTable)
 Vue.use(VueLocalStorage)
 Vue.use(VueCookies)
+Vue.use(BootstrapVue)
 
 var toastrConfigs = {
   position: 'bottom right',

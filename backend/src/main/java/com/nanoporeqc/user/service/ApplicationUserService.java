@@ -1,5 +1,6 @@
 package com.nanoporeqc.user.service;
 
+import com.nanoporeqc.exceptions.UserAlreadyExistException;
 import com.nanoporeqc.user.domain.ApplicationUser;
 import com.nanoporeqc.user.dto.ChangePasswordUserDto;
 import com.nanoporeqc.user.repository.ApplicationUserRepository;
@@ -26,13 +27,17 @@ public class ApplicationUserService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    public void save(final UserDto userDto) {
-        final ApplicationUser user = ApplicationUser.builder()
+    public void create(final UserDto userDto) {
+        final ApplicationUser user = applicationUserRepository.findByUsername(userDto.getUsername());
+        if (user != null) {
+            throw new UserAlreadyExistException();
+        }
+        final ApplicationUser newUser = ApplicationUser.builder()
                 .username(userDto.getUsername())
                 .password(bCryptPasswordEncoder.encode(userDto.getPassword()))
                 .build();
 
-        applicationUserRepository.save(user);
+        applicationUserRepository.save(newUser);
     }
 
     public ApplicationUser getCurrentUser() {
@@ -50,8 +55,7 @@ public class ApplicationUserService {
 
     public void changePassword(final ChangePasswordUserDto changePasswordUserDto) {
         final ApplicationUser user = applicationUserRepository.findByUsername(changePasswordUserDto.getUsername());
-        final String encodePassword = bCryptPasswordEncoder.encode(changePasswordUserDto.getOldPassword());
-        if (user != null && user.getPassword().equals(encodePassword)) {
+        if (user != null && bCryptPasswordEncoder.matches(changePasswordUserDto.getOldPassword(), user.getPassword())) {
             user.setPassword(bCryptPasswordEncoder.encode(changePasswordUserDto.getNewPassword()));
             applicationUserRepository.save(user);
         }

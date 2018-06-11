@@ -15,43 +15,67 @@
         <v-tab title="Read category counts"></v-tab>
         <v-tab title="Events"></v-tab>
         <v-tab title="Reads per channel"></v-tab>
-        <v-tab title="kb per channel"></v-tab>
+        <v-tab title="Kilobases per channel"></v-tab>
       </vue-tabs>
       <div v-if="this.tabIndex === 0">
         <summary-info :sourceData="this.dataSummaryInfo" v-if="this.dataSummaryInfo != null"></summary-info>
-        <label class="control-label">Summary information about files of analysis</label>
+        <label class="control-label">
+          <p>Summary information about files of analysis</p>
+        </label>
       </div>
       <div v-if="this.tabIndex === 1">
         <read-accumulation :chart-data="this.dataReadAccumulation"></read-accumulation>
-        <label class="control-label">An accumulation of reads over the duration of an experiment</label>
+        <label class="control-label">
+          <p>x - duration of an experiment [sec]</p>
+          <p>y - accumulation of reads</p>
+        </label>
       </div>
       <div v-if="this.tabIndex === 2">
         <active-channels :chart-data="this.dataActiveChannels"></active-channels>
-        <label class="control-label">A number of active channels for each minute of run time</label>
+        <label class="control-label">
+          <p>x - duration of an experiment [sec]</p>
+          <p>y - number of active channels</p>
+        </label>
       </div>
       <div v-if="this.tabIndex === 3">
         <read-quality :chart-data="this.dataReadQuality"></read-quality>
-        <label class="control-label">Mean reads' qualities of each file</label>
+        <label class="control-label">
+
+        </label>
       </div>
       <div v-if="this.tabIndex === 4">
         <read-category-quality :chart-data="this.dataReadCategoryQuality"></read-category-quality>
-        <label class="control-label">A quality summary of an analysis. Min, mean, median and max values, broken down into the strand categories</label>
+        <label class="control-label">
+          <p>x - strand categories</p>
+          <p>y - quality factors</p>
+        </label>
       </div>
       <div v-if="this.tabIndex === 5">
         <read-category-counts :chart-data="this.dataReadCategoryCounts"></read-category-counts>
-        <label class="control-label">A strand classification with numbers of readings</label>
+        <label class="control-label">
+          <p>y - number of readings for file and each strand category</p>
+        </label>
       </div>
       <div v-if="this.tabIndex === 6">
         <events-counts :chart-data="this.dataEventsCounts"></events-counts>
-        <label class="control-label">Number of events over the duration of an experiment</label>
+        <label class="control-label">
+          <p>x - duration of an experiment [sec]</p>
+          <p>y - number of events</p>
+        </label>
       </div>
       <div v-if="this.tabIndex === 7">
         <reads-per-channel :chart-data="this.dataReadsPerChannel"></reads-per-channel>
-        <label class="control-label">Number of reads read for each channel</label>
+        <label class="control-label">
+          <p>x - channel</p>
+          <p>y - number of reads</p>
+        </label>
       </div>
       <div v-if="this.tabIndex === 8">
         <kb-per-channel :chart-data="this.dataKbPerChannel"></kb-per-channel>
-        <label class="control-label">The amount of data (kilobytes) read for each channel</label>
+        <label class="control-label">
+          <p>x - channel</p>
+          <p>y - kb (kilobase pair) of data </p>
+        </label>
       </div>
     </div>
   </div>
@@ -179,7 +203,7 @@
           }
         }).then(response => {
           this.dataReadCategoryCounts = {
-            labels: ['counts'],
+            labels: [ ],
             datasets: [
               {
                 label: 'files',
@@ -251,12 +275,11 @@
           }
         }).then(response => {
           this.dataEventsCounts = {
+            labels: response.data.xvalues,
             datasets: [
               {
                 label: 'Events in time',
-                backgroundColor: '#f8ac5f',
                 fill: false,
-                showLine: true,
                 borderColor: '#f8ac5f',
                 pointRadius: 0,
                 steppedLine: true,
@@ -337,7 +360,8 @@
               {
                 borderColor: '#47f889',
                 data: response.data.yvaluesList[0],
-                pointRadius: 0,
+                steppedLine: true,
+                pointRadius: 5,
                 fill: false
               }
             ]
@@ -359,7 +383,8 @@
               {
                 borderColor: '#f8ac5f',
                 data: response.data.yvaluesList[0],
-                pointRadius: 0,
+                steppedLine: true,
+                pointRadius: 5,
                 fill: false
               }
             ]

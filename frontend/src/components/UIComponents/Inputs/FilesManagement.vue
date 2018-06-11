@@ -24,7 +24,7 @@
                 </td>
               </tr>
             </table>
-            <div v-if="this.uploadPending">
+            <div v-if="this.percentCompleted > 0">
               <hr>
               <b-progress :value="percentCompleted" :max="100" show-progress animated></b-progress>
             </div>

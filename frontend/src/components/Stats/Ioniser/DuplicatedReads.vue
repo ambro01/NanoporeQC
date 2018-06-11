@@ -19,7 +19,11 @@
         options: {
           headings: {
             sequence: 'Sequence',
-            count: 'Count'
+            count: 'Occurrences'
+          },
+          headingsTooltips: {
+            sequence: 'Sequence of nucleotides',
+            count: 'Number of occurrences'
           },
           sortable: ['count'],
           filterable: ['sequence'],

@@ -26,10 +26,7 @@
             }],
             xAxes: [{
               ticks: {
-                maxTicksLimit: 50,
-                callback: function (value, index, values) {
-                  return value + '\''
-                }
+                maxTicksLimit: 50
               },
               gridLines: {
                 display: true

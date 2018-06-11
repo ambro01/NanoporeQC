@@ -7,33 +7,45 @@
     </div>
     <div class="content">
       <vue-tabs active-tab-color="#f4f3ef" @tab-change="handleTabChange">
-        <v-tab title="Nucleotide counts"></v-tab>
-        <v-tab title="Read quality"></v-tab>
+        <v-tab title="Nucleotides counts"></v-tab>
+        <v-tab title="Read quality distribution"></v-tab>
         <v-tab title="Cycle base call"></v-tab>
         <v-tab title="Cycle quality"></v-tab>
         <v-tab title="Reads distribution"></v-tab>
-        <v-tab title="Duplicated reads"></v-tab>
+        <v-tab title="Multiplicated reads"></v-tab>
       </vue-tabs>
       <div v-if="this.tabIndex === 0">
         <nucleotide-counts :chart-data="this.dataNucleotideCounts"></nucleotide-counts>
-        <label class="control-label">Number of each nucleotide (N - undefined)</label>
+        <label class="control-label">
+          <p>A - adenine, G - guanine, C - cytosine. T - thymine, N - undefined</p>
+          <p>y - number of nucleotides in each category</p>
+        </label>
       </div>
       <div v-if="this.tabIndex === 1">
         <read-quality-score :chart-data="this.dataReadQualityScore"></read-quality-score>
-        <label class="control-label">Proportion of reads per average base quality</label>
+        <label class="control-label">
+          <p>x - mean base quality</p>
+          <p>y - proportion of reads</p>
+        </label>
       </div>
       <div v-if="this.tabIndex === 2">
         <per-cycle-base-call :chart-data="this.dataCycleBaseCall"></per-cycle-base-call>
-        <label class="control-label">Number of nucleotides read per each cycle</label>
+        <label class="control-label">
+          <p>x - cycle of base calling</p>
+          <p>y - number of read nucleotides</p>
+        </label>
       </div>
       <div v-if="this.tabIndex === 3">
         <per-cycle-quality :chart-data="this.dataCycleQuality"></per-cycle-quality>
-        <label class="control-label">Quality factors per each cycle</label>
+        <label class="control-label">
+          <p>x - cycle of base calling</p>
+          <p>y - quality factors</p>
+        </label>
       </div>
       <div v-if="this.tabIndex === 4">
         <read-distribution :sourceData="this.dataReadsDistribution"
                            v-if="this.dataReadsDistribution != null"></read-distribution>
-        <label class="control-label">Reads distribution</label>
+        <label class="control-label"></label>
       </div>
       <div v-if="this.tabIndex === 5">
         <duplicated-reads :sourceData="this.dataDuplicatedReads" v-if="dataDuplicatedReads != null"></duplicated-reads>
@@ -101,7 +113,7 @@
           }
         }).then(response => {
           this.dataNucleotideCounts = {
-            labels: ['counts'],
+            labels: [ ],
             datasets: [
               {
                 label: 'A',

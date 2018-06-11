@@ -16,16 +16,17 @@
     data () {
       return {
         columns: ['id', 'fileName', 'channelIndex', 'strandIndexInChannel', 'eventsNo', 'startTime', 'duration',
-          'hasTemplate', 'hasComplement', 'eventsNoTemplate', 'eventsNoComplement', 'is2d'],
+          'hasTemplate', 'eventsNoTemplate', 'hasComplement', 'eventsNoComplement', 'is2d'],
         data: [],
         options: {
           headings: {
             id: 'Id',
             fileName: 'File name',
             channelIndex: 'Channel',
-            strandIndexInChannel: 'Strand no',
+            strandIndexInChannel: 'Read no',
             eventsNo: 'Events',
             startTime: 'Start time',
+            duration: 'Duration',
             hasTemplate: 'T',
             eventsNoTemplate: 'T events',
             hasComplement: 'C',
@@ -33,9 +34,11 @@
             is2d: '2d'
           },
           headingsTooltips: {
-            channelIndex: 'Channel number 1:512',
-            strandIndexInChannel: 'Strand number in channel',
+            channelIndex: 'Channel number',
+            strandIndexInChannel: 'Read number from channel (read index)',
             eventsNo: 'Changes in the measured current',
+            startTime: 'Time in seconds after the reading started',
+            duration: 'Time in seconds the reading lasted',
             eventsNoTemplate: 'Events of template strand',
             eventsNoComplement: 'Events of complement strand',
             hasTemplate: 'Template strand',

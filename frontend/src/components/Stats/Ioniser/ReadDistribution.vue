@@ -18,9 +18,14 @@
         data: [],
         options: {
           headings: {
-            fileName: 'File name',
+            fileName: 'Lane',
             occurrences: 'Occurrences',
             reads: 'Reads'
+          },
+          headingsTooltips: {
+            fileName: 'Molecule sequence',
+            occurrences: 'Number of molecule occurrences',
+            reads: 'Number of reads (molecule’s base sequences)'
           },
           sortable: ['fileName', 'occurrences', 'reads'],
           filterable: ['fileName'],

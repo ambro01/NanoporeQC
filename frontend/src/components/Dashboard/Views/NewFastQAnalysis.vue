@@ -66,20 +66,6 @@
           })
         })
       }
-    },
-    watch: {
-      percent: function (percent) {
-        console.log('Received Upload Percent Status!')
-        this.percent = percent
-      },
-      loading_on: function () {
-        console.log('Received Loading ON Event!')
-        this.loading = true
-      },
-      loading_off: function () {
-        console.log('Received Loading OFF Event!')
-        this.loading = false
-      }
     }
   }
 </script>

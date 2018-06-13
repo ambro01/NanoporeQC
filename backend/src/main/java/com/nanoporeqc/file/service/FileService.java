@@ -72,8 +72,8 @@ public class FileService {
         return FileConsts.SCRIPTS_DIR + rScriptEnum.getFileName();
     }
 
-    public byte[] getSummaryContent() {
-        final Path path = Paths.get(FileConsts.SUMMARY_FILE);
+    public byte[] getSummaryContent(final String filePath) {
+        final Path path = Paths.get(filePath);
         byte[] data = new byte[0];
         try {
             data = Files.readAllBytes(path);
@@ -88,6 +88,15 @@ public class FileService {
             FileUtils.cleanDirectory(new File(dirPath));
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void createNewDir(final String dirPath) {
+        final File file = new File(dirPath);
+        if (!file.exists()) {
+            file.mkdir();
+        } else {
+            cleanDirectory(dirPath);
         }
     }
 

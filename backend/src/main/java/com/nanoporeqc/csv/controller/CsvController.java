@@ -25,7 +25,7 @@ public class CsvController {
         this.csvService = csvService;
     }
 
-    @GetMapping(value = "/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{name}")
     public ResponseEntity getCsvChartData(@PathVariable("name") String name,
                                           @RequestParam("xName") String xName,
                                           @RequestParam("yNames[]") List<String> yNames,
@@ -34,19 +34,19 @@ public class CsvController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping(value = "/info", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/info")
     public ResponseEntity getCsvSummaryInfo(HttpServletResponse response) {
         csvService.exportReadsToCsv(RScriptEnum.READ_INFO, response);
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping(value = "/duplicated-sequences", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/duplicated-sequences")
     public ResponseEntity getDuplicatedSequences(HttpServletResponse response) {
         csvService.exportReadsToCsv(RScriptEnum.DUPLICATED_READS, response);
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping(value = "/reads-distribution", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/reads-distribution")
     public ResponseEntity getReadsDistribution(HttpServletResponse response) {
         csvService.exportReadsToCsv(RScriptEnum.READ_DISTRIBUTION, response);
         return new ResponseEntity(HttpStatus.OK);

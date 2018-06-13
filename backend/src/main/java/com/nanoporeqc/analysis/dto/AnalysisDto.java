@@ -31,4 +31,6 @@ public class AnalysisDto {
     @NotEmpty
     private String type;
 
+    private Boolean hasHtmlReport;
+
 }

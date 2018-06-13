@@ -13,6 +13,9 @@
         <a slot="runFastQ" slot-scope="props" v-if="props.row.type == 'Fast5'">
           <button class="btn btn-sm button" @click="onRunAnalysis(props.row)">Run analysis</button>
         </a>
+        <a slot="htmlReport" slot-scope="props" v-if="props.row.hasHtmlReport">
+          <button class="btn btn-sm btn-info button" @click="onDownloadHtmlReport(props.row)">Download</button>
+        </a>
       </v-client-table>
     </div>
     <report-stats-fast5 :id="this.detailsId"
@@ -26,6 +29,8 @@
   import ReportStatsFast5 from 'src/components/Dashboard/Views/ReportStatsFast5.vue'
   import ReportStatsFastQ from 'src/components/Dashboard/Views/ReportStatsFastQ.vue'
 
+  const TEXT_HTML = 'text/html'
+
   export default {
     components: {
       ReportStatsFast5,
@@ -35,7 +40,7 @@
       return {
         analysisType: '',
         detailsId: 0,
-        columns: ['name', 'comment', 'type', 'runTime', 'viewResults', 'deleteRow', 'runFastQ'],
+        columns: ['name', 'comment', 'type', 'runTime', 'viewResults', 'deleteRow', 'runFastQ', 'htmlReport'],
         data: [],
         options: {
           headings: {
@@ -43,9 +48,10 @@
             type: 'Type',
             runTime: 'Run time',
             comment: 'Comment',
-            deleteRow: 'Delete analysis',
-            viewResults: 'View results',
-            runFastQ: 'Run FastQ'
+            deleteRow: 'Delete',
+            viewResults: 'Results',
+            runFastQ: 'Run FastQ',
+            htmlReport: 'HTML report'
           },
           sortable: ['name', 'type', 'runTime'],
           filterable: ['name'],
@@ -62,11 +68,13 @@
             ascending: false
           },
           columnsClasses: {
-            viewResults: 'view-results',
-            deleteRow: 'delete-row',
-            runFastQ: 'run-fastq',
+            viewResults: 'button-width',
+            deleteRow: 'button-width',
+            runFastQ: 'button-width',
+            htmlReport: 'button-width',
             type: 'type',
-            runTime: 'run-time'
+            runTime: 'run-time',
+            comment: 'comment'
           }
         }
       }
@@ -143,31 +151,34 @@
             message: 'Data loading failed'
           })
         })
+      },
+      onDownloadHtmlReport (row) {
+        this.$http.get(`api/analysis/download-report/` + row.id).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_HTML})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = row.name + '.html'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
       }
     }
   }
 </script>
 
-<style lang="css">
+<style lang="scss">
   .btn.btn-sm {
     margin: 0 auto;
     display: block;
   }
 
   .button {
-    width: 120px;
+    width: 100px;
   }
 
-  .delete-row {
-    width: 8%;
-  }
-
-  .view-results {
-    width: 8%;
-  }
-
-  .run-fastq {
-    width: 8%;
+  .button-width {
+    width: 6%;
   }
 
   .type {
@@ -176,5 +187,9 @@
 
   .run-time {
     width: 10%;
+  }
+
+  .comment {
+    width: 20%;
   }
 </style>

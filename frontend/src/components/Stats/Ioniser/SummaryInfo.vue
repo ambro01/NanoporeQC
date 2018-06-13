@@ -53,11 +53,34 @@
           columnsDropdown: true,
           texts: {
             filter: 'Search in names:'
+          },
+          columnsClasses: {
+            is2d: 'width-3',
+            hasTemplate: 'width-3',
+            hasComplement: 'width-3',
+            eventsNoTemplate: 'width-6',
+            eventsNoComplement: 'width-6',
+            eventsNo: 'width-6',
+            strandIndexInChannel: 'width-6',
+            channelIndex: 'width-6',
+            id: 'width-3',
+            duration: 'width-6',
+            startTime: 'width-6'
           }
         }
       }
     }
   }
 </script>
-<style>
+
+<style lang="scss">
+
+  .width-6 {
+    width: 6%;
+  }
+
+  .width-3 {
+    width: 3%;
+  }
+
 </style>

@@ -32,11 +32,26 @@
           },
           texts: {
             filter: 'Search in sequences:'
+          },
+          columnsClasses: {
+            count: 'occurrences'
           }
         }
       }
     }
   }
 </script>
-<style>
+
+<style lang="scss">
+  td {
+    overflow: auto;
+  }
+
+  table {
+    table-layout: fixed;
+  }
+
+  .occurrences {
+    width: 10%;
+  }
 </style>

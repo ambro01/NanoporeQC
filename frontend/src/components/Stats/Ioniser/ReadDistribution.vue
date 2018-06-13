@@ -34,11 +34,21 @@
           },
           texts: {
             filter: 'Search in file names:'
+          },
+          columnsClasses: {
+            occurrences: 'width-10',
+            reads: 'width-10'
           }
         }
       }
     }
   }
 </script>
-<style>
+
+<style lang="scss">
+
+  .width-10 {
+    width: 10%;
+  }
+
 </style>

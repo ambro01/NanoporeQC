@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.rowset.serial.SerialBlob;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -31,9 +32,11 @@ import java.util.stream.Collectors;
 public class AnalysisService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AnalysisService.class);
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private static final String FAST_QC_TOOL = "fastqc";
 
     private final RService rService;
     private final FileService fileService;
+    private final ReportService reportService;
     private final AnalysisRepository analysisRepository;
     private final ApplicationUserService applicationUserService;
     private final ModelMapper modelMapper;
@@ -42,11 +45,13 @@ public class AnalysisService {
     @Autowired
     public AnalysisService(final RService rService,
                            final FileService fileService,
+                           final ReportService reportService,
                            final AnalysisRepository analysisRepository,
                            final ApplicationUserService applicationUserService,
                            final ModelMapper modelMapper) {
         this.rService = rService;
         this.fileService = fileService;
+        this.reportService = reportService;
         this.analysisRepository = analysisRepository;
         this.applicationUserService = applicationUserService;
         this.modelMapper = modelMapper;
@@ -56,6 +61,10 @@ public class AnalysisService {
         final RScriptEnum rScriptEnum = rService.getSummaryFromDirScript(analysisDto.getType());
         LOGGER.info("Analysis: Running new analyse of type: " + analysisDto.getType());
         rService.loadFilesFromDirToR(rScriptEnum);
+        if (Type.FastQ.equals(Type.valueOf(analysisDto.getType()))) {
+            reportService.saveLocallyFastQCHtmlReport();
+        }
+        fileService.cleanDirectory(FileConsts.FILES_DIR);
     }
 
     public void saveNewAnalysis(final AnalysisDto analysisDto) {
@@ -115,9 +124,20 @@ public class AnalysisService {
         return analysisTime.format(DATE_TIME_FORMATTER);
     }
 
+    public void downloadHtmlReport(final Long id, final HttpServletResponse response) {
+        final Analysis analysis = analysisRepository.findById(id)
+                .orElseThrow(AnalysisNotFoundException::new);
+        reportService.downloadReport(analysis, response);
+    }
+
+    public void downloadCurrentHtmlReport(final String type, final HttpServletResponse response) {
+        reportService.downloadCurrentReport(type, response);
+    }
+
     private AnalysisDto convertAnalysisToDto(final Analysis analysis) {
         final AnalysisDto analysisDto = modelMapper.map(analysis, AnalysisDto.class);
         analysisDto.setRunTime(convertLocalDateTimeToString(analysis.getRunTime()));
+        analysisDto.setHasHtmlReport(analysis.getHtmlReport() != null);
         return analysisDto;
     }
 
@@ -142,11 +162,13 @@ public class AnalysisService {
                     .comment(analysisDto.getComment())
                     .runTime(LocalDateTime.now())
                     .type(Type.valueOf(analysisDto.getType()))
-                    .content(new SerialBlob(fileService.getSummaryContent()))
+                    .content(new SerialBlob(fileService.getSummaryContent(FileConsts.SUMMARY_FILE)))
                     .user(applicationUserService.getCurrentUser())
+                    .htmlReport(new SerialBlob(fileService.getSummaryContent(reportService.getHtmlReportPath(analysisDto.getType()))))
                     .build();
         } catch (UserNotFoundException | SQLException e) {
             throw new AnalysisCannotBeSavedException();
         }
     }
+
 }

@@ -19,6 +19,7 @@ create table ANALYSES (
   TYPE varchar(10),
   SUMMARY_FILE_CONTENT mediumblob,
   USER_ID decimal(8,0),
+  HTML_REPORT mediumblob,
   PRIMARY KEY (ID),
   FOREIGN KEY (USER_ID) REFERENCES USERS(ID),
   UNIQUE (ID)

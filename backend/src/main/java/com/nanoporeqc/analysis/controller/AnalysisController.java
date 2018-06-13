@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
@@ -97,6 +98,18 @@ public class AnalysisController {
     @GetMapping(value = "/last/{type}", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getLastAnalysisTime(@PathVariable("type") String type) {
         return analysisService.getLastAnalysisTime(type);
+    }
+
+    @GetMapping(value = "/download-report/{id}")
+    public ResponseEntity downloadHtmlReport(@PathVariable("id") Long id, HttpServletResponse response) {
+        analysisService.downloadHtmlReport(id, response);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/download-current-report/{type}")
+    public ResponseEntity downloadCurrentHtmlReport(@PathVariable("type") String type, HttpServletResponse response) {
+        analysisService.downloadCurrentHtmlReport(type, response);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
 }

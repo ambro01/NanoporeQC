@@ -23,6 +23,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -117,7 +120,6 @@ public class RService {
         try {
             eval("dirPath <- " + "'" + FileConsts.FILES_DIR + "'");
             eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
-            fileService.cleanDirectory(FileConsts.FILES_DIR);
         } finally {
             lock.unlock();
         }

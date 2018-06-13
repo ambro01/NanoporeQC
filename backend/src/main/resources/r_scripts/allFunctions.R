@@ -68,7 +68,7 @@ readsPerChannel <- function(summaryData) {
 
 readQuality <- function(summaryData) {
     fq <- fastq(summaryData)
-    readType <- factor(.readtypeFromFASTQ(fq), levels = c('space', 'template', 'complement', '2D'))
+    readType <- factor(.readtypeFromFASTQ(fq), levels = c('2D'))
     out <- ShortRead::alphabetScore(Biostrings::quality(fq)) / ShortRead::width(fq)
     return (out)
 }

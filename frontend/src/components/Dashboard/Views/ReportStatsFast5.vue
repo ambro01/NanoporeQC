@@ -40,7 +40,8 @@
       <div v-if="this.tabIndex === 3">
         <read-quality :chart-data="this.dataReadQuality"></read-quality>
         <label class="control-label">
-
+          <p>x - file</p>
+          <p>y - quality factors</p>
         </label>
       </div>
       <div v-if="this.tabIndex === 4">

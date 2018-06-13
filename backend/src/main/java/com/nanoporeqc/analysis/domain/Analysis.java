@@ -55,4 +55,7 @@ public class Analysis {
     @JoinColumn(name = "USER_ID")
     private ApplicationUser user;
 
+    @Column(name = "HTML_REPORT")
+    private Blob htmlReport;
+
 }

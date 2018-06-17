@@ -464,7 +464,7 @@
       },
 
       downloadHtmlReport () {
-        this.$http.get(`api/analysis/download-current-report/FastQ`).then(response => {
+        this.$http.get(`api/analysis/download-current-report`).then(response => {
           const blob = new Blob([response.data], {type: TEXT_HTML})
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(blob)

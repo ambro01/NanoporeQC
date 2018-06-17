@@ -106,9 +106,9 @@ public class AnalysisController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping(value = "/download-current-report/{type}")
-    public ResponseEntity downloadCurrentHtmlReport(@PathVariable("type") String type, HttpServletResponse response) {
-        analysisService.downloadCurrentHtmlReport(type, response);
+    @GetMapping(value = "/download-current-report")
+    public ResponseEntity downloadCurrentHtmlReport(HttpServletResponse response) {
+        analysisService.downloadCurrentHtmlReport(response);
         return new ResponseEntity(HttpStatus.OK);
     }
 

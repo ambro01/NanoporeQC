@@ -2,8 +2,19 @@
   <div class="card">
     <div class="header">
       <h4 class="title">Report of analysis</h4>
-      <button class="btn btn-primary btn-wd refresh-button left-margin" @click.prevent="exportCsv">Export CSV</button>
-      <button class="btn btn-primary btn-wd refresh-button left-margin" @click.prevent="refreshData">Refresh</button>
+      <button class="btn btn-primary btn-wd refresh-button left-margin"
+              title="Download HTML report from FastQC tool"
+              @click.prevent="downloadHtmlReport">
+        HTML report
+      </button>
+      <button class="btn btn-primary btn-wd refresh-button left-margin"
+              @click.prevent="exportCsv">
+        Export CSV
+      </button>
+      <button class="btn btn-primary btn-wd refresh-button left-margin"
+              @click.prevent="refreshData">
+        Refresh
+      </button>
     </div>
     <div class="content">
       <vue-tabs active-tab-color="#f4f3ef" @tab-change="handleTabChange">
@@ -95,6 +106,7 @@
   import StatsCard from '../../UIComponents/Cards/StatsCard.vue'
 
   const TEXT_CSV = 'text/csv'
+  const TEXT_HTML = 'text/html'
 
   export default {
     name: 'VueChartJS',
@@ -609,6 +621,18 @@
             this.csvKbPerChannel()
             break
         }
+      },
+
+      downloadHtmlReport () {
+        this.$http.get(`api/analysis/download-current-report`).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_HTML})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'fastqc_report.html'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
       }
 
     }

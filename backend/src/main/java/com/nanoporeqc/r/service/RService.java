@@ -132,7 +132,6 @@ public class RService {
             eval("filePath <- " + "'" + FileConsts.FASTQ_FILE_FROM_FAST5 + "'");
             eval("dirPath <- " + "'" + FileConsts.FILES_DIR + "'");
             eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
-            fileService.cleanDirectory(FileConsts.FILES_DIR);
         } finally {
             lock.unlock();
         }

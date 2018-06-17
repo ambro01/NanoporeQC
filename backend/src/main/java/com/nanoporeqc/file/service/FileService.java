@@ -100,6 +100,19 @@ public class FileService {
         }
     }
 
+    public File createNewFile(final String filePath) {
+        final File file = new File(filePath);
+        if (file.exists()) {
+            return file;
+        }
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+
     private void copySourceToDestination(final File source, final File destination) {
         if (destination.exists()) {
             return;

@@ -96,12 +96,10 @@ public class RScriptsConst {
             "full_2D_c", new RVariable("full_2D_c", RVariableTypeEnum.LOGICAL)));
 
     private static final RScript READ_QUALITY = new RScript(RScriptEnum.READ_QUALITY, Map.of(
-            "id", new RVariable("id", RVariableTypeEnum.DOUBLE, 0),
-            "quality", new RVariable("quality", RVariableTypeEnum.DOUBLE, 2),
-            "min_", new RVariable("min_", RVariableTypeEnum.DOUBLE, 2),
-            "max_", new RVariable("max_", RVariableTypeEnum.DOUBLE, 2),
-            "mean_", new RVariable("mean_", RVariableTypeEnum.DOUBLE, 2),
-            "median_", new RVariable("median_", RVariableTypeEnum.DOUBLE, 2)));
+            "id", new RVariable("id", RVariableTypeEnum.NUMERIC),
+            "q_template", new RVariable("q_template", RVariableTypeEnum.DOUBLE, 2),
+            "q_complement", new RVariable("q_complement", RVariableTypeEnum.DOUBLE, 2),
+            "q_2D", new RVariable("q_2D", RVariableTypeEnum.DOUBLE, 2)));
 
     private static final RScript DUPLICATED_READS = new RScript(RScriptEnum.DUPLICATED_READS, Map.of(
             "sequence", new RVariable("sequence", RVariableTypeEnum.CHARACTER),

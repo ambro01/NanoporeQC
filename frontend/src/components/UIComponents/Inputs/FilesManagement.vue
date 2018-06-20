@@ -19,7 +19,9 @@
                 </td>
                 <td>
                 <span class="margin-left-10" @click="removeAttachment(attachment)">
-                  <button class="btn btn-xs btn-danger">Remove</button>
+                  <button class="btn btn-xs btn-danger">
+                    Remove
+                  </button>
                 </span>
                 </td>
               </tr>
@@ -124,7 +126,6 @@
               title: 'Success',
               message: 'Successful upload. Please wait'
             })
-            this.uploadPending = false
           })
           .catch(e => {
             this.$toast.error({

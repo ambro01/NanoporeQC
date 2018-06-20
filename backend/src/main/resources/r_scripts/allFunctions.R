@@ -28,7 +28,7 @@ readCategoryCounts <- function(summaryData) {
 
 readCategoryQuals <- function(summaryData) {
     fq <- fastq(summaryData)
-    readType <- factor(.readtypeFromFASTQ(fq), levels = c('space', 'template', 'complement', '2D'))
+    readType <- factor(.readtypeFromFASTQ(fq), levels = c('template', 'complement', '2D'))
     meanBaseQuality <- ShortRead::alphabetScore(Biostrings::quality(fq)) / ShortRead::width(fq)
     res <- data.frame(readType, meanBaseQuality)
     minRes <- aggregate(meanBaseQuality ~ readType, res, function(x) min(x))
@@ -68,7 +68,8 @@ readsPerChannel <- function(summaryData) {
 
 readQuality <- function(summaryData) {
     fq <- fastq(summaryData)
-    readType <- factor(.readtypeFromFASTQ(fq), levels = c('2D'))
-    out <- ShortRead::alphabetScore(Biostrings::quality(fq)) / ShortRead::width(fq)
-    return (out)
+    readType <- factor(.readtypeFromFASTQ(fq), levels = c('template', 'complement', '2D'))
+    meanBaseQuality <- ShortRead::alphabetScore(Biostrings::quality(fq)) / ShortRead::width(fq)
+    res <- data.frame(readType, meanBaseQuality)
+    return (res)
 }

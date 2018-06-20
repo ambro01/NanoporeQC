@@ -22,7 +22,7 @@
         <v-tab title="Read accumulation"></v-tab>
         <v-tab title="Active channels"></v-tab>
         <v-tab title="Read quality"></v-tab>
-        <v-tab title="Read category quality"></v-tab>
+        <v-tab title="Read quality factors"></v-tab>
         <v-tab title="Read category counts"></v-tab>
         <v-tab title="Events"></v-tab>
         <v-tab title="Reads per channel"></v-tab>
@@ -51,15 +51,15 @@
       <div v-if="this.tabIndex === 3">
         <read-quality :chart-data="this.dataReadQuality"></read-quality>
         <label class="control-label">
-          <p>x - file</p>
-          <p>y - quality factors</p>
+          <p>x - read</p>
+          <p>y - mean base quality</p>
         </label>
       </div>
       <div v-if="this.tabIndex === 4">
         <read-category-quality :chart-data="this.dataReadCategoryQuality"></read-category-quality>
         <label class="control-label">
-          <p>x - strand categories</p>
-          <p>y - quality factors</p>
+          <p>x - read categories</p>
+          <p>y - mean base quality factors</p>
         </label>
       </div>
       <div v-if="this.tabIndex === 5">
@@ -308,50 +308,34 @@
         this.$http.get(`api/analysis/stats/readQuality`, {
           params: {
             xName: 'id',
-            yNames: ['quality', 'min_', 'max_', 'mean_', 'median_']
+            yNames: ['q_template', 'q_complement', 'q_2D']
           }
         }).then(response => {
           this.dataReadQuality = {
             labels: response.data.xvalues,
             datasets: [
               {
-                label: 'quality',
-                borderColor: '#f87979',
+                label: 'template quality',
+                borderColor: '#47f889',
                 fill: false,
                 data: response.data.yvaluesList[0],
                 pointRadius: 0,
                 borderWidth: 1
               },
               {
-                label: 'min',
+                label: 'complement quality',
                 borderColor: '#d392f8',
-                pointRadius: 0,
                 fill: false,
                 data: response.data.yvaluesList[1],
+                pointRadius: 0,
                 borderWidth: 1
               },
               {
-                label: 'max',
-                borderColor: '#f8ac5f',
-                pointRadius: 0,
+                label: '2d quality',
+                borderColor: '#f87979',
                 fill: false,
                 data: response.data.yvaluesList[2],
-                borderWidth: 1
-              },
-              {
-                label: 'mean',
-                borderColor: '#47f889',
                 pointRadius: 0,
-                fill: false,
-                data: response.data.yvaluesList[3],
-                borderWidth: 1
-              },
-              {
-                label: 'median',
-                borderColor: '#82c3f8',
-                pointRadius: 0,
-                fill: false,
-                data: response.data.yvaluesList[4],
                 borderWidth: 1
               }
             ]

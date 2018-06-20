@@ -39,7 +39,7 @@ Vue.use(BootstrapVue)
 
 var toastrConfigs = {
   position: 'bottom right',
-  showDuration: 2000
+  showDuration: 3000
 }
 Vue.use(CxltToastr, toastrConfigs)
 

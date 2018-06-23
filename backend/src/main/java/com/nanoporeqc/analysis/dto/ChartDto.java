@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
@@ -13,8 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 public class ChartDto {
 
-    private List xValues;
-
-    private List<List> yValuesList;
+    private Map<String, List> values;
 
 }

@@ -122,8 +122,7 @@
       getNucleotideCounts () {
         this.$http.get(`api/analysis/stats/nucleotideCounts`, {
           params: {
-            xName: 'counts',
-            yNames: ['A', 'G', 'C', 'T', 'N']
+            valuesNames: ['counts', 'A', 'G', 'C', 'T', 'N']
           }
         }).then(response => {
           this.dataNucleotideCounts = {
@@ -132,27 +131,27 @@
               {
                 label: 'A',
                 backgroundColor: '#f87979',
-                data: response.data.yvaluesList[0]
+                data: response.data.values['A']
               },
               {
                 label: 'G',
                 backgroundColor: '#f8ac5f',
-                data: response.data.yvaluesList[1]
+                data: response.data.values['G']
               },
               {
                 label: 'C',
                 backgroundColor: '#47f889',
-                data: response.data.yvaluesList[2]
+                data: response.data.values['C']
               },
               {
                 label: 'T',
                 backgroundColor: '#82c3f8',
-                data: response.data.yvaluesList[3]
+                data: response.data.values['T']
               },
               {
                 label: 'N',
                 backgroundColor: '#8f8792',
-                data: response.data.yvaluesList[4]
+                data: response.data.values['N']
               }
             ]
           }
@@ -163,16 +162,15 @@
       getReadQualityScore () {
         this.$http.get(`api/analysis/stats/readQualityScore`, {
           params: {
-            xName: 'quality',
-            yNames: ['density']
+            valuesNames: ['quality', 'density']
           }
         }).then(response => {
           this.dataReadQualityScore = {
-            labels: response.data.xvalues,
+            labels: response.data.values['quality'],
             datasets: [
               {
                 backgroundColor: '#f87979',
-                data: response.data.yvaluesList[0],
+                data: response.data.values['density'],
                 pointRadius: 0,
                 steppedLine: false
               }
@@ -185,18 +183,17 @@
       getCycleBaseCall () {
         this.$http.get(`api/analysis/stats/perCycleBaseCall`, {
           params: {
-            xName: 'cycle',
-            yNames: ['countA', 'countG', 'countC', 'countT']
+            valuesNames: ['cycle', 'countA', 'countG', 'countC', 'countT']
           }
         }).then(response => {
           this.dataCycleBaseCall = {
-            labels: response.data.xvalues,
+            labels: response.data.values['cycle'],
             datasets: [
               {
                 label: 'A',
                 borderColor: '#f87979',
                 fill: false,
-                data: response.data.yvaluesList[0],
+                data: response.data.values['countA'],
                 pointRadius: 0,
                 borderWidth: 1
               },
@@ -204,7 +201,7 @@
                 label: 'G',
                 borderColor: '#f8ac5f',
                 fill: false,
-                data: response.data.yvaluesList[1],
+                data: response.data.values['countG'],
                 pointRadius: 0,
                 borderWidth: 1
               },
@@ -212,7 +209,7 @@
                 label: 'C',
                 borderColor: '#47f889',
                 fill: false,
-                data: response.data.yvaluesList[2],
+                data: response.data.values['countC'],
                 pointRadius: 0,
                 borderWidth: 1
               },
@@ -220,7 +217,7 @@
                 label: 'T',
                 borderColor: '#82c3f8',
                 fill: false,
-                data: response.data.yvaluesList[3],
+                data: response.data.values['countT'],
                 pointRadius: 0,
                 borderWidth: 1
               }
@@ -233,18 +230,17 @@
       getCycleQuality () {
         this.$http.get(`api/analysis/stats/perCycleQuality`, {
           params: {
-            xName: 'cycle',
-            yNames: ['mean_', 'median_', 'q25', 'q50', 'q75']
+            valuesNames: ['cycle', 'mean_', 'median_', 'q25', 'q50', 'q75']
           }
         }).then(response => {
           this.dataCycleQuality = {
-            labels: response.data.xvalues,
+            labels: response.data.values['cycle'],
             datasets: [
               {
                 label: 'mean',
                 borderColor: '#f87979',
                 fill: false,
-                data: response.data.yvaluesList[0],
+                data: response.data.values['mean_'],
                 pointRadius: 0,
                 borderWidth: 1
               },
@@ -252,7 +248,7 @@
                 label: 'median',
                 borderColor: '#82c3f8',
                 fill: false,
-                data: response.data.yvaluesList[1],
+                data: response.data.values['median_'],
                 pointRadius: 0,
                 borderWidth: 1
               },
@@ -260,7 +256,7 @@
                 label: 'quantile 25',
                 borderColor: '#47f889',
                 fill: false,
-                data: response.data.yvaluesList[2],
+                data: response.data.values['q25'],
                 pointRadius: 0,
                 borderWidth: 1
               },
@@ -268,7 +264,7 @@
                 label: 'quantile 50',
                 borderColor: '#f8ac5f',
                 fill: false,
-                data: response.data.yvaluesList[3],
+                data: response.data.values['q50'],
                 pointRadius: 0,
                 borderWidth: 1
               },
@@ -276,7 +272,7 @@
                 label: 'quantile 75',
                 borderColor: '#8f8792',
                 fill: false,
-                data: response.data.yvaluesList[3],
+                data: response.data.values['q75'],
                 pointRadius: 0,
                 borderWidth: 1
               }
@@ -289,8 +285,7 @@
       getReadsDistribution () {
         this.$http.get(`api/analysis/stats/reads-distribution`, {
           params: {
-            xName: 'sequence',
-            yNames: ['count']
+            valuesNames: ['file_name', 'occurrences', 'reads']
           }
         }).then(response => {
           this.dataReadsDistribution = response.data
@@ -301,8 +296,7 @@
       getDuplicatedReads () {
         this.$http.get(`api/analysis/stats/duplicated-sequences`, {
           params: {
-            xName: 'sequence',
-            yNames: ['count']
+            valuesNames: ['sequence', 'count']
           }
         }).then(response => {
           this.dataDuplicatedReads = response.data
@@ -346,8 +340,7 @@
       csvNucleotideCounts () {
         this.$http.get(`api/csv/nucleotideCounts`, {
           params: {
-            xName: 'counts',
-            yNames: ['A', 'G', 'C', 'T', 'N']
+            valuesNames: ['counts', 'A', 'G', 'C', 'T', 'N']
           }
         }).then(response => {
           const blob = new Blob([response.data], {type: TEXT_CSV})
@@ -362,8 +355,7 @@
       csvReadQualityScore () {
         this.$http.get(`api/csv/readQualityScore`, {
           params: {
-            xName: 'quality',
-            yNames: ['density']
+            valuesNames: ['quality', 'density']
           }
         }).then(response => {
           const blob = new Blob([response.data], {type: TEXT_CSV})
@@ -378,8 +370,7 @@
       csvCycleBaseCall () {
         this.$http.get(`api/csv/perCycleBaseCall`, {
           params: {
-            xName: 'cycle',
-            yNames: ['countA', 'countG', 'countC', 'countT']
+            valuesNames: ['cycle', 'countA', 'countG', 'countC', 'countT']
           }
         }).then(response => {
           const blob = new Blob([response.data], {type: TEXT_CSV})
@@ -394,8 +385,7 @@
       csvCycleQuality () {
         this.$http.get(`api/csv/perCycleQuality`, {
           params: {
-            xName: 'cycle',
-            yNames: ['mean_', 'median_', 'q25', 'q50', 'q75']
+            valuesNames: ['cycle', 'mean_', 'median_', 'q25', 'q50', 'q75']
           }
         }).then(response => {
           const blob = new Blob([response.data], {type: TEXT_CSV})
@@ -410,8 +400,7 @@
       csvReadsDistribution () {
         this.$http.get(`api/csv/reads-distribution`, {
           params: {
-            xName: 'sequence',
-            yNames: ['count']
+            valuesNames: ['sequence', 'count']
           }
         }).then(response => {
           const blob = new Blob([response.data], {type: TEXT_CSV})
@@ -426,8 +415,7 @@
       csvDuplicatedReads () {
         this.$http.get(`api/csv/duplicated-sequences`, {
           params: {
-            xName: 'sequence',
-            yNames: ['count']
+            valuesNames: ['sequence', 'count']
           }
         }).then(response => {
           const blob = new Blob([response.data], {type: TEXT_CSV})

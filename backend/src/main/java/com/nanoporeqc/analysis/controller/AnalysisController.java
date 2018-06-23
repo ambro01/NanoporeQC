@@ -70,9 +70,8 @@ public class AnalysisController {
 
     @GetMapping(value = "/stats/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ChartDto getChartXY(@PathVariable("name") String name,
-                               @RequestParam("xName") String xName,
-                               @RequestParam("yNames[]") List<String> yNames) {
-        return statsService.getChartDataXY(name, xName, yNames);
+                               @RequestParam("valuesNames[]") List<String> valuesNames) {
+        return statsService.getChartDataXY(name, valuesNames);
     }
 
     @GetMapping(value = "/stats/info", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -27,10 +27,9 @@ public class CsvController {
 
     @GetMapping(value = "/{name}")
     public ResponseEntity getCsvChartData(@PathVariable("name") String name,
-                                          @RequestParam("xName") String xName,
-                                          @RequestParam("yNames[]") List<String> yNames,
+                                          @RequestParam("valuesNames[]") List<String> valuesNames,
                                           HttpServletResponse response) {
-        csvService.exportChartDataToCsv(name, xName, yNames, response);
+        csvService.exportChartDataToCsv(name, valuesNames, response);
         return new ResponseEntity(HttpStatus.OK);
     }
 

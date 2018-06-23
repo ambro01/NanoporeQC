@@ -22,6 +22,7 @@
         <v-tab title="Read accumulation"></v-tab>
         <v-tab title="Active channels"></v-tab>
         <v-tab title="Read quality"></v-tab>
+        <v-tab title="Read quality density"></v-tab>
         <v-tab title="Read quality factors"></v-tab>
         <v-tab title="Read category counts"></v-tab>
         <v-tab title="Events"></v-tab>
@@ -56,33 +57,50 @@
         </label>
       </div>
       <div v-if="this.tabIndex === 4">
+        <read-quality-density :chart-data="this.dataReadQuality2D"></read-quality-density>
+        <label class="control-label">
+          <p>x - mean 2d base quality</p>
+          <p>y - quality density</p>
+        </label>
+        <read-quality-density :chart-data="this.dataReadQualityTemplate"></read-quality-density>
+        <label class="control-label">
+          <p>x - mean template base quality</p>
+          <p>y - quality density</p>
+        </label>
+        <read-quality-density :chart-data="this.dataReadQualityComplement"></read-quality-density>
+        <label class="control-label">
+          <p>x - mean complement base quality</p>
+          <p>y - quality density</p>
+        </label>
+      </div>
+      <div v-if="this.tabIndex === 5">
         <read-category-quality :chart-data="this.dataReadCategoryQuality"></read-category-quality>
         <label class="control-label">
           <p>x - read categories</p>
           <p>y - mean base quality factors</p>
         </label>
       </div>
-      <div v-if="this.tabIndex === 5">
+      <div v-if="this.tabIndex === 6">
         <read-category-counts :chart-data="this.dataReadCategoryCounts"></read-category-counts>
         <label class="control-label">
           <p>y - number of readings for file and each strand category</p>
         </label>
       </div>
-      <div v-if="this.tabIndex === 6">
+      <div v-if="this.tabIndex === 7">
         <events-counts :chart-data="this.dataEventsCounts"></events-counts>
         <label class="control-label">
           <p>x - duration of an experiment [sec]</p>
           <p>y - number of events</p>
         </label>
       </div>
-      <div v-if="this.tabIndex === 7">
+      <div v-if="this.tabIndex === 8">
         <reads-per-channel :chart-data="this.dataReadsPerChannel"></reads-per-channel>
         <label class="control-label">
           <p>x - channel</p>
           <p>y - number of reads</p>
         </label>
       </div>
-      <div v-if="this.tabIndex === 8">
+      <div v-if="this.tabIndex === 9">
         <kb-per-channel :chart-data="this.dataKbPerChannel"></kb-per-channel>
         <label class="control-label">
           <p>x - channel</p>
@@ -98,6 +116,7 @@
   import ActiveChannels from 'src/components/Charts/Ioniser/fast5/ActiveChannels.vue'
   import ReadQuality from 'src/components/Charts/Ioniser/fast5/ReadQuality.vue'
   import ReadCategoryQuality from 'src/components/Charts/Ioniser/fast5/ReadCategoryQuality.vue'
+  import ReadQualityDensity from 'src/components/Charts/Ioniser/fast5/ReadQualityDensity.vue'
   import ReadCategoryCounts from 'src/components/Charts/Ioniser/fast5/ReadCategoryCounts.vue'
   import EventsCounts from 'src/components/Charts/Ioniser/fast5/EventsCounts.vue'
   import ReadsPerChannel from 'src/components/Charts/Ioniser/fast5/ReadsPerChannel.vue'
@@ -116,6 +135,7 @@
       ActiveChannels,
       ReadQuality,
       ReadCategoryQuality,
+      ReadQualityDensity,
       ReadCategoryCounts,
       EventsCounts,
       ReadsPerChannel,
@@ -137,6 +157,9 @@
         dataReadsPerChannel: null,
         dataKbPerChannel: null,
         dataReadQuality: null,
+        dataReadQualityTemplate: null,
+        dataReadQualityComplement: null,
+        dataReadQuality2D: null,
         tabIndex: 0
       }
     },
@@ -164,16 +187,15 @@
       getReadAccumulation () {
         this.$http.get(`api/analysis/stats/readAccumulation/`, {
           params: {
-            xName: 'minute',
-            yNames: ['accumulation']
+            valuesNames: ['minute', 'accumulation']
           }
         }).then(response => {
           this.dataReadAccumulation = {
-            labels: response.data.xvalues,
+            labels: response.data.values['minute'],
             datasets: [
               {
                 backgroundColor: '#f87979',
-                data: response.data.yvaluesList[0],
+                data: response.data.values['accumulation'],
                 pointRadius: 0
               }
             ]
@@ -185,12 +207,11 @@
       getActiveChannels () {
         this.$http.get(`api/analysis/stats/activeChannels`, {
           params: {
-            xName: 'minute',
-            yNames: ['channels']
+            valuesNames: ['minute', 'channels']
           }
         }).then(response => {
           this.dataActiveChannels = {
-            labels: response.data.xvalues,
+            labels: response.data.values['minute'],
             datasets: [
               {
                 backgroundColor: '#0096f8',
@@ -200,7 +221,7 @@
                 steppedLine: true,
                 fill: false,
                 pointRadius: 0,
-                data: response.data.yvaluesList[0]
+                data: response.data.values['channels']
               }
             ]
           }
@@ -211,32 +232,31 @@
       getReadCategoryCounts () {
         this.$http.get(`api/analysis/stats/readCategoryCounts`, {
           params: {
-            xName: 'category',
-            yNames: ['files_count', 'template_count', 'complement_count', 'full_2d_count']
+            valuesNames: ['category', 'files_count', 'template_count', 'complement_count', 'full_2d_count']
           }
         }).then(response => {
           this.dataReadCategoryCounts = {
-            labels: [ ],
+            labels: [],
             datasets: [
               {
                 label: 'files',
                 backgroundColor: '#f87979',
-                data: response.data.yvaluesList[0]
+                data: response.data.values['files_count']
               },
               {
                 label: 'template',
                 backgroundColor: '#f8ac5f',
-                data: response.data.yvaluesList[2]
+                data: response.data.values['template_count']
               },
               {
                 label: 'complement',
                 backgroundColor: '#47f889',
-                data: response.data.yvaluesList[3]
+                data: response.data.values['complement_count']
               },
               {
                 label: 'full 2d',
                 backgroundColor: '#82c3f8',
-                data: response.data.yvaluesList[1]
+                data: response.data.values['full_2d_count']
               }
             ]
           }
@@ -247,32 +267,31 @@
       getReadCategoryQuality () {
         this.$http.get(`api/analysis/stats/readCategoryQuality`, {
           params: {
-            xName: 'category',
-            yNames: ['min', 'max', 'mean', 'median']
+            valuesNames: ['category', 'min', 'max', 'mean', 'median']
           }
         }).then(response => {
           this.dataReadCategoryQuality = {
-            labels: response.data.xvalues,
+            labels: response.data.values['category'],
             datasets: [
               {
                 label: 'min',
                 backgroundColor: '#f87979',
-                data: response.data.yvaluesList[0]
+                data: response.data.values['min']
               },
               {
                 label: 'mean',
                 backgroundColor: '#f8ac5f',
-                data: response.data.yvaluesList[2]
+                data: response.data.values['mean']
               },
               {
                 label: 'median',
                 backgroundColor: '#47f889',
-                data: response.data.yvaluesList[3]
+                data: response.data.values['median']
               },
               {
                 label: 'max',
                 backgroundColor: '#82c3f8',
-                data: response.data.yvaluesList[1]
+                data: response.data.values['max']
               }
             ]
           }
@@ -283,12 +302,11 @@
       getEventsCounts () {
         this.$http.get(`api/analysis/stats/eventsCounts`, {
           params: {
-            xName: 'time',
-            yNames: ['events']
+            valuesNames: ['time', 'events']
           }
         }).then(response => {
           this.dataEventsCounts = {
-            labels: response.data.xvalues,
+            labels: response.data.values['time'],
             datasets: [
               {
                 label: 'Events in time',
@@ -296,7 +314,7 @@
                 borderColor: '#f8ac5f',
                 pointRadius: 0,
                 steppedLine: true,
-                data: response.data.yvaluesList[0]
+                data: response.data.values['events']
               }
             ]
           }
@@ -307,18 +325,17 @@
       getReadQuality () {
         this.$http.get(`api/analysis/stats/readQuality`, {
           params: {
-            xName: 'id',
-            yNames: ['q_template', 'q_complement', 'q_2D']
+            valuesNames: ['id', 'q_template', 'q_complement', 'q_2D']
           }
         }).then(response => {
           this.dataReadQuality = {
-            labels: response.data.xvalues,
+            labels: response.data.values['id'],
             datasets: [
               {
                 label: 'template quality',
                 borderColor: '#47f889',
                 fill: false,
-                data: response.data.yvaluesList[0],
+                data: response.data.values['q_template'],
                 pointRadius: 0,
                 borderWidth: 1
               },
@@ -326,7 +343,7 @@
                 label: 'complement quality',
                 borderColor: '#d392f8',
                 fill: false,
-                data: response.data.yvaluesList[1],
+                data: response.data.values['q_complement'],
                 pointRadius: 0,
                 borderWidth: 1
               },
@@ -334,9 +351,59 @@
                 label: '2d quality',
                 borderColor: '#f87979',
                 fill: false,
-                data: response.data.yvaluesList[2],
+                data: response.data.values['q_2D'],
                 pointRadius: 0,
                 borderWidth: 1
+              }
+            ]
+          }
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      getReadQualityDensity () {
+        this.$http.get(`api/analysis/stats/readQualityDensity`, {
+          params: {
+            valuesNames: ['quality_template', 'quality_complement', 'quality_2D',
+              'density_template', 'density_complement', 'density_2D']
+          }
+        }).then(response => {
+          this.dataReadQuality2D = {
+            labels: response.data.values['quality_2D'],
+            datasets: [
+              {
+                label: '2D quality density',
+                borderColor: '#f87979',
+                fill: false,
+                data: response.data.values['density_2D'],
+                pointRadius: 0,
+                borderWidth: 2
+              }
+            ]
+          }
+          this.dataReadQualityTemplate = {
+            labels: response.data.values['quality_template'],
+            datasets: [
+              {
+                label: 'Template quality density',
+                borderColor: '#47f889',
+                fill: false,
+                data: response.data.values['density_template'],
+                pointRadius: 0,
+                borderWidth: 2
+              }
+            ]
+          }
+          this.dataReadQualityComplement = {
+            labels: response.data.values['quality_complement'],
+            datasets: [
+              {
+                label: 'Complement quality density',
+                borderColor: '#d392f8',
+                fill: false,
+                data: response.data.values['density_complement'],
+                pointRadius: 0,
+                borderWidth: 2
               }
             ]
           }
@@ -347,16 +414,15 @@
       getReadsPerChannel () {
         this.$http.get(`api/analysis/stats/readsPerChannel`, {
           params: {
-            xName: 'channel',
-            yNames: ['reads']
+            valuesNames: ['channel', 'reads']
           }
         }).then(response => {
           this.dataReadsPerChannel = {
-            labels: response.data.xvalues,
+            labels: response.data.values['channel'],
             datasets: [
               {
                 borderColor: '#47f889',
-                data: response.data.yvaluesList[0],
+                data: response.data.values['reads'],
                 steppedLine: true,
                 pointRadius: 5,
                 fill: false
@@ -371,15 +437,15 @@
         this.$http.get(`api/analysis/stats/kbPerChannel`, {
           params: {
             xName: 'channel',
-            yNames: ['kb']
+            valuesNames: ['channel', 'kb']
           }
         }).then(response => {
           this.dataKbPerChannel = {
-            labels: response.data.xvalues,
+            labels: response.data.values['channel'],
             datasets: [
               {
                 borderColor: '#f8ac5f',
-                data: response.data.yvaluesList[0],
+                data: response.data.values['kb'],
                 steppedLine: true,
                 pointRadius: 5,
                 fill: false
@@ -399,6 +465,7 @@
         this.getReadCategoryQuality()
         this.getEventsCounts()
         this.getReadQuality()
+        this.getReadQualityDensity()
         this.getReadsPerChannel()
         this.getKbPerChannel()
       },
@@ -418,18 +485,21 @@
             this.getReadQuality()
             break
           case 4:
-            this.getReadCategoryQuality()
+            this.getReadQualityDensity()
             break
           case 5:
-            this.getReadCategoryCounts()
+            this.getReadCategoryQuality()
             break
           case 6:
-            this.getEventsCounts()
+            this.getReadCategoryCounts()
             break
           case 7:
-            this.getReadsPerChannel()
+            this.getEventsCounts()
             break
           case 8:
+            this.getReadsPerChannel()
+            break
+          case 9:
             this.getKbPerChannel()
             break
         }
@@ -449,8 +519,7 @@
       csvReadAccumulation () {
         this.$http.get(`api/csv/readAccumulation`, {
           params: {
-            xName: 'minute',
-            yNames: ['accumulation']
+            valuesNames: ['minute', 'accumulation']
           }
         }).then(response => {
           const blob = new Blob([response.data], {type: TEXT_CSV})
@@ -465,8 +534,7 @@
       csvActiveChannels () {
         this.$http.pgetost(`api/csv/activeChannels`, {
           params: {
-            xName: 'minute',
-            yNames: ['channels']
+            valuesNames: ['minute', 'channels']
           }
         }).then(response => {
           const blob = new Blob([response.data], {type: TEXT_CSV})
@@ -481,8 +549,7 @@
       csvReadCategoryCounts () {
         this.$http.get(`api/csv/readCategoryCounts`, {
           params: {
-            xName: 'category',
-            yNames: ['files_count', 'template_count', 'complement_count', 'full_2d_count']
+            valuesNames: ['category', 'files_count', 'template_count', 'complement_count', 'full_2d_count']
           }
         }).then(response => {
           const blob = new Blob([response.data], {type: TEXT_CSV})
@@ -497,8 +564,7 @@
       csvReadCategoryQuality () {
         this.$http.get(`api/csv/readCategoryQuality`, {
           params: {
-            xName: 'category',
-            yNames: ['min', 'max', 'mean', 'median']
+            valuesNames: ['category', 'min', 'max', 'mean', 'median']
           }
         }).then(response => {
           const blob = new Blob([response.data], {type: TEXT_CSV})
@@ -513,8 +579,7 @@
       csvEventsCounts () {
         this.$http.get(`api/csv/eventsCounts`, {
           params: {
-            xName: 'time',
-            yNames: ['events']
+            valuesNames: ['time', 'events']
           }
         }).then(response => {
           const blob = new Blob([response.data], {type: TEXT_CSV})
@@ -529,8 +594,7 @@
       csvReadQuality () {
         this.$http.get(`api/csv/readQuality`, {
           params: {
-            xName: 'id',
-            yNames: ['quality', 'min_', 'max_', 'mean_', 'median_']
+            valuesNames: ['id', 'quality', 'min_', 'max_', 'mean_', 'median_']
           }
         }).then(response => {
           const blob = new Blob([response.data], {type: TEXT_CSV})
@@ -542,11 +606,26 @@
           console.error(e)
         })
       },
+      csvReadQualityDensity () {
+        this.$http.get(`api/csv/readQualityDensity`, {
+          params: {
+            valuesNames: ['quality_template', 'quality_complement', 'quality_2D',
+              'density_template', 'density_complement', 'density_2D']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'read_quality_density.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
       csvReadsPerChannel () {
         this.$http.get(`api/csv/readsPerChannel`, {
           params: {
-            xName: 'channel',
-            yNames: ['reads']
+            valuesNames: ['channel', 'reads']
           }
         }).then(response => {
           const blob = new Blob([response.data], {type: TEXT_CSV})
@@ -561,8 +640,7 @@
       csvKbPerChannel () {
         this.$http.get(`api/csv/kbPerChannel`, {
           params: {
-            xName: 'channel',
-            yNames: ['kb']
+            valuesNames: ['channel', 'kb']
           }
         }).then(response => {
           const blob = new Blob([response.data], {type: TEXT_CSV})
@@ -590,18 +668,21 @@
             this.csvReadQuality()
             break
           case 4:
-            this.csvReadCategoryQuality()
+            this.csvReadQualityDensity()
             break
           case 5:
-            this.csvReadCategoryCounts()
+            this.csvReadCategoryQuality()
             break
           case 6:
-            this.csvEventsCounts()
+            this.csvReadCategoryCounts()
             break
           case 7:
-            this.csvReadsPerChannel()
+            this.csvEventsCounts()
             break
           case 8:
+            this.csvReadsPerChannel()
+            break
+          case 9:
             this.csvKbPerChannel()
             break
         }

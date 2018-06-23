@@ -8,6 +8,7 @@ import com.nanoporeqc.analysis.service.StatsService;
 import com.nanoporeqc.exceptions.CsvDataCannotBeExportedException;
 import com.nanoporeqc.r.consts.RScriptsConst;
 import com.nanoporeqc.r.enumeration.RScriptEnum;
+import javafx.scene.control.IndexRange;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
@@ -30,14 +31,13 @@ public class CsvService {
     }
 
     public void exportChartDataToCsv(final String name,
-                                     final String xName,
-                                     final List<String> yNames,
+                                     final List<String> valuesNames,
                                      final HttpServletResponse response) {
-        final ChartDto chartDto = statsService.getChartDataXY(name, xName, yNames);
+        final ChartDto chartDto = statsService.getChartDataXY(name, valuesNames);
         setCsvAndDownloadHeader(name, response);
         try {
             final OutputStream outputStream = response.getOutputStream();
-            outputStream.write(writeValues(chartDto, xName, yNames).getBytes(UTF_8));
+            outputStream.write(writeValues(chartDto, valuesNames).getBytes(UTF_8));
             outputStream.flush();
             outputStream.close();
         } catch (IOException e) {
@@ -66,20 +66,15 @@ public class CsvService {
     }
 
     private String writeValues(final ChartDto chartDto,
-                               final String xName,
-                               final List<String> yNames) throws IOException {
+                               final List<String> valuesNames) throws IOException {
         final StringBuilder sb = new StringBuilder();
         final List<String> names = new ArrayList<>();
-        names.add(xName);
-        names.addAll(yNames);
+        names.addAll(valuesNames);
         writeLine(sb, names);
-
-        for (int i = 0; i < chartDto.getXValues().size(); i++) {
+        for (int i = 0; i < chartDto.getValues().get(valuesNames.get(0)).size(); i++) {
+            final Integer index = i;
             final List<String> values = new ArrayList<>();
-            values.add(String.valueOf(chartDto.getXValues().get(i)));
-            for (int j = 0; j < yNames.size(); j++) {
-                values.add(String.valueOf(chartDto.getYValuesList().get(j).get(i)));
-            }
+            valuesNames.forEach(name -> values.add(String.valueOf(chartDto.getValues().get(name).get(index))));
             writeLine(sb, values);
         }
         return sb.toString();

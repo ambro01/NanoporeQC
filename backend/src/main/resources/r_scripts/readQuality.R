@@ -1,4 +1,3 @@
-# id, num_events, duration, start_time, strand, full_2D
 
 out <- tryCatch(readQuality(summaryData), error = function(cond){return (tibble())})
 

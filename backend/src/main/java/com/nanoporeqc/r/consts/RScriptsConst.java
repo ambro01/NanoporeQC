@@ -101,6 +101,14 @@ public class RScriptsConst {
             "q_complement", new RVariable("q_complement", RVariableTypeEnum.DOUBLE, 2),
             "q_2D", new RVariable("q_2D", RVariableTypeEnum.DOUBLE, 2)));
 
+    private static final RScript READ_QUALITY_DENSITY = new RScript(RScriptEnum.READ_QUALITY_DENSITY, Map.of(
+            "quality_template", new RVariable("quality_template", RVariableTypeEnum.DOUBLE, 2),
+            "quality_complement", new RVariable("quality_complement", RVariableTypeEnum.DOUBLE, 2),
+            "quality_2D", new RVariable("quality_2D", RVariableTypeEnum.DOUBLE, 2),
+            "density_template", new RVariable("density_template", RVariableTypeEnum.DOUBLE, 2),
+            "density_complement", new RVariable("density_complement", RVariableTypeEnum.DOUBLE, 2),
+            "density_2D", new RVariable("density_2D", RVariableTypeEnum.DOUBLE, 2)));
+
     private static final RScript DUPLICATED_READS = new RScript(RScriptEnum.DUPLICATED_READS, Map.of(
             "sequence", new RVariable("sequence", RVariableTypeEnum.CHARACTER),
             "count", new RVariable("count", RVariableTypeEnum.NUMERIC)));
@@ -153,6 +161,7 @@ public class RScriptsConst {
             Map.entry(RScriptEnum.BASE_CALLED_TEMPLATE, BASE_CALLED_TEMPLATE),
             Map.entry(RScriptEnum.BASE_CALLED_COMPLEMENT, BASE_CALLED_COMPLEMENT),
             Map.entry(RScriptEnum.READ_QUALITY, READ_QUALITY),
+            Map.entry(RScriptEnum.READ_QUALITY_DENSITY, READ_QUALITY_DENSITY),
             Map.entry(RScriptEnum.DUPLICATED_READS, DUPLICATED_READS),
             Map.entry(RScriptEnum.NUCLEOTIDE_COUNTS, NUCLEOTIDE_COUNTS),
             Map.entry(RScriptEnum.PER_CYCLE_BASE_CALL, PER_CYCLE_BASE_CALL),
@@ -160,7 +169,7 @@ public class RScriptsConst {
             Map.entry(RScriptEnum.READ_DISTRIBUTION, READ_DISTRIBUTION),
             Map.entry(RScriptEnum.PER_CYCLE_QUALITY, PER_CYCLE_QUALITY));
 
-    public static final List<String> DUPLICATED_READS_VARIABLES = List.of("sequence", "coubt");
+    public static final List<String> DUPLICATED_READS_VARIABLES = List.of("sequence", "count");
 
     public static final List<String> READ_DISTRIBUTION_VARIABLES = List.of("fileName", "occurrences", "reads");
 

@@ -32,28 +32,26 @@ public class StatsService {
         this.rService = rService;
     }
 
-    public ChartDto getChartDataXY(final String name, final String xName, final List<String> yNames) {
+    public ChartDto getChartDataXY(final String name, final List<String> valuesNames) {
         LOGGER.info("Getting chart of: " + name);
         final RScriptEnum rScriptEnum = RScriptEnum.getEnumByValue(name);
         final RScript rScript = RScriptsConst.RScriptsMap.get(rScriptEnum);
 
-        final RVariable xData = rScript.getRVariablesMap().get(xName);
-        final List<RVariable> yDataList = yNames.stream()
+        final List<RVariable> valuesList = valuesNames.stream()
                 .map(yName -> rScript.getRVariablesMap().get(yName))
                 .collect(Collectors.toList());
 
         lock.lock();
         try {
             rService.evaluateRScript(rScriptEnum);
-            rService.updateRVariableData(xData);
-            yDataList.forEach(rService::updateRVariableData);
+            valuesList.forEach(rService::updateRVariableData);
         } finally {
             lock.unlock();
         }
 
         return ChartDto.builder()
-                .xValues(xData.getRDataSet())
-                .yValuesList(yDataList.stream().map(RVariable::getRDataSet).collect(Collectors.toList()))
+                .values(valuesList.stream()
+                        .collect(Collectors.toMap(RVariable::getName, RVariable::getRDataSet)))
                 .build();
     }
 

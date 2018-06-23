@@ -22,6 +22,7 @@ public enum RScriptEnum {
     BASE_CALLED_TEMPLATE("baseCalledTemplate"),
     BASE_CALLED_COMPLEMENT("baseCalledComplement"),
     READ_QUALITY("readQuality"),
+    READ_QUALITY_DENSITY("readQualityDensity"),
     LOAD_LIBRARIES("loadLibraries"),
     SAVE_SUMMARY_FAST5("saveSummaryFast5"),
     READ_SUMMARY_FAST5("readSummaryFast5"),

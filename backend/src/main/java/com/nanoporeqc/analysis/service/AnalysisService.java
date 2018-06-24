@@ -207,7 +207,6 @@ public class AnalysisService {
             throw new AnalysisCannotBeSavedException();
         } finally {
             fileService.cleanDirectory(FileConsts.SUMMARY_DIR);
-            fileService.cleanDirectory(FileConsts.REPORT_DIR);
         }
     }
 

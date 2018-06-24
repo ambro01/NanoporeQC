@@ -18,8 +18,10 @@ create table ANALYSES (
   COMMENT varchar(150),
   TYPE varchar(10),
   SUMMARY_FILE_CONTENT mediumblob,
-  USER_ID decimal(8,0),
+  QUALITY_SUMMARY mediumblob,
   HTML_REPORT mediumblob,
+  USER_ID decimal(8,0),
+  PARENT_ANALYSIS_ID decimal(8,0),
   PRIMARY KEY (ID),
   FOREIGN KEY (USER_ID) REFERENCES USERS(ID),
   UNIQUE (ID)

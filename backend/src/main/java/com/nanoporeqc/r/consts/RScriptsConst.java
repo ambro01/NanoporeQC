@@ -136,9 +136,31 @@ public class RScriptsConst {
             "q50", new RVariable("q50", RVariableTypeEnum.DOUBLE, 2),
             "q75", new RVariable("q75", RVariableTypeEnum.DOUBLE, 2)));
 
-    private static final RScript READ_QUALITY_SCORE = new RScript(RScriptEnum.READ_QUALITY_SCORE, Map.of(
+    private static final RScript PER_CYCLE_CG_CONTENT = new RScript(RScriptEnum.PER_CYCLE_CG_CONTENT, Map.of(
+            "cycle", new RVariable("cycle", RVariableTypeEnum.NUMERIC),
+            "contentCG", new RVariable("contentCG", RVariableTypeEnum.DOUBLE, 2)));
+
+    private static final RScript READ_QUALITY_FASTQ = new RScript(RScriptEnum.READ_QUALITY_FASTQ, Map.of(
+            "id", new RVariable("id", RVariableTypeEnum.NUMERIC),
+            "quality", new RVariable("quality", RVariableTypeEnum.DOUBLE, 2)));
+
+    private static final RScript READ_QUALITY_FASTQ_FROM_FAST5 = new RScript(RScriptEnum.READ_QUALITY_FASTQ_FROM_FAST5, Map.of(
+            "id", new RVariable("id", RVariableTypeEnum.NUMERIC),
+            "q_template", new RVariable("q_template", RVariableTypeEnum.DOUBLE, 2),
+            "q_complement", new RVariable("q_complement", RVariableTypeEnum.DOUBLE, 2),
+            "q_2D", new RVariable("q_2D", RVariableTypeEnum.DOUBLE, 2)));
+
+    private static final RScript READ_QUALITY_DENSITY_FASTQ = new RScript(RScriptEnum.READ_QUALITY_DENSITY_FASTQ, Map.of(
             "quality", new RVariable("quality", RVariableTypeEnum.DOUBLE,2),
             "density", new RVariable("density", RVariableTypeEnum.DOUBLE, 2)));
+
+    private static final RScript READ_QUALITY_DENSITY_FASTQ_FROM_FAST5 = new RScript(RScriptEnum.READ_QUALITY_DENSITY_FASTQ_FROM_FAST5, Map.of(
+            "quality_template", new RVariable("quality_template", RVariableTypeEnum.DOUBLE, 2),
+            "quality_complement", new RVariable("quality_complement", RVariableTypeEnum.DOUBLE, 2),
+            "quality_2D", new RVariable("quality_2D", RVariableTypeEnum.DOUBLE, 2),
+            "density_template", new RVariable("density_template", RVariableTypeEnum.DOUBLE, 2),
+            "density_complement", new RVariable("density_complement", RVariableTypeEnum.DOUBLE, 2),
+            "density_2D", new RVariable("density_2D", RVariableTypeEnum.DOUBLE, 2)));
 
     private static final RScript READ_DISTRIBUTION = new RScript(RScriptEnum.READ_DISTRIBUTION, Map.of(
             "occurrences", new RVariable("occurrences", RVariableTypeEnum.NUMERIC),
@@ -165,7 +187,11 @@ public class RScriptsConst {
             Map.entry(RScriptEnum.DUPLICATED_READS, DUPLICATED_READS),
             Map.entry(RScriptEnum.NUCLEOTIDE_COUNTS, NUCLEOTIDE_COUNTS),
             Map.entry(RScriptEnum.PER_CYCLE_BASE_CALL, PER_CYCLE_BASE_CALL),
-            Map.entry(RScriptEnum.READ_QUALITY_SCORE, READ_QUALITY_SCORE),
+            Map.entry(RScriptEnum.PER_CYCLE_CG_CONTENT, PER_CYCLE_CG_CONTENT),
+            Map.entry(RScriptEnum.READ_QUALITY_FASTQ, READ_QUALITY_FASTQ),
+            Map.entry(RScriptEnum.READ_QUALITY_FASTQ_FROM_FAST5, READ_QUALITY_FASTQ_FROM_FAST5),
+            Map.entry(RScriptEnum.READ_QUALITY_DENSITY_FASTQ, READ_QUALITY_DENSITY_FASTQ),
+            Map.entry(RScriptEnum.READ_QUALITY_DENSITY_FASTQ_FROM_FAST5, READ_QUALITY_DENSITY_FASTQ_FROM_FAST5),
             Map.entry(RScriptEnum.READ_DISTRIBUTION, READ_DISTRIBUTION),
             Map.entry(RScriptEnum.PER_CYCLE_QUALITY, PER_CYCLE_QUALITY));
 

@@ -45,7 +45,8 @@
             hasComplement: 'Complement strand',
             is2d: 'Full 2d strand (template & complement)'
           },
-          sortable: ['id', 'fileName', 'channelIndex', 'strandIndexInChannel', 'eventsNo', 'startTime', 'duration'],
+          sortable: ['id', 'fileName', 'channelIndex', 'strandIndexInChannel', 'eventsNo', 'startTime', 'duration',
+            'eventsNoTemplate', 'eventsNoComplement'],
           filterable: ['fileName'],
           pagination: {
             edge: false

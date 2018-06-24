@@ -33,4 +33,8 @@ public class AnalysisDto {
 
     private Boolean hasHtmlReport;
 
+    private Boolean fastQFromFast5;
+
+    private Long parentAnalysisId;
+
 }

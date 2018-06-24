@@ -43,7 +43,7 @@
                     v-if=this.attachments.length
                     @click.prevent="submit"
                     :disabled="this.uploadPending">
-              Upload
+              Upload and run
             </button>
           </div>
         </form>

@@ -82,6 +82,9 @@ public class AnalysisService {
             fileService.cleanDirectory(FileConsts.SUMMARY_DIR);
             LOGGER.info("Analysis: Saving summary file of type: " + analysisDto.getType());
             rService.saveSummaryToFile(analysisDto.getType());
+            if (Type.FastQ.equals(Type.valueOf(analysisDto.getType()))) {
+                rService.saveQualityToFile();
+            }
             saveAnalysis(analysisDto);
         } finally {
             lockAnalysis.unlock();
@@ -96,6 +99,9 @@ public class AnalysisService {
                     .orElseThrow(AnalysisNotFoundException::new);
             fileService.saveSummaryToFile(analysis.getContent());
             rService.loadSummaryFromFile(sourceType);
+            if (analysis.getQualitySummary() != null) {
+                rService.loadQualityFromFile();
+            }
         } finally {
             lockAnalysis.unlock();
         }
@@ -122,7 +128,7 @@ public class AnalysisService {
     public void runFastQFromFast5(final Long id) {
         runOldAnalysis(id, Type.Fast5.name());
         rService.loadSummaryAFromSummaryB();
-        reportService.saveLocallyFastQCHtmlReport(Type.Fast5.name());
+        reportService.saveFastQCHtmlReportFromDb(id);
         fileService.cleanDirectory(FileConsts.FILES_DIR);
     }
 
@@ -166,6 +172,7 @@ public class AnalysisService {
         final AnalysisDto analysisDto = modelMapper.map(analysis, AnalysisDto.class);
         analysisDto.setRunTime(convertLocalDateTimeToString(analysis.getRunTime()));
         analysisDto.setHasHtmlReport(analysis.getHtmlReport() != null);
+        analysisDto.setFastQFromFast5(analysis.getParentAnalysisId() != null);
         return analysisDto;
     }
 
@@ -190,9 +197,11 @@ public class AnalysisService {
                     .comment(analysisDto.getComment())
                     .runTime(LocalDateTime.now())
                     .type(Type.valueOf(analysisDto.getType()))
+                    .parentAnalysisId(analysisDto.getParentAnalysisId())
                     .content(new SerialBlob(fileService.getSummaryContent(FileConsts.SUMMARY_FILE)))
                     .user(applicationUserService.getCurrentUser())
                     .htmlReport(new SerialBlob(fileService.getSummaryContent(reportService.getHtmlReportPath())))
+                    .qualitySummary(new SerialBlob(fileService.getSummaryContent(FileConsts.QUALITY_SUMMARY_FILE)))
                     .build();
         } catch (UserNotFoundException | SQLException e) {
             throw new AnalysisCannotBeSavedException();

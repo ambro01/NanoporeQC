@@ -18,28 +18,41 @@
         </a>
       </v-client-table>
     </div>
+    <analysis-save :analysisType="this.analysisType"
+                   :parentAnalysisId="this.parentAnalysisId"
+                   @savedAnalysis="onSavedAnalysis"
+                   v-if=this.showSave>
+    </analysis-save>
     <report-stats-fast5 :id="this.detailsId"
-                        v-if="this.detailsId > 0 && this.analysisType == 'Fast5'"></report-stats-fast5>
+                        v-if="this.detailsId > 0 && this.analysisType == 'Fast5'">
+    </report-stats-fast5>
     <report-stats-fastQ :id="this.detailsId"
-                        v-if="this.detailsId > 0 && this.analysisType == 'FastQ'"></report-stats-fastQ>
+                        :isFromFast5="this.isFromFast5"
+                        v-if="this.detailsId > 0 && this.analysisType == 'FastQ'">
+    </report-stats-fastQ>
   </div>
 </template>
 
 <script>
   import ReportStatsFast5 from 'src/components/Dashboard/Views/ReportStatsFast5.vue'
   import ReportStatsFastQ from 'src/components/Dashboard/Views/ReportStatsFastQ.vue'
+  import AnalysisSave from 'src/components/UIComponents/Inputs/AnalysisSave.vue'
 
   const TEXT_HTML = 'text/html'
 
   export default {
     components: {
       ReportStatsFast5,
-      ReportStatsFastQ
+      ReportStatsFastQ,
+      AnalysisSave
     },
     data () {
       return {
+        showSave: false,
+        parentAnalysisId: null,
         analysisType: '',
         detailsId: 0,
+        isFromFast5: false,
         columns: ['name', 'comment', 'type', 'runTime', 'viewResults', 'deleteRow', 'runFastQ', 'htmlReport'],
         data: [],
         options: {
@@ -83,6 +96,9 @@
       this.getAnalysisForCurrentUser()
     },
     methods: {
+      onSavedAnalysis () {
+        this.showSave = false
+      },
       getAnalysisForCurrentUser () {
         this.$http.get(`api/analysis/current-user`).then(response => {
           this.data = response.data
@@ -94,7 +110,7 @@
         })
       },
       onShowDetails (row) {
-        this.loadAnalysis(row.id, row.type)
+        this.loadAnalysis(row.id, row.type, row.fastQFromFast5)
       },
       onDeleteRow (rowId, analyseId) {
         this.$http.post(`api/analysis/delete/` + analyseId).then(response => {
@@ -125,6 +141,9 @@
           })
           this.detailsId = row.id
           this.analysisType = 'FastQ'
+          this.showSave = true
+          this.isFromFast5 = true
+          this.parentAnalysisId = row.id
         }).catch(e => {
           this.$toast.error({
             title: 'Error',
@@ -132,7 +151,7 @@
           })
         })
       },
-      loadAnalysis (id, type) {
+      loadAnalysis (id, type, fastQFromFast5) {
         this.$http.get(`api/analysis/` + id, {
           params: {
             type: type
@@ -145,6 +164,7 @@
           })
           this.detailsId = id
           this.analysisType = type
+          this.isFromFast5 = fastQFromFast5
         }).catch(e => {
           this.$toast.error({
             title: 'Error',

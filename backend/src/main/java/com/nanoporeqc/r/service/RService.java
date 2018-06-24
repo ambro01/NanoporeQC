@@ -160,6 +160,27 @@ public class RService {
         }
     }
 
+    public void saveQualityToFile() {
+        lock.lock();
+        try {
+            eval("qualitySummaryName <- " + "'" + FileConsts.QUALITY_SUMMARY_FILE + "'");
+            eval(String.format("source('%s')", fileService.getRScriptPath(RScriptEnum.SAVE_QUALITY_SUMMARY)));
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void loadQualityFromFile() {
+        lock.lock();
+        try {
+            eval("qualitySummaryName <- " + "'" + FileConsts.QUALITY_SUMMARY_FILE + "'");
+            eval(String.format("source('%s')", fileService.getRScriptPath(RScriptEnum.READ_QUALITY_SUMMARY)));
+            fileService.cleanDirectory(FileConsts.SUMMARY_DIR);
+        } finally {
+            lock.unlock();
+        }
+    }
+
     private void copyAllRScriptsToDisc() {
         fileService.cleanDirectory(FileConsts.SCRIPTS_DIR);
         for (RScriptEnum rScriptEnum : RScriptEnum.values()) {

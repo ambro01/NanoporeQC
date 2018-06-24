@@ -3,6 +3,7 @@ package com.nanoporeqc.file.service;
 import com.nanoporeqc.Config;
 import com.nanoporeqc.exceptions.AnalysisSummaryCannotBeSavedException;
 import com.nanoporeqc.exceptions.RScriptFileCannotBeSavedException;
+import com.nanoporeqc.exceptions.ReportCannotBeSavedException;
 import com.nanoporeqc.exceptions.UploadedFilesCannotBeSavedException;
 import com.nanoporeqc.file.consts.FileConsts;
 import com.nanoporeqc.r.enumeration.RScriptEnum;
@@ -111,6 +112,19 @@ public class FileService {
             e.printStackTrace();
         }
         return file;
+    }
+
+    public void saveReport(final Blob report, final String filePath) {
+        try {
+            final Path path = Paths.get(filePath);
+            final InputStream inputStream = report.getBinaryStream();
+            final OutputStream outputStream = new FileOutputStream(path.toFile());
+            IOUtils.copy(inputStream, outputStream);
+            inputStream.close();
+            outputStream.close();
+        } catch (SQLException | IOException e) {
+            throw new ReportCannotBeSavedException();
+        }
     }
 
     private void copySourceToDestination(final File source, final File destination) {

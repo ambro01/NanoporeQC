@@ -2,6 +2,8 @@ package com.nanoporeqc.analysis.service;
 
 import com.nanoporeqc.analysis.domain.Analysis;
 import com.nanoporeqc.analysis.domain.Type;
+import com.nanoporeqc.analysis.repository.AnalysisRepository;
+import com.nanoporeqc.exceptions.AnalysisNotFoundException;
 import com.nanoporeqc.exceptions.CsvDataCannotBeExportedException;
 import com.nanoporeqc.exceptions.NotSupportedAnalysisTypeException;
 import com.nanoporeqc.exceptions.ReportCannotBeSavedException;
@@ -36,12 +38,15 @@ public class ReportService {
 
     private final FileService fileService;
     private final ApplicationUserService applicationUserService;
+    private final AnalysisRepository analysisRepository;
 
     @Autowired
     public ReportService(final FileService fileService,
-                         final ApplicationUserService applicationUserService) {
+                         final ApplicationUserService applicationUserService,
+                         final AnalysisRepository analysisRepository) {
         this.fileService = fileService;
         this.applicationUserService = applicationUserService;
+        this.analysisRepository = analysisRepository;
     }
 
     public void saveLocallyFastQCHtmlReport(final String type) {
@@ -98,6 +103,14 @@ public class ReportService {
         } catch (IOException e) {
             throw new CsvDataCannotBeExportedException();
         }
+    }
+
+    public void saveFastQCHtmlReportFromDb(final Long id) {
+        final String dirToSave = findHtmlReportDir();
+        fileService.createNewDir(dirToSave);
+        final Analysis analysis = analysisRepository.findById(id)
+                .orElseThrow(AnalysisNotFoundException::new);
+        fileService.saveReport(analysis.getHtmlReport(), dirToSave + analysis.getName() + HTML);
     }
 
     private void setHtmlAndDownloadHeader(final String name, final HttpServletResponse response) {

@@ -73,3 +73,10 @@ readQuality <- function(summaryData) {
     res <- data.frame(readType, meanBaseQuality)
     return (res)
 }
+
+readQualityFromShortReadQ <- function(fq) {
+    readType <- factor(.readtypeFromFASTQ(fq), levels = c('template', 'complement', '2D'))
+    meanBaseQuality <- ShortRead::alphabetScore(Biostrings::quality(fq)) / ShortRead::width(fq)
+    res <- data.frame(readType, meanBaseQuality)
+    return (res)
+}

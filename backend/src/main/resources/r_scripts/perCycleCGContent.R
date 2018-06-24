@@ -2,7 +2,7 @@ df <- qaSummary[["perCycle"]]
 
 df <- df$baseCall
 
-df <- df[df$Base != "N" && df$Base != "-", ]
+df <- df[df$Base != "N" & df$Base != "-", ]
 df <- df[order(df$lane, df$Base, df$Cycle), ]
 
 A <- df %>% filter(Base == "A")
@@ -21,14 +21,9 @@ T <- df %>% filter(Base == "T")
 T <- subset(T, select = c("Cycle", "Count"))
 colnames(T)[2] <- "Count_T"
 
-out <- merge(x = A, y = C, by="Cycle", all.x = TRUE)
-out <- merge(x = out, y = G, by="Cycle", all.x = TRUE)
-out <- merge(x = out, y = T, by="Cycle", all.x = TRUE)
-
-out[is.na(out)] <- 0
+out <- merge(A, C, by="Cycle")
+out <- merge(out, G, by="Cycle")
+out <- merge(out, T, by="Cycle")
 
 cycle <- out$Cycle
-countA <- out$Count_A
-countC <- out$Count_C
-countG <- out$Count_G
-countT <- out$Count_T
+contentCG <- (out$Count_C + out$Count_G) / (out$Count_A + out$Count_T + out$Count_C + out$Count_G)

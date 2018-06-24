@@ -34,11 +34,17 @@ public enum RScriptEnum {
     NUCLEOTIDE_COUNTS("nucleotideCounts"),
     PER_CYCLE_BASE_CALL("perCycleBaseCall"),
     PER_CYCLE_QUALITY("perCycleQuality"),
-    READ_QUALITY_SCORE("readQualityScore"),
+    PER_CYCLE_CG_CONTENT("perCycleCGContent"),
+    READ_QUALITY_FASTQ("readQualityFastQ"),
+    READ_QUALITY_FASTQ_FROM_FAST5("readQualityFastQFromFast5"),
+    READ_QUALITY_DENSITY_FASTQ("readQualityDensityFastQ"),
+    READ_QUALITY_DENSITY_FASTQ_FROM_FAST5("readQualityDensityFastQFromFast5"),
     READ_DISTRIBUTION("readDistribution"),
     READ_FASTQ_SUMMARY_FROM_FAST5_SUMMARY("readFastQSummaryFromFast5Summary"),
     READ_SUMMARY_FASTQ("readSummaryFastQ"),
-    SAVE_SUMMARY_FASTQ("saveSummaryFastQ");
+    SAVE_SUMMARY_FASTQ("saveSummaryFastQ"),
+    SAVE_QUALITY_SUMMARY("saveQualitySummary"),
+    READ_QUALITY_SUMMARY("readQualitySummary");
 
     private String value;
 

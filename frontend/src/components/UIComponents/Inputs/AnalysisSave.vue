@@ -29,7 +29,8 @@
             </div>
             <div class="col-md-2">
               <div class="col-md-2">
-                <button class="btn btn-primary btn-fill save-button" :disabled="!this.analysisName.length > 0" @click.prevent="submit">
+                <button class="btn btn-primary btn-fill save-button" :disabled="!this.analysisName.length > 0"
+                        @click.prevent="submit">
                   Save
                 </button>
               </div>
@@ -43,7 +44,8 @@
 <script>
   export default {
     props: [
-      'analysisType'
+      'analysisType',
+      'parentAnalysisId'
     ],
     data () {
       return {
@@ -63,7 +65,8 @@
         this.$http.post(`api/analysis/save-new`, {
           name: this.analysisName,
           comment: this.comment,
-          type: this.analysisType
+          type: this.analysisType,
+          parentAnalysisId: this.parentAnalysisId
         }).then(response => {
           if (response.status === 200) {
             this.resetData()

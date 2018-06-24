@@ -332,20 +332,20 @@
             labels: response.data.values['id'],
             datasets: [
               {
-                label: 'template quality',
+                label: 'Template quality',
                 borderColor: '#47f889',
                 fill: false,
                 data: response.data.values['q_template'],
                 pointRadius: 0,
-                borderWidth: 1
+                borderWidth: 2
               },
               {
-                label: 'complement quality',
+                label: 'Complement quality',
                 borderColor: '#d392f8',
                 fill: false,
                 data: response.data.values['q_complement'],
                 pointRadius: 0,
-                borderWidth: 1
+                borderWidth: 2
               },
               {
                 label: '2d quality',
@@ -353,7 +353,7 @@
                 fill: false,
                 data: response.data.values['q_2D'],
                 pointRadius: 0,
-                borderWidth: 1
+                borderWidth: 2
               }
             ]
           }

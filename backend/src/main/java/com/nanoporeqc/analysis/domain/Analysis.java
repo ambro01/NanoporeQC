@@ -48,14 +48,19 @@ public class Analysis {
     @Column(name = "TYPE")
     private Type type;
 
+    @Column(name = "QUALITY_SUMMARY")
+    private Blob qualitySummary;
+
     @Column(name = "SUMMARY_FILE_CONTENT")
     private Blob content;
+
+    @Column(name = "HTML_REPORT")
+    private Blob htmlReport;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
     private ApplicationUser user;
 
-    @Column(name = "HTML_REPORT")
-    private Blob htmlReport;
-
+    @Column(name = "PARENT_ANALYSIS_ID")
+    private Long parentAnalysisId;
 }

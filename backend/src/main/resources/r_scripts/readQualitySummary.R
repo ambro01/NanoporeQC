@@ -1,1 +1,0 @@
-qualitySummary <- readRDS(qualitySummaryName)

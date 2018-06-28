@@ -2,8 +2,8 @@ package com.nanoporeqc.analysis.controller;
 
 import com.nanoporeqc.analysis.dto.AnalysisDto;
 import com.nanoporeqc.analysis.dto.ChartDto;
-import com.nanoporeqc.analysis.dto.DuplicatedSequenceDto;
-import com.nanoporeqc.analysis.dto.ReadDistributionDto;
+import com.nanoporeqc.analysis.dto.DuplicatedSequencesDto;
+import com.nanoporeqc.analysis.dto.SequencesDistributionDto;
 import com.nanoporeqc.analysis.dto.SummaryInfoDto;
 import com.nanoporeqc.analysis.service.AnalysisService;
 import com.nanoporeqc.analysis.service.StatsService;
@@ -80,13 +80,13 @@ public class AnalysisController {
     }
 
     @GetMapping(value = "/stats/duplicated-sequences", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<DuplicatedSequenceDto> getDuplicatedSequences() {
+    public List<DuplicatedSequencesDto> getDuplicatedSequences() {
         return statsService.getDuplicatedSequences();
     }
 
-    @GetMapping(value = "/stats/reads-distribution", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ReadDistributionDto> getReadsDistribution() {
-        return statsService.getReadsDistribution();
+    @GetMapping(value = "/stats/sequences-distribution", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<SequencesDistributionDto> getReadsDistribution() {
+        return statsService.getSequencesDistribution();
     }
 
     @GetMapping(value = "/amount/{type}", produces = MediaType.APPLICATION_JSON_VALUE)

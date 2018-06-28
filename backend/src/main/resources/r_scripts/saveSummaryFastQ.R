@@ -1,1 +1,1 @@
-saveRDS(qaSummary, summaryName)
+list.serialize(resultsFastQ, '/home/ra/nanporeqc/summary/fastq.json')

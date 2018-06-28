@@ -1,5 +1,5 @@
 
-out <- tryCatch(qualitySummary, error = function(cond){return (tibble())})
+out <- tryCatch(readQuality(summaryData), error = function(cond){return (tibble())})
 
 q_template <- (out %>% filter(readType == "template"))$meanBaseQuality
 q_complement <- (out %>% filter(readType == "complement"))$meanBaseQuality

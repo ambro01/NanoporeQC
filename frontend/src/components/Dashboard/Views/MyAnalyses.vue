@@ -18,6 +18,7 @@
         </a>
       </v-client-table>
     </div>
+    <hr>
     <analysis-save :analysisType="this.analysisType"
                    :parentAnalysisId="this.parentAnalysisId"
                    @savedAnalysis="onSavedAnalysis"
@@ -27,7 +28,6 @@
                         v-if="this.detailsId > 0 && this.analysisType == 'Fast5'">
     </report-stats-fast5>
     <report-stats-fastQ :id="this.detailsId"
-                        :isFromFast5="this.isFromFast5"
                         v-if="this.detailsId > 0 && this.analysisType == 'FastQ'">
     </report-stats-fastQ>
   </div>
@@ -52,7 +52,6 @@
         parentAnalysisId: null,
         analysisType: '',
         detailsId: 0,
-        isFromFast5: false,
         columns: ['name', 'comment', 'type', 'runTime', 'viewResults', 'deleteRow', 'runFastQ', 'htmlReport'],
         data: [],
         options: {
@@ -142,7 +141,6 @@
           this.detailsId = row.id
           this.analysisType = 'FastQ'
           this.showSave = true
-          this.isFromFast5 = true
           this.parentAnalysisId = row.id
         }).catch(e => {
           this.$toast.error({
@@ -164,7 +162,6 @@
           })
           this.detailsId = id
           this.analysisType = type
-          this.isFromFast5 = fastQFromFast5
         }).catch(e => {
           this.$toast.error({
             title: 'Error',

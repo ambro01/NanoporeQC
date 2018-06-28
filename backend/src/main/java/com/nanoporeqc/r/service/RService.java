@@ -6,7 +6,9 @@ import com.nanoporeqc.exceptions.NotSupportedAnalysisTypeException;
 import com.nanoporeqc.exceptions.REvaluatingException;
 import com.nanoporeqc.file.consts.FileConsts;
 import com.nanoporeqc.file.service.FileService;
+import com.nanoporeqc.r.domain.RData;
 import com.nanoporeqc.r.domain.RVariable;
+import com.nanoporeqc.r.enumeration.RDataEnum;
 import com.nanoporeqc.r.enumeration.RScriptEnum;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
@@ -80,15 +82,16 @@ public class RService {
         eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
     }
 
-    private List getDataSetFromR(final RVariable rVariable) {
+    private List getDataSetFromR(final RDataEnum rDataEnum, final RVariable rVariable) {
+        final String commandPrefix = "results" + rDataEnum.getType().name() + "$" + rDataEnum.getValue() + "$";
         try {
             switch (rVariable.getType()) {
                 case LOGICAL:
-                    return Arrays.stream(eval(rVariable.getName()).asIntegers())
+                    return Arrays.stream(eval(commandPrefix + rVariable.getName()).asIntegers())
                             .boxed()
                             .collect(Collectors.toList());
                 case DOUBLE:
-                    return Arrays.stream(eval(rVariable.getName()).asDoubles())
+                    return Arrays.stream(eval( commandPrefix + rVariable.getName()).asDoubles())
                             .boxed()
                             .map(aDouble -> {
                                         if (rVariable.getPrecision() != null) {
@@ -101,11 +104,11 @@ public class RService {
                             )
                             .collect(Collectors.toList());
                 case NUMERIC:
-                    return Arrays.stream(eval(rVariable.getName()).asIntegers())
+                    return Arrays.stream(eval(commandPrefix + rVariable.getName()).asIntegers())
                             .boxed()
                             .collect(Collectors.toList());
                 case CHARACTER:
-                    return Arrays.asList(eval(rVariable.getName()).asStrings());
+                    return Arrays.asList(eval(commandPrefix + rVariable.getName()).asStrings());
                 default:
                     break;
             }
@@ -125,56 +128,22 @@ public class RService {
         }
     }
 
-    public void loadSummaryAFromSummaryB() {
-        final RScriptEnum rScriptEnum = RScriptEnum.READ_FASTQ_SUMMARY_FROM_FAST5_SUMMARY;
+    public void saveSummaryToFile(final Type type, final String summaryPath) {
+        final RScriptEnum rScriptEnum = getSaveSummaryScript(type.name());
         lock.lock();
         try {
-            eval("filePath <- " + "'" + FileConsts.FASTQ_FILE_FROM_FAST5 + "'");
-            eval("dirPath <- " + "'" + FileConsts.FILES_DIR + "'");
+            eval("summaryName <- " + "'" + summaryPath + "'");
             eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
         } finally {
             lock.unlock();
         }
     }
 
-    public void saveSummaryToFile(final String type) {
-        final RScriptEnum rScriptEnum = getSaveSummaryScript(type);
+    public void loadSummaryFromFile(final RScriptEnum rScriptEnum, final String summaryPath) {
         lock.lock();
         try {
-            eval("summaryName <- " + "'" + FileConsts.SUMMARY_FILE + "'");
+            eval("summaryName <- " + "'" + summaryPath + "'");
             eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public void loadSummaryFromFile(final String type) {
-        final RScriptEnum rScriptEnum = getReadSummaryScript(type);
-        lock.lock();
-        try {
-            eval("summaryName <- " + "'" + FileConsts.SUMMARY_FILE + "'");
-            eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
-            fileService.cleanDirectory(FileConsts.SUMMARY_DIR);
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public void saveQualityToFile() {
-        lock.lock();
-        try {
-            eval("qualitySummaryName <- " + "'" + FileConsts.QUALITY_SUMMARY_FILE + "'");
-            eval(String.format("source('%s')", fileService.getRScriptPath(RScriptEnum.SAVE_QUALITY_SUMMARY)));
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public void loadQualityFromFile() {
-        lock.lock();
-        try {
-            eval("qualitySummaryName <- " + "'" + FileConsts.QUALITY_SUMMARY_FILE + "'");
-            eval(String.format("source('%s')", fileService.getRScriptPath(RScriptEnum.READ_QUALITY_SUMMARY)));
             fileService.cleanDirectory(FileConsts.SUMMARY_DIR);
         } finally {
             lock.unlock();
@@ -188,10 +157,10 @@ public class RService {
         }
     }
 
-    public void updateRVariableData(RVariable rVariable) {
+    public void updateRVariableData(final RDataEnum rDataEnum, final RVariable rVariable) {
         lock.lock();
         try {
-            rVariable.setRDataSet(getDataSetFromR(rVariable));
+            rVariable.setRDataSet(getDataSetFromR(rDataEnum, rVariable));
         } finally {
             lock.unlock();
         }
@@ -208,7 +177,18 @@ public class RService {
         }
     }
 
-    private RScriptEnum getReadSummaryScript(final String type) {
+    public RScriptEnum getGenerateDataScript(final String type) {
+        switch (Type.valueOf(type)) {
+            case Fast5:
+                return RScriptEnum.GENERATE_DATA_FAST5;
+            case FastQ:
+                return RScriptEnum.GENERATE_DATA_FASTQ;
+            default:
+                throw new NotSupportedAnalysisTypeException();
+        }
+    }
+
+    public RScriptEnum getReadSummaryScript(final String type) {
         switch (Type.valueOf(type)) {
             case Fast5:
                 return RScriptEnum.READ_SUMMARY_FAST5;

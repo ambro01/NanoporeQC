@@ -12,11 +12,13 @@ import com.nanoporeqc.file.service.FileService;
 import com.nanoporeqc.r.enumeration.RScriptEnum;
 import com.nanoporeqc.r.service.RService;
 import com.nanoporeqc.user.service.ApplicationUserService;
+import lombok.AllArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +41,7 @@ import java.util.stream.Collectors;
 public class AnalysisService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AnalysisService.class);
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-    private static final String PORETOOLS_CMD = "poretools fastq";
+    private static final String PORETOOLS_CMD = "poretools fastq --type best";
 
     private final RService rService;
     private final FileService fileService;
@@ -49,7 +51,6 @@ public class AnalysisService {
     private final ModelMapper modelMapper;
     private final ReentrantLock lockAnalysis = new ReentrantLock();
 
-    @Autowired
     public AnalysisService(final RService rService,
                            final FileService fileService,
                            final ReportService reportService,
@@ -65,25 +66,25 @@ public class AnalysisService {
     }
 
     public void runNewAnalysis(final AnalysisDto analysisDto) {
-        final RScriptEnum rScriptEnum = rService.getSummaryFromDirScript(analysisDto.getType());
         fileService.cleanDirectory(FileConsts.REPORT_DIR);
         LOGGER.info("Analysis: Running new analyse of type: " + analysisDto.getType());
-        rService.loadFilesFromDirToR(rScriptEnum);
-        if (Type.Fast5.equals(Type.valueOf(analysisDto.getType()))) {
-            runPoretoolsFast5ToFastQ();
-        }
+        rService.loadFilesFromDirToR(rService.getSummaryFromDirScript(analysisDto.getType()));
+        rService.evaluateRScript(rService.getGenerateDataScript(analysisDto.getType()));
         reportService.saveLocallyFastQCHtmlReport(analysisDto.getType());
+        generateFastQDataFromFast5(analysisDto);
         fileService.cleanDirectory(FileConsts.FILES_DIR);
     }
 
     public void saveNewAnalysis(final AnalysisDto analysisDto) {
         lockAnalysis.lock();
         try {
+            final Type type = Type.valueOf(analysisDto.getType());
+            final String summaryPath = Type.Fast5.equals(type) ? FileConsts.SUMMARY_FAST5_FILE : FileConsts.SUMMARY_FASTQ_FILE;
             fileService.cleanDirectory(FileConsts.SUMMARY_DIR);
             LOGGER.info("Analysis: Saving summary file of type: " + analysisDto.getType());
-            rService.saveSummaryToFile(analysisDto.getType());
-            if (Type.FastQ.equals(Type.valueOf(analysisDto.getType()))) {
-                rService.saveQualityToFile();
+            rService.saveSummaryToFile(type, summaryPath);
+            if (Type.Fast5.equals(Type.valueOf(analysisDto.getType()))) {
+                rService.evaluateRScript(RScriptEnum.SAVE_SUMMARY_FASTQ);
             }
             saveAnalysis(analysisDto);
         } finally {
@@ -92,16 +93,30 @@ public class AnalysisService {
     }
 
     public void runOldAnalysis(final Long id, final String sourceType) {
+        LOGGER.info("Running old analyse, id: " + id);
+        final RScriptEnum rScriptEnum = rService.getReadSummaryScript(sourceType);
+        final Analysis analysis = analysisRepository.findById(id)
+                .orElseThrow(AnalysisNotFoundException::new);
+        loadMainSummary(analysis, rScriptEnum);
+    }
+
+    private void loadMainSummary(final Analysis analysis, final RScriptEnum rScriptEnum) {
         lockAnalysis.lock();
         try {
-            LOGGER.info("Running old analyse, id: " + id);
-            final Analysis analysis = analysisRepository.findById(id)
-                    .orElseThrow(AnalysisNotFoundException::new);
-            fileService.saveSummaryToFile(analysis.getContent());
-            rService.loadSummaryFromFile(sourceType);
-            if (analysis.getQualitySummary() != null) {
-                rService.loadQualityFromFile();
-            }
+            final String filePath = Type.Fast5.equals(analysis.getType()) ? FileConsts.SUMMARY_FAST5_FILE : FileConsts.SUMMARY_FASTQ_FILE;
+            fileService.saveSummaryToFile(analysis.getMainSummary(), filePath);
+            rService.loadSummaryFromFile(rScriptEnum, filePath);
+        } finally {
+            lockAnalysis.unlock();
+        }
+    }
+
+    private void loadAdditionalSummary(final Analysis analysis, final RScriptEnum rScriptEnum) {
+        lockAnalysis.lock();
+        try {
+            final String filePath = Type.Fast5.equals(analysis.getType()) ? FileConsts.SUMMARY_FAST5_FILE : FileConsts.SUMMARY_FASTQ_FILE;
+            fileService.saveSummaryToFile(analysis.getAdditionalSummary(), filePath);
+            rService.loadSummaryFromFile(rScriptEnum, filePath);
         } finally {
             lockAnalysis.unlock();
         }
@@ -126,9 +141,11 @@ public class AnalysisService {
     }
 
     public void runFastQFromFast5(final Long id) {
-        runOldAnalysis(id, Type.Fast5.name());
-        rService.loadSummaryAFromSummaryB();
-        reportService.saveFastQCHtmlReportFromDb(id);
+        final RScriptEnum rScriptEnum = rService.getReadSummaryScript(Type.FastQ.name());
+        final Analysis analysis = analysisRepository.findById(id)
+                .orElseThrow(AnalysisNotFoundException::new);
+        loadAdditionalSummary(analysis, rScriptEnum);
+        reportService.saveFastQCHtmlReportFromDb(analysis);
         fileService.cleanDirectory(FileConsts.FILES_DIR);
     }
 
@@ -158,7 +175,7 @@ public class AnalysisService {
                     .append(" ")
                     .append(FileConsts.FILES_DIR);
             final Process process = Runtime.getRuntime().exec(sb.toString());
-            final File file = fileService.createNewFile(FileConsts.FASTQ_FILE_FROM_FAST5_FOR_REPORT);
+            final File file = fileService.createNewFile(FileConsts.FASTQ_FILE_FROM_FAST5);
             final InputStream inputStream = process.getInputStream();
             java.nio.file.Files.copy(inputStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
             IOUtils.closeQuietly(inputStream);
@@ -176,37 +193,38 @@ public class AnalysisService {
         return analysisDto;
     }
 
-    private Analysis convertDtoToAnalysis(final AnalysisDto analysisDto) {
-        final Analysis analysis = modelMapper.map(analysisDto, Analysis.class);
-        analysis.setRunTime(convertStringToLocalDateTime(analysisDto.getRunTime()));
-        return analysis;
-    }
-
     private String convertLocalDateTimeToString(final LocalDateTime dateTime) {
         return dateTime.format(DATE_TIME_FORMATTER);
     }
 
-    private LocalDateTime convertStringToLocalDateTime(final String dateTime) {
-        return LocalDateTime.parse(dateTime, DATE_TIME_FORMATTER);
-    }
-
     private Analysis prepareAnalysisToSave(final AnalysisDto analysisDto) {
         try {
-            return Analysis.builder()
+            final Analysis analysis = Analysis.builder()
                     .name(analysisDto.getName())
                     .comment(analysisDto.getComment())
                     .runTime(LocalDateTime.now())
                     .type(Type.valueOf(analysisDto.getType()))
                     .parentAnalysisId(analysisDto.getParentAnalysisId())
-                    .content(new SerialBlob(fileService.getSummaryContent(FileConsts.SUMMARY_FILE)))
+                    .mainSummary(new SerialBlob(fileService.getSummaryContent(FileConsts.SUMMARY_FAST5_FILE)))
                     .user(applicationUserService.getCurrentUser())
                     .htmlReport(new SerialBlob(fileService.getSummaryContent(reportService.getHtmlReportPath())))
-                    .qualitySummary(new SerialBlob(fileService.getSummaryContent(FileConsts.QUALITY_SUMMARY_FILE)))
                     .build();
+            if (Type.Fast5.equals(Type.valueOf(analysisDto.getType()))) {
+                analysis.setAdditionalSummary(new SerialBlob(fileService.getSummaryContent(FileConsts.SUMMARY_FASTQ_FILE)));
+            }
+            return analysis;
         } catch (UserNotFoundException | SQLException e) {
             throw new AnalysisCannotBeSavedException();
         } finally {
             fileService.cleanDirectory(FileConsts.SUMMARY_DIR);
+        }
+    }
+
+    private void generateFastQDataFromFast5(final AnalysisDto analysisDto) {
+        if (Type.Fast5.equals(Type.valueOf(analysisDto.getType()))) {
+            runPoretoolsFast5ToFastQ();
+            rService.evaluateRScript(RScriptEnum.READ_FASTQ_SUMMARY_FROM_DIR);
+            rService.evaluateRScript(RScriptEnum.GENERATE_DATA_FASTQ);
         }
     }
 

@@ -1,6 +1,8 @@
 package com.nanoporeqc.csv.controller;
 
 import com.nanoporeqc.csv.service.CsvService;
+import com.nanoporeqc.r.domain.RData;
+import com.nanoporeqc.r.enumeration.RDataEnum;
 import com.nanoporeqc.r.enumeration.RScriptEnum;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,19 +37,19 @@ public class CsvController {
 
     @GetMapping(value = "/info")
     public ResponseEntity getCsvSummaryInfo(HttpServletResponse response) {
-        csvService.exportReadsToCsv(RScriptEnum.READ_INFO, response);
+        csvService.exportReadsToCsv(RDataEnum.SUMMARY_INFO, response);
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @GetMapping(value = "/duplicated-sequences")
     public ResponseEntity getDuplicatedSequences(HttpServletResponse response) {
-        csvService.exportReadsToCsv(RScriptEnum.DUPLICATED_READS, response);
+        csvService.exportReadsToCsv(RDataEnum.DUPLICATED_SEQUENCES, response);
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping(value = "/reads-distribution")
+    @GetMapping(value = "/sequences-distribution")
     public ResponseEntity getReadsDistribution(HttpServletResponse response) {
-        csvService.exportReadsToCsv(RScriptEnum.READ_DISTRIBUTION, response);
+        csvService.exportReadsToCsv(RDataEnum.SEQUENCES_DISTRIBUTION, response);
         return new ResponseEntity(HttpStatus.OK);
     }
 

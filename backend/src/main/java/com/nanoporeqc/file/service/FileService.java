@@ -55,11 +55,11 @@ public class FileService {
     }
 
 
-    public void saveSummaryToFile(final Blob summary) {
+    public void saveSummaryToFile(final Blob summary, final String summaryPath) {
         try {
             cleanDirectory(FileConsts.SUMMARY_DIR);
             final InputStream inputStream = summary.getBinaryStream();
-            final Path path = Paths.get(FileConsts.SUMMARY_FILE);
+            final Path path = Paths.get(summaryPath);
             final OutputStream outputStream = new FileOutputStream(path.toFile());
             IOUtils.copy(inputStream, outputStream);
             inputStream.close();

@@ -9,10 +9,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DuplicatedSequenceDto {
+public class SequencesDistributionDto {
 
-    private String sequence;
+    private String fileName;
 
-    private Integer count;
+    private Integer occurrences;
+
+    private Integer reads;
 
 }

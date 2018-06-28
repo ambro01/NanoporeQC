@@ -1,13 +1,13 @@
 package com.nanoporeqc.analysis.service;
 
 import com.nanoporeqc.analysis.dto.ChartDto;
-import com.nanoporeqc.analysis.dto.DuplicatedSequenceDto;
-import com.nanoporeqc.analysis.dto.ReadDistributionDto;
+import com.nanoporeqc.analysis.dto.DuplicatedSequencesDto;
+import com.nanoporeqc.analysis.dto.SequencesDistributionDto;
 import com.nanoporeqc.analysis.dto.SummaryInfoDto;
-import com.nanoporeqc.r.consts.RScriptsConst;
-import com.nanoporeqc.r.domain.RScript;
+import com.nanoporeqc.r.consts.RDataConst;
+import com.nanoporeqc.r.domain.RData;
 import com.nanoporeqc.r.domain.RVariable;
-import com.nanoporeqc.r.enumeration.RScriptEnum;
+import com.nanoporeqc.r.enumeration.RDataEnum;
 import com.nanoporeqc.r.service.RService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,17 +34,16 @@ public class StatsService {
 
     public ChartDto getChartDataXY(final String name, final List<String> valuesNames) {
         LOGGER.info("Getting chart of: " + name);
-        final RScriptEnum rScriptEnum = RScriptEnum.getEnumByValue(name);
-        final RScript rScript = RScriptsConst.RScriptsMap.get(rScriptEnum);
+        final RDataEnum rDataEnum = RDataEnum.getEnumByValue(name);
+        final RData rData = RDataConst.RDataMap.get(rDataEnum);
 
         final List<RVariable> valuesList = valuesNames.stream()
-                .map(yName -> rScript.getRVariablesMap().get(yName))
+                .map(yName -> rData.getRVariablesMap().get(yName))
                 .collect(Collectors.toList());
 
         lock.lock();
         try {
-            rService.evaluateRScript(rScriptEnum);
-            valuesList.forEach(rService::updateRVariableData);
+            valuesList.forEach(rVariable -> rService.updateRVariableData(rDataEnum, rVariable));
         } finally {
             lock.unlock();
         }
@@ -57,10 +56,7 @@ public class StatsService {
 
     public List<SummaryInfoDto> getSummaryInformation() {
         LOGGER.info("Getting summary info");
-        final RScript readInfo = loadAllForRScript(RScriptEnum.READ_INFO);
-        final RScript baseCalledTemplate = loadAllForRScript(RScriptEnum.BASE_CALLED_TEMPLATE);
-        final RScript baseCalledComplement = loadAllForRScript(RScriptEnum.BASE_CALLED_COMPLEMENT);
-        final RScript eventsData = loadAllForRScript(RScriptEnum.EVENTS_DATA);
+        final RData readInfo = loadAllForRScript(RDataEnum.SUMMARY_INFO);
         final String template = "template";
         final String complement = "complement";
 
@@ -72,14 +68,14 @@ public class StatsService {
                     .fileName((String) getValueFromRDataSet(readInfo, "file", i))
                     .channelIndex((Integer) getValueFromRDataSet(readInfo, "channel", i))
                     .strandIndexInChannel((Integer) getValueFromRDataSet(readInfo, "read", i))
-                    .startTime((Double) getValueFromRDataSet(eventsData, "start_time", i))
-                    .duration((Double) getValueFromRDataSet(eventsData, "duration", i))
-                    .eventsNo((Integer) getValueFromRDataSet(eventsData, "num_events", i))
-                    .hasTemplate(template.equals(String.valueOf(getValueFromRDataSet(baseCalledTemplate, "strand_t", i))) ? "true" : "false")
-                    .hasComplement(complement.equals(String.valueOf(getValueFromRDataSet(baseCalledComplement, "strand_c", i))) ? "true" : "false")
-                    .eventsNoTemplate((Integer) getValueFromRDataSet(baseCalledTemplate, "num_events_t", i))
-                    .eventsNoComplement((Integer) getValueFromRDataSet(baseCalledComplement, "num_events_c", i))
-                    .is2d(Optional.ofNullable(getValueFromRDataSet(baseCalledTemplate, "full_2D_t", i))
+                    .startTime((Double) getValueFromRDataSet(readInfo, "start_time", i))
+                    .duration((Double) getValueFromRDataSet(readInfo, "duration", i))
+                    .eventsNo((Integer) getValueFromRDataSet(readInfo, "num_events", i))
+                    .hasTemplate(template.equals(String.valueOf(getValueFromRDataSet(readInfo, "strand_t", i))) ? "true" : "false")
+                    .hasComplement(complement.equals(String.valueOf(getValueFromRDataSet(readInfo, "strand_c", i))) ? "true" : "false")
+                    .eventsNoTemplate((Integer) getValueFromRDataSet(readInfo, "num_events_t", i))
+                    .eventsNoComplement((Integer) getValueFromRDataSet(readInfo, "num_events_c", i))
+                    .is2d(Optional.ofNullable(getValueFromRDataSet(readInfo, "full_2D_t", i))
                             .map(o -> (Integer) o).map(integer -> integer > 0).map(aBoolean -> aBoolean ? "true" : "false").orElse("false"))
                     .build();
 
@@ -88,55 +84,53 @@ public class StatsService {
         return infoDtoList;
     }
 
-    public List<DuplicatedSequenceDto> getDuplicatedSequences() {
+    public List<DuplicatedSequencesDto> getDuplicatedSequences() {
         LOGGER.info("Getting duplicated reads");
-        final RScript rScript = loadAllForRScript(RScriptEnum.DUPLICATED_READS);
-        final List<DuplicatedSequenceDto> duplicatedSequenceDtoList = new ArrayList<>();
+        final RData rData = loadAllForRScript(RDataEnum.DUPLICATED_SEQUENCES);
+        final List<DuplicatedSequencesDto> duplicatedSequencesDtoList = new ArrayList<>();
 
-        for (int i = 0; i < rScript.getRVariablesMap().get("count").getRDataSet().size(); ++i) {
-            final DuplicatedSequenceDto duplicatedSequenceDto = DuplicatedSequenceDto.builder()
-                    .count((Integer) getValueFromRDataSet(rScript, "count", i))
-                    .sequence((String) getValueFromRDataSet(rScript, "sequence", i))
+        for (int i = 0; i < rData.getRVariablesMap().get("count").getRDataSet().size(); ++i) {
+            final DuplicatedSequencesDto duplicatedSequencesDto = DuplicatedSequencesDto.builder()
+                    .count((Integer) getValueFromRDataSet(rData, "count", i))
+                    .sequence((String) getValueFromRDataSet(rData, "sequence", i))
                     .build();
 
-            duplicatedSequenceDtoList.add(duplicatedSequenceDto);
+            duplicatedSequencesDtoList.add(duplicatedSequencesDto);
         }
-        return duplicatedSequenceDtoList;
+        return duplicatedSequencesDtoList;
     }
 
-    public List<ReadDistributionDto> getReadsDistribution() {
+    public List<SequencesDistributionDto> getSequencesDistribution() {
         LOGGER.info("Getting reads distribution");
-        final RScript rScript = loadAllForRScript(RScriptEnum.READ_DISTRIBUTION);
-        final List<ReadDistributionDto> readDistributionDtoList = new ArrayList<>();
+        final RData rData = loadAllForRScript(RDataEnum.SEQUENCES_DISTRIBUTION);
+        final List<SequencesDistributionDto> sequencesDistributionDtoList = new ArrayList<>();
 
-        for (int i = 0; i < rScript.getRVariablesMap().get("occurrences").getRDataSet().size(); ++i) {
-            final ReadDistributionDto readDistributionDto = ReadDistributionDto.builder()
-                    .occurrences((Integer) getValueFromRDataSet(rScript, "occurrences", i))
-                    .reads((Integer) getValueFromRDataSet(rScript, "reads", i))
-                    .fileName((String) getValueFromRDataSet(rScript, "file_name", i))
+        for (int i = 0; i < rData.getRVariablesMap().get("occurrences").getRDataSet().size(); ++i) {
+            final SequencesDistributionDto sequencesDistributionDto = SequencesDistributionDto.builder()
+                    .occurrences((Integer) getValueFromRDataSet(rData, "occurrences", i))
+                    .reads((Integer) getValueFromRDataSet(rData, "reads", i))
+                    .fileName((String) getValueFromRDataSet(rData, "fileName", i))
                     .build();
 
-            readDistributionDtoList.add(readDistributionDto);
+            sequencesDistributionDtoList.add(sequencesDistributionDto);
         }
-        return readDistributionDtoList;
+        return sequencesDistributionDtoList;
     }
 
-    private RScript loadAllForRScript(final RScriptEnum rScriptEnum) {
-        final RScript rScript = RScriptsConst.RScriptsMap.get(rScriptEnum);
-
+    private RData loadAllForRScript(final RDataEnum rDataEnum) {
+        final RData rData = RDataConst.RDataMap.get(rDataEnum);
         lock.lock();
         try {
-            rService.evaluateRScript(rScriptEnum);
-            rScript.getRVariablesMap().forEach((name, rVariable) -> rService.updateRVariableData(rVariable));
+            rData.getRVariablesMap().forEach((name, rVariable) -> rService.updateRVariableData(rDataEnum, rVariable));
         } finally {
             lock.unlock();
         }
 
-        return rScript;
+        return rData;
     }
 
-    private Object getValueFromRDataSet(final RScript rScript, final String variableName, final int index) {
-        final List dataSet = rScript.getRVariablesMap().get(variableName).getRDataSet();
+    private Object getValueFromRDataSet(final RData rData, final String variableName, final int index) {
+        final List dataSet = rData.getRVariablesMap().get(variableName).getRDataSet();
         return dataSet.size() > index ? dataSet.get(index) : null;
     }
 }

@@ -3,8 +3,9 @@ package com.nanoporeqc.rTest;
 import com.nanoporeqc.Config;
 import com.nanoporeqc.config.IntegrationTest;
 import com.nanoporeqc.file.consts.FileConsts;
-import com.nanoporeqc.r.consts.RScriptsConst;
+import com.nanoporeqc.r.consts.RDataConst;
 import com.nanoporeqc.r.domain.RVariable;
+import com.nanoporeqc.r.enumeration.RScriptEnum;
 import com.nanoporeqc.r.service.RService;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -64,27 +65,6 @@ public class IoniserTest {
     @After
     public void closeConnection() {
         engine.close();
-    }
-
-    @Test
-    public void testRScripts() {
-        RScriptsConst.RScriptsMap.values().forEach(rScript -> {
-            URL rScriptPath = Config.class.getResource("/r_scripts/" + rScript.getName().getFileName());
-
-            try {
-                connection.eval(String.format("source('%s')", getScriptFilePath(rScriptPath)));
-            } catch (RserveException e) {
-                e.printStackTrace();
-            }
-
-            List<RVariable> rVariables = new ArrayList<>(rScript.getRVariablesMap().values());
-
-            for (RVariable rVariable : rVariables) {
-                rService.updateRVariableData(rVariable);
-
-                Assert.assertNotNull(rVariable.getRDataSet());
-            }
-        });
     }
 
     private String getScriptFilePath(URL url) {

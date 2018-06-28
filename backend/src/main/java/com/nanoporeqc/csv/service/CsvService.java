@@ -1,14 +1,13 @@
 package com.nanoporeqc.csv.service;
 
 import com.nanoporeqc.analysis.dto.ChartDto;
-import com.nanoporeqc.analysis.dto.DuplicatedSequenceDto;
-import com.nanoporeqc.analysis.dto.ReadDistributionDto;
+import com.nanoporeqc.analysis.dto.DuplicatedSequencesDto;
+import com.nanoporeqc.analysis.dto.SequencesDistributionDto;
 import com.nanoporeqc.analysis.dto.SummaryInfoDto;
 import com.nanoporeqc.analysis.service.StatsService;
 import com.nanoporeqc.exceptions.CsvDataCannotBeExportedException;
-import com.nanoporeqc.r.consts.RScriptsConst;
-import com.nanoporeqc.r.enumeration.RScriptEnum;
-import javafx.scene.control.IndexRange;
+import com.nanoporeqc.r.consts.RDataConst;
+import com.nanoporeqc.r.enumeration.RDataEnum;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
@@ -45,12 +44,12 @@ public class CsvService {
         }
     }
 
-    public void exportReadsToCsv(final RScriptEnum rScriptEnum,
+    public void exportReadsToCsv(final RDataEnum rDataEnum,
                                  final HttpServletResponse response) {
-        setCsvAndDownloadHeader(rScriptEnum.getValue(), response);
+        setCsvAndDownloadHeader(rDataEnum.getValue(), response);
         try {
             final OutputStream outputStream = response.getOutputStream();
-            outputStream.write(writeValuesByRScript(rScriptEnum).getBytes(UTF_8));
+            outputStream.write(writeValuesByRScript(rDataEnum).getBytes(UTF_8));
             outputStream.flush();
             outputStream.close();
         } catch (IOException e) {
@@ -80,13 +79,13 @@ public class CsvService {
         return sb.toString();
     }
 
-    private String writeValuesByRScript(final RScriptEnum rScriptEnum) throws IOException {
-        switch (rScriptEnum) {
-            case READ_INFO:
+    private String writeValuesByRScript(final RDataEnum rDataEnum) throws IOException {
+        switch (rDataEnum) {
+            case SUMMARY_INFO:
                 return writeSummaryInfoValues();
-            case DUPLICATED_READS:
+            case DUPLICATED_SEQUENCES:
                 return writeDuplicatedReadsValues();
-            case READ_DISTRIBUTION:
+            case SEQUENCES_DISTRIBUTION:
                 return writeReadDistributionValues();
             default:
                 throw new CsvDataCannotBeExportedException();
@@ -96,7 +95,7 @@ public class CsvService {
     private String writeSummaryInfoValues() throws IOException {
         final List<SummaryInfoDto> data = statsService.getSummaryInformation();
         final StringBuilder sb = new StringBuilder();
-        writeLine(sb, RScriptsConst.SUMMARY_INFO_VARIABLES);
+        writeLine(sb, RDataConst.SUMMARY_INFO_DTO_VARIABLES);
 
         for (SummaryInfoDto aData : data) {
             final List<String> values = new ArrayList<>();
@@ -119,11 +118,11 @@ public class CsvService {
     }
 
     private String writeDuplicatedReadsValues() throws IOException {
-        final List<DuplicatedSequenceDto> data = statsService.getDuplicatedSequences();
+        final List<DuplicatedSequencesDto> data = statsService.getDuplicatedSequences();
         final StringBuilder sb = new StringBuilder();
-        writeLine(sb, RScriptsConst.DUPLICATED_READS_VARIABLES);
+        writeLine(sb, RDataConst.DUPLICATED_SEQUENCES_DTO_VARIABLES);
 
-        for (DuplicatedSequenceDto aData : data) {
+        for (DuplicatedSequencesDto aData : data) {
             final List<String> values = new ArrayList<>();
             values.add(aData.getSequence());
             values.add(String.valueOf(aData.getCount()));
@@ -133,11 +132,11 @@ public class CsvService {
     }
 
     private String writeReadDistributionValues() throws IOException {
-        final List<ReadDistributionDto> data = statsService.getReadsDistribution();
+        final List<SequencesDistributionDto> data = statsService.getSequencesDistribution();
         final StringBuilder sb = new StringBuilder();
-        writeLine(sb, RScriptsConst.READ_DISTRIBUTION_VARIABLES);
+        writeLine(sb, RDataConst.SEQUENCES_DISTRIBUTION_DTO_VARIABLES);
 
-        for (ReadDistributionDto aData : data) {
+        for (SequencesDistributionDto aData : data) {
             final List<String> values = new ArrayList<>();
             values.add(aData.getFileName());
             values.add(String.valueOf(aData.getOccurrences()));

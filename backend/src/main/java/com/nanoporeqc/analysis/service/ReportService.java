@@ -105,11 +105,9 @@ public class ReportService {
         }
     }
 
-    public void saveFastQCHtmlReportFromDb(final Long id) {
+    public void saveFastQCHtmlReportFromDb(final Analysis analysis) {
         final String dirToSave = findHtmlReportDir();
         fileService.createNewDir(dirToSave);
-        final Analysis analysis = analysisRepository.findById(id)
-                .orElseThrow(AnalysisNotFoundException::new);
         fileService.saveReport(analysis.getHtmlReport(), dirToSave + analysis.getName() + HTML);
     }
 
@@ -145,7 +143,7 @@ public class ReportService {
 
     private void generateFastQCHtmlReportFromFile(final String dirToSave) {
         try {
-            final Process process = Runtime.getRuntime().exec(FAST_QC_TOOL_CMD + " " + FileConsts.FASTQ_FILE_FROM_FAST5_FOR_REPORT + " --outdir=" + dirToSave);
+            final Process process = Runtime.getRuntime().exec(FAST_QC_TOOL_CMD + " " + FileConsts.FASTQ_FILE_FROM_FAST5 + " --outdir=" + dirToSave);
             process.waitFor();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();

@@ -1,6 +1,6 @@
 package com.nanoporeqc.r.domain;
 
-import com.nanoporeqc.r.enumeration.RScriptEnum;
+import com.nanoporeqc.r.enumeration.RDataEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,10 +12,10 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RScript {
+public class RData {
 
-    private RScriptEnum name;
+    private RDataEnum name;
 
     private Map<String, RVariable> rVariablesMap;
-    
+
 }

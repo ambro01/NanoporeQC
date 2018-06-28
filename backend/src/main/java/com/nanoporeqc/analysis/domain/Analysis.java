@@ -48,11 +48,11 @@ public class Analysis {
     @Column(name = "TYPE")
     private Type type;
 
-    @Column(name = "QUALITY_SUMMARY")
-    private Blob qualitySummary;
+    @Column(name = "MAIN_SUMMARY")
+    private Blob mainSummary;
 
-    @Column(name = "SUMMARY_FILE_CONTENT")
-    private Blob content;
+    @Column(name = "ADDITIONAL_SUMMARY")
+    private Blob additionalSummary;
 
     @Column(name = "HTML_REPORT")
     private Blob htmlReport;

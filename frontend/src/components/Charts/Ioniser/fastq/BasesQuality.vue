@@ -1,4 +1,3 @@
-
 <script>
   // Importing Bar and mixins class from the vue-chartjs wrapper
   import {

@@ -1,1 +1,1 @@
-saveRDS(summaryData, summaryName)
+list.serialize(resultsFast5, '/home/ra/nanporeqc/summary/fast5.json')

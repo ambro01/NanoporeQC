@@ -1,1 +1,1 @@
-qaSummary <- readRDS(summaryName)
+resultsFastQ <- list.unserialize(summaryName)

@@ -21,82 +21,72 @@
     <div class="content">
       <vue-tabs active-tab-color="#f4f3ef" @tab-change="handleTabChange">
         <v-tab title="Nucleotides counts"></v-tab>
-        <v-tab title="Quality"></v-tab>
-        <v-tab title="Quality density"></v-tab>
-        <v-tab title="Cycle base call"></v-tab>
-        <v-tab title="Cycle quality"></v-tab>
-        <v-tab title="Cycle CG Content"></v-tab>
-        <v-tab title="Reads distribution"></v-tab>
-        <v-tab title="Multiplicated reads"></v-tab>
+        <v-tab title="Reads quality"></v-tab>
+        <v-tab title="Reads quality density"></v-tab>
+        <v-tab title="Bases calls"></v-tab>
+        <v-tab title="Bases quality"></v-tab>
+        <v-tab title="Bases quality density"></v-tab>
+        <v-tab title="Bases CG content"></v-tab>
+        <v-tab title="Sequences distribution"></v-tab>
+        <v-tab title="Duplicated sequences"></v-tab>
       </vue-tabs>
       <div v-if="this.tabIndex === 0">
-        <nucleotide-counts :chart-data="this.dataNucleotideCounts"></nucleotide-counts>
+        <nucleotides-counts :chart-data="this.dataNucleotidesCounts"></nucleotides-counts>
         <label class="control-label">
           <p>A - adenine, G - guanine, C - cytosine. T - thymine, N - undefined</p>
           <p>y - number of nucleotides in each category</p>
         </label>
       </div>
       <div v-if="this.tabIndex === 1">
-        <read-quality-score :chart-data="this.dataReadQuality"></read-quality-score>
+        <reads-quality :chart-data="this.dataReadsQuality"></reads-quality>
         <label class="control-label">
           <p>x - read index</p>
           <p>y - mean base quality</p>
         </label>
       </div>
       <div v-if="this.tabIndex === 2">
-        <div v-if="!this.isFromFast5">
-          <read-quality-score :chart-data="this.dataReadQualityDensity"></read-quality-score>
-          <label class="control-label">
-            <p>x - mean base quality</p>
-            <p>y - quality density</p>
-          </label>
-        </div>
-        <div v-if="this.isFromFast5">
-          <read-quality-density :chart-data="this.dataReadQualityDensity2D"></read-quality-density>
-          <label class="control-label">
-            <p>x - mean 2d base quality</p>
-            <p>y - quality density</p>
-          </label>
-          <read-quality-density :chart-data="this.dataReadQualityDensityTemplate"></read-quality-density>
-          <label class="control-label">
-            <p>x - mean template base quality</p>
-            <p>y - quality density</p>
-          </label>
-          <read-quality-density :chart-data="this.dataReadQualityDensityComplement"></read-quality-density>
-          <label class="control-label">
-            <p>x - mean complement base quality</p>
-            <p>y - quality density</p>
-          </label>
-        </div>
+        <reads-quality-density :chart-data="this.dataReadsQualityDensity"></reads-quality-density>
+        <label class="control-label">
+          <p>x - mean base quality</p>
+          <p>y - quality density</p>
+        </label>
       </div>
       <div v-if="this.tabIndex === 3">
-        <per-cycle-base-call :chart-data="this.dataCycleBaseCall"></per-cycle-base-call>
+        <bases-calls :chart-data="this.dataBasesCalls"></bases-calls>
         <label class="control-label">
-          <p>x - cycle of base calling</p>
+          <p>x - base index in read</p>
           <p>y - number of read nucleotides</p>
         </label>
       </div>
       <div v-if="this.tabIndex === 4">
-        <per-cycle-quality :chart-data="this.dataCycleQuality"></per-cycle-quality>
+        <bases-quality :chart-data="this.dataBasesQuality"></bases-quality>
         <label class="control-label">
-          <p>x - cycle of base calling</p>
+          <p>x - base index in read</p>
           <p>y - quality factors</p>
         </label>
       </div>
       <div v-if="this.tabIndex === 5">
-        <per-cycle-c-g-content :chart-data="this.dataCycleCGContent"></per-cycle-c-g-content>
+        <bases-quality-density :chart-data="this.dataBasesQualityDensity"></bases-quality-density>
         <label class="control-label">
-          <p>x - cycle of base calling</p>
-          <p>y - CG content</p>
+          <p>x - base index in read</p>
+          <p>y - quality factors</p>
         </label>
       </div>
       <div v-if="this.tabIndex === 6">
-        <read-distribution :sourceData="this.dataReadsDistribution"
-                           v-if="this.dataReadsDistribution != null"></read-distribution>
-        <label class="control-label"></label>
+        <bases-cg-content :chart-data="this.dataBasesCgContent"></bases-cg-content>
+        <label class="control-label">
+          <p>x - base index in read</p>
+          <p>y - CG content</p>
+        </label>
       </div>
       <div v-if="this.tabIndex === 7">
-        <duplicated-reads :sourceData="this.dataDuplicatedReads" v-if="dataDuplicatedReads != null"></duplicated-reads>
+        <sequences-distribution :sourceData="this.dataSequencesDistribution"
+                                v-if="this.dataSequencesDistribution != null"></sequences-distribution>
+        <label class="control-label"></label>
+      </div>
+      <div v-if="this.tabIndex === 8">
+        <duplicated-sequences :sourceData="this.dataDuplicatedSequences"
+                              v-if="this.dataDuplicatedSequences != null"></duplicated-sequences>
         <label class="control-label">Duplicated reads</label>
       </div>
     </div>
@@ -104,14 +94,15 @@
 </template>
 
 <script>
-  import NucleotideCounts from 'src/components/Charts/Ioniser/fastq/NucleotideCounts.vue'
-  import PerCycleBaseCall from 'src/components/Charts/Ioniser/fastq/PerCycleBaseCall.vue'
-  import PerCycleQuality from 'src/components/Charts/Ioniser/fastq/PerCycleQuality.vue'
-  import PerCycleCGContent from 'src/components/Charts/Ioniser/fastq/PerCycleCGContent.vue'
-  import ReadQualityScore from 'src/components/Charts/Ioniser/fastq/ReadQualityScore.vue'
-  import ReadDistribution from 'src/components/Stats/Ioniser/ReadDistribution.vue'
-  import DuplicatedReads from 'src/components/Stats/Ioniser/DuplicatedReads.vue'
-  import ReadQualityDensity from 'src/components/Charts/Ioniser/fast5/ReadQualityDensity.vue'
+  import NucleotidesCounts from 'src/components/Charts/Ioniser/fastq/NucleotidesCounts.vue'
+  import BasesCalls from 'src/components/Charts/Ioniser/fastq/BasesCalls.vue'
+  import BasesCgContent from 'src/components/Charts/Ioniser/fastq/BasesCgContent.vue'
+  import BasesQuality from 'src/components/Charts/Ioniser/fastq/BasesQuality.vue'
+  import BasesQualityDensity from 'src/components/Charts/Ioniser/fastq/BasesQualityDensity.vue'
+  import ReadsQuality from 'src/components/Charts/Ioniser/fastq/ReadsQuality.vue'
+  import ReadsQualityDensity from 'src/components/Charts/Ioniser/fastq/ReadsQualityDensity.vue'
+  import SequencesDistribution from 'src/components/Stats/Ioniser/SequencesDistribution.vue'
+  import DuplicatedSequences from 'src/components/Stats/Ioniser/DuplicatedSequences.vue'
   import StatsCard from '../../UIComponents/Cards/StatsCard.vue'
 
   const TEXT_CSV = 'text/csv'
@@ -121,32 +112,31 @@
     name: 'VueChartJS',
     components: {
       StatsCard,
-      NucleotideCounts,
-      PerCycleBaseCall,
-      PerCycleQuality,
-      PerCycleCGContent,
-      ReadDistribution,
-      ReadQualityScore,
-      DuplicatedReads,
-      ReadQualityDensity
+      NucleotidesCounts,
+      BasesCalls,
+      BasesCgContent,
+      BasesQuality,
+      BasesQualityDensity,
+      ReadsQuality,
+      ReadsQualityDensity,
+      SequencesDistribution,
+      DuplicatedSequences
     },
     props: [
-      'id',
-      'isFromFast5'
+      'id'
     ],
     data () {
       return {
-        dataNucleotideCounts: null,
-        dataCycleBaseCall: null,
-        dataCycleQuality: null,
-        dataCycleCGContent: null,
-        dataReadQualityDensity: null,
-        dataReadsDistribution: null,
-        dataDuplicatedReads: null,
-        dataReadQualityDensityTemplate: null,
-        dataReadQualityDensityComplement: null,
-        dataReadQualityDensity2D: null,
-        dataReadQuality: null,
+        dataNucleotidesCounts: null,
+        dataBasesCalls: null,
+        dataBasesQuality: null,
+        dataBasesQualityDensity: null,
+        dataBasesCgContent: null,
+        dataReadsQuality: null,
+        dataReadsQualityDensity: null,
+        dataSequencesDistribution: null,
+        dataDuplicatedSequences: null,
+
         tabIndex: 0
       }
     },
@@ -164,13 +154,13 @@
       handleTabChange (tabIndex, newTab, oldTab) {
         this.tabIndex = tabIndex
       },
-      getNucleotideCounts () {
-        this.$http.get(`api/analysis/stats/nucleotideCounts`, {
+      getNucleotidesCounts () {
+        this.$http.get(`api/analysis/stats/nucleotidesCounts`, {
           params: {
             valuesNames: ['counts', 'A', 'G', 'C', 'T', 'N']
           }
         }).then(response => {
-          this.dataNucleotideCounts = {
+          this.dataNucleotidesCounts = {
             labels: [],
             datasets: [
               {
@@ -204,20 +194,20 @@
           console.error(e)
         })
       },
-      getCycleBaseCall () {
-        this.$http.get(`api/analysis/stats/perCycleBaseCall`, {
+      getBasesCalls () {
+        this.$http.get(`api/analysis/stats/basesCalls`, {
           params: {
-            valuesNames: ['cycle', 'countA', 'countG', 'countC', 'countT']
+            valuesNames: ['id', 'A', 'G', 'C', 'T']
           }
         }).then(response => {
-          this.dataCycleBaseCall = {
-            labels: response.data.values['cycle'],
+          this.dataBasesCalls = {
+            labels: response.data.values['id'],
             datasets: [
               {
                 label: 'A',
                 borderColor: '#f87979',
                 fill: false,
-                data: response.data.values['countA'],
+                data: response.data.values['A'],
                 pointRadius: 0,
                 borderWidth: 1
               },
@@ -225,7 +215,7 @@
                 label: 'G',
                 borderColor: '#f8ac5f',
                 fill: false,
-                data: response.data.values['countG'],
+                data: response.data.values['G'],
                 pointRadius: 0,
                 borderWidth: 1
               },
@@ -233,7 +223,7 @@
                 label: 'C',
                 borderColor: '#47f889',
                 fill: false,
-                data: response.data.values['countC'],
+                data: response.data.values['C'],
                 pointRadius: 0,
                 borderWidth: 1
               },
@@ -241,7 +231,7 @@
                 label: 'T',
                 borderColor: '#82c3f8',
                 fill: false,
-                data: response.data.values['countT'],
+                data: response.data.values['T'],
                 pointRadius: 0,
                 borderWidth: 1
               }
@@ -251,199 +241,13 @@
           console.error(e)
         })
       },
-      getCycleQuality () {
-        this.$http.get(`api/analysis/stats/perCycleQuality`, {
-          params: {
-            valuesNames: ['cycle', 'mean_', 'median_', 'q25', 'q50', 'q75']
-          }
-        }).then(response => {
-          this.dataCycleQuality = {
-            labels: response.data.values['cycle'],
-            datasets: [
-              {
-                label: 'mean',
-                borderColor: '#f87979',
-                fill: false,
-                data: response.data.values['mean_'],
-                pointRadius: 0,
-                borderWidth: 1
-              },
-              {
-                label: 'median',
-                borderColor: '#82c3f8',
-                fill: false,
-                data: response.data.values['median_'],
-                pointRadius: 0,
-                borderWidth: 1
-              },
-              {
-                label: 'quantile 25',
-                borderColor: '#47f889',
-                fill: false,
-                data: response.data.values['q25'],
-                pointRadius: 0,
-                borderWidth: 1
-              },
-              {
-                label: 'quantile 50',
-                borderColor: '#f8ac5f',
-                fill: false,
-                data: response.data.values['q50'],
-                pointRadius: 0,
-                borderWidth: 1
-              },
-              {
-                label: 'quantile 75',
-                borderColor: '#8f8792',
-                fill: false,
-                data: response.data.values['q75'],
-                pointRadius: 0,
-                borderWidth: 1
-              }
-            ]
-          }
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      getCycleCGContent () {
-        this.$http.get(`api/analysis/stats/perCycleCGContent`, {
-          params: {
-            valuesNames: ['cycle', 'contentCG']
-          }
-        }).then(response => {
-          this.dataCycleCGContent = {
-            labels: response.data.values['cycle'],
-            datasets: [
-              {
-                borderColor: '#f87979',
-                fill: false,
-                data: response.data.values['contentCG'],
-                pointRadius: 0,
-                borderWidth: 1
-              }
-            ]
-          }
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      getReadsDistribution () {
-        this.$http.get(`api/analysis/stats/reads-distribution`, {
-          params: {
-            valuesNames: ['file_name', 'occurrences', 'reads']
-          }
-        }).then(response => {
-          this.dataReadsDistribution = response.data
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      getDuplicatedReads () {
-        this.$http.get(`api/analysis/stats/duplicated-sequences`, {
-          params: {
-            valuesNames: ['sequence', 'count']
-          }
-        }).then(response => {
-          this.dataDuplicatedReads = response.data
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      getReadQualityDensity () {
-        if (this.isFromFast5) {
-          this.getReadQualityDensityFastQFromFast5()
-        } else {
-          this.getReadQualityDensityFastQ()
-        }
-      },
-      getReadQualityDensityFastQ () {
-        this.$http.get(`api/analysis/stats/readQualityDensityFastQ`, {
-          params: {
-            valuesNames: ['quality', 'density']
-          }
-        }).then(response => {
-          this.dataReadQualityDensity = {
-            labels: response.data.values['quality'],
-            datasets: [
-              {
-                borderColor: '#f8ac5f',
-                data: response.data.values['density'],
-                pointRadius: 0,
-                borderWidth: 2,
-                fill: false,
-                steppedLine: false
-              }
-            ]
-          }
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      getReadQualityDensityFastQFromFast5 () {
-        this.$http.get(`api/analysis/stats/readQualityDensityFastQFromFast5`, {
-          params: {
-            valuesNames: ['quality_template', 'quality_complement', 'quality_2D',
-              'density_template', 'density_complement', 'density_2D']
-          }
-        }).then(response => {
-          this.dataReadQualityDensity2D = {
-            labels: response.data.values['quality_2D'],
-            datasets: [
-              {
-                label: '2D quality density',
-                borderColor: '#f87979',
-                fill: false,
-                data: response.data.values['density_2D'],
-                pointRadius: 0,
-                borderWidth: 2
-              }
-            ]
-          }
-          this.dataReadQualityDensityTemplate = {
-            labels: response.data.values['quality_template'],
-            datasets: [
-              {
-                label: 'Template quality density',
-                borderColor: '#47f889',
-                fill: false,
-                data: response.data.values['density_template'],
-                pointRadius: 0,
-                borderWidth: 2
-              }
-            ]
-          }
-          this.dataReadQualityDensityComplement = {
-            labels: response.data.values['quality_complement'],
-            datasets: [
-              {
-                label: 'Complement quality density',
-                borderColor: '#d392f8',
-                fill: false,
-                data: response.data.values['density_complement'],
-                pointRadius: 0,
-                borderWidth: 2
-              }
-            ]
-          }
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      getReadQuality () {
-        if (this.isFromFast5) {
-          this.getReadQualityFastQFromFast5()
-        } else {
-          this.getReadQualityFastQ()
-        }
-      },
-      getReadQualityFastQ () {
-        this.$http.get(`api/analysis/stats/readQualityFastQ`, {
+      getBasesQuality () {
+        this.$http.get(`api/analysis/stats/basesQuality`, {
           params: {
             valuesNames: ['id', 'quality']
           }
         }).then(response => {
-          this.dataReadQuality = {
+          this.dataBasesQuality = {
             labels: response.data.values['id'],
             datasets: [
               {
@@ -460,38 +264,115 @@
           console.error(e)
         })
       },
-      getReadQualityFastQFromFast5 () {
-        this.$http.get(`api/analysis/stats/readQualityFastQFromFast5`, {
+      getBasesQualityDensity () {
+        this.$http.get(`api/analysis/stats/basesQualityDensity`, {
           params: {
-            valuesNames: ['id', 'q_template', 'q_complement', 'q_2D']
+            valuesNames: ['quality', 'density']
           }
         }).then(response => {
-          this.dataReadQuality = {
+          this.dataBasesQualityDensity = {
+            labels: response.data.values['quality'],
+            datasets: [
+              {
+                label: '',
+                borderColor: '#f8ac5f',
+                data: response.data.values['density'],
+                pointRadius: 0,
+                borderWidth: 2,
+                fill: false,
+                steppedLine: false
+              }
+            ]
+          }
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      getBasesCgContent () {
+        this.$http.get(`api/analysis/stats/basesCgContent`, {
+          params: {
+            valuesNames: ['id', 'cgContent']
+          }
+        }).then(response => {
+          this.dataBasesCgContent = {
             labels: response.data.values['id'],
             datasets: [
               {
-                label: 'Template quality',
-                borderColor: '#47f889',
-                fill: false,
-                data: response.data.values['q_template'],
-                pointRadius: 0,
-                borderWidth: 2
-              },
-              {
-                label: 'Complement quality',
-                borderColor: '#d392f8',
-                fill: false,
-                data: response.data.values['q_complement'],
-                pointRadius: 0,
-                borderWidth: 2
-              },
-              {
-                label: '2d quality',
+                label: 'CG content',
                 borderColor: '#f87979',
                 fill: false,
-                data: response.data.values['q_2D'],
+                data: response.data.values['cgContent'],
                 pointRadius: 0,
-                borderWidth: 2
+                borderWidth: 1
+              }
+            ]
+          }
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      getSequencesDistribution () {
+        this.$http.get(`api/analysis/stats/sequences-distribution`, {
+          params: {
+            valuesNames: ['fileName', 'occurrences', 'reads']
+          }
+        }).then(response => {
+          this.dataSequencesDistribution = response.data
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      getDuplicatedSequences () {
+        this.$http.get(`api/analysis/stats/duplicated-sequences`, {
+          params: {
+            valuesNames: ['sequence', 'count']
+          }
+        }).then(response => {
+          this.dataDuplicatedSequences = response.data
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      getReadsQualityDensity () {
+        this.$http.get(`api/analysis/stats/readsQualityDensity`, {
+          params: {
+            valuesNames: ['quality', 'density']
+          }
+        }).then(response => {
+          this.dataReadsQualityDensity = {
+            labels: response.data.values['quality'],
+            datasets: [
+              {
+                label: '',
+                borderColor: '#f8ac5f',
+                data: response.data.values['density'],
+                pointRadius: 0,
+                borderWidth: 2,
+                fill: false,
+                steppedLine: false
+              }
+            ]
+          }
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      getReadsQuality () {
+        this.$http.get(`api/analysis/stats/readsQuality`, {
+          params: {
+            valuesNames: ['id', 'quality']
+          }
+        }).then(response => {
+          this.dataReadsQuality = {
+            labels: response.data.values['id'],
+            datasets: [
+              {
+                label: 'Quality',
+                borderColor: '#f87979',
+                fill: false,
+                data: response.data.values['quality'],
+                pointRadius: 0,
+                borderWidth: 1
               }
             ]
           }
@@ -501,47 +382,51 @@
       },
 
       getAllData () {
-        this.getNucleotideCounts()
-        this.getCycleBaseCall()
-        this.getCycleQuality()
-        this.getCycleCGContent()
-        this.getReadsDistribution()
-        this.getDuplicatedReads()
-        this.getReadQualityDensity()
-        this.getReadQuality()
+        this.getNucleotidesCounts()
+        this.getBasesCalls()
+        this.getBasesQuality()
+        this.getBasesQualityDensity()
+        this.getBasesCgContent()
+        this.getReadsQuality()
+        this.getReadsQualityDensity()
+        this.getSequencesDistribution()
+        this.getDuplicatedSequences()
       },
 
       refreshData () {
         switch (this.tabIndex) {
           case 0:
-            this.getNucleotideCounts()
+            this.getNucleotidesCounts()
             break
           case 1:
-            this.getReadQuality()
+            this.getReadsQuality()
             break
           case 2:
-            this.getReadQualityDensity()
+            this.getReadsQualityDensity()
             break
           case 3:
-            this.getCycleBaseCall()
+            this.getBasesCalls()
             break
           case 4:
-            this.getCycleQuality()
+            this.getBasesQuality()
             break
           case 5:
-            this.getCycleCGContent()
+            this.getBasesQualityDensity()
             break
           case 6:
-            this.getReadsDistribution()
+            this.getBasesCgContent()
             break
           case 7:
-            this.getDuplicatedReads()
+            this.getSequencesDistribution()
+            break
+          case 8:
+            this.getDuplicatedSequences()
             break
         }
       },
 
-      csvNucleotideCounts () {
-        this.$http.get(`api/csv/nucleotideCounts`, {
+      csvNucleotidesCounts () {
+        this.$http.get(`api/csv/nucleotidesCounts`, {
           params: {
             valuesNames: ['counts', 'A', 'G', 'C', 'T', 'N']
           }
@@ -549,59 +434,74 @@
           const blob = new Blob([response.data], {type: TEXT_CSV})
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(blob)
-          link.download = 'nucleotide_counts.csv'
+          link.download = 'nucleotides_counts.csv'
           link.click()
         }).catch(e => {
           console.error(e)
         })
       },
-      csvCycleBaseCall () {
-        this.$http.get(`api/csv/perCycleBaseCall`, {
+      csvBaseCalls () {
+        this.$http.get(`api/csv/basesCalls`, {
           params: {
-            valuesNames: ['cycle', 'countA', 'countG', 'countC', 'countT']
+            valuesNames: ['id', 'A', 'G', 'C', 'T']
           }
         }).then(response => {
           const blob = new Blob([response.data], {type: TEXT_CSV})
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(blob)
-          link.download = 'per_cycle_base_call.csv'
+          link.download = 'bases_calls.csv'
           link.click()
         }).catch(e => {
           console.error(e)
         })
       },
-      csvCycleQuality () {
-        this.$http.get(`api/csv/perCycleQuality`, {
+      csvBasesQuality () {
+        this.$http.get(`api/csv/basesQuality`, {
           params: {
-            valuesNames: ['cycle', 'mean_', 'median_', 'q25', 'q50', 'q75']
+            valuesNames: ['id', 'quality', 'mean', 'median', 'q25', 'q50', 'q75']
           }
         }).then(response => {
           const blob = new Blob([response.data], {type: TEXT_CSV})
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(blob)
-          link.download = 'per_cycle_quality.csv'
+          link.download = 'bases_quality.csv'
           link.click()
         }).catch(e => {
           console.error(e)
         })
       },
-      csvCycleCGContent () {
-        this.$http.get(`api/csv/perCycleCGContent`, {
+      csvBasesQualityDensity () {
+        this.$http.get(`api/csv/basesQualityDensity`, {
           params: {
-            valuesNames: ['cycle', 'contentCG']
+            valuesNames: ['quality', 'density']
           }
         }).then(response => {
           const blob = new Blob([response.data], {type: TEXT_CSV})
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(blob)
-          link.download = 'per_cycle_cg_content.csv'
+          link.download = 'bases_quality_density.csv'
           link.click()
         }).catch(e => {
           console.error(e)
         })
       },
-      csvReadsDistribution () {
-        this.$http.get(`api/csv/reads-distribution`, {
+      csvBasesCGContent () {
+        this.$http.get(`api/csv/basesCgContent`, {
+          params: {
+            valuesNames: ['id', 'cgContent']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'bases_cg_content.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      csvSequencesDistribution () {
+        this.$http.get(`api/csv/sequences-distribution`, {
           params: {
             valuesNames: ['sequence', 'count']
           }
@@ -609,13 +509,13 @@
           const blob = new Blob([response.data], {type: TEXT_CSV})
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(blob)
-          link.download = 'reads_distribution.csv'
+          link.download = 'rsequences_distribution.csv'
           link.click()
         }).catch(e => {
           console.error(e)
         })
       },
-      csvDuplicatedReads () {
+      csvDuplicatedSequences () {
         this.$http.get(`api/csv/duplicated-sequences`, {
           params: {
             valuesNames: ['sequence', 'count']
@@ -630,52 +530,23 @@
           console.error(e)
         })
       },
-      csvReadQuality () {
-        if (this.isFromFast5) {
-          this.csvReadQualityFastQFromFast5()
-        } else {
-          this.csvReadQualityFastQ()
-        }
-      },
-      csvReadQualityFastQ () {
-        this.$http.get(`api/csv/readQualityFastQ`, {
+      csvReadsQuality () {
+        this.$http.get(`api/csv/readsQuality`, {
           params: {
-            valuesNames: ['is', 'quality']
+            valuesNames: ['id', 'quality', 'mean', 'median', 'q25', 'q50', 'q75']
           }
         }).then(response => {
           const blob = new Blob([response.data], {type: TEXT_CSV})
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(blob)
-          link.download = 'read_quality.csv'
+          link.download = 'reads_quality.csv'
           link.click()
         }).catch(e => {
           console.error(e)
         })
       },
-      csvReadQualityFastQFromFast5 () {
-        this.$http.get(`api/csv/readQualityFastQFromFast5`, {
-          params: {
-            valuesNames: ['id', 'q_template', 'q_complement', 'q_2D']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'read_quality.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvReadQualityDensity () {
-        if (this.isFromFast5) {
-          this.csvReadQualityDensityFastQFromFast5()
-        } else {
-          this.csvReadQualityDensityFastQ()
-        }
-      },
-      csvReadQualityDensityFastQ () {
-        this.$http.get(`api/csv/readQualityDensityFastQ`, {
+      csvReadsQualityDensity () {
+        this.$http.get(`api/csv/readsQualityDensity`, {
           params: {
             valuesNames: ['quality', 'density']
           }
@@ -683,23 +554,7 @@
           const blob = new Blob([response.data], {type: TEXT_CSV})
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(blob)
-          link.download = 'read_quality_density.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvReadQualityDensityFastQFromFast5 () {
-        this.$http.get(`api/csv/readQualityFastQFromFast5`, {
-          params: {
-            valuesNames: ['quality_template', 'quality_complement', 'quality_2D',
-              'density_template', 'density_complement', 'density_2D']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'read_quality_density.csv'
+          link.download = 'reads_quality_density.csv'
           link.click()
         }).catch(e => {
           console.error(e)
@@ -709,28 +564,31 @@
       exportCsv () {
         switch (this.tabIndex) {
           case 0:
-            this.csvNucleotideCounts()
+            this.csvNucleotidesCounts()
             break
           case 1:
-            this.csvReadQuality()
+            this.csvReadsQuality()
             break
           case 2:
-            this.csvReadQualityDensity()
+            this.csvReadsQualityDensity()
             break
           case 3:
-            this.csvCycleBaseCall()
+            this.csvBaseCalls()
             break
           case 4:
-            this.csvCycleQuality()
+            this.csvBasesQuality()
             break
           case 5:
-            this.csvCycleCGContent()
+            this.csvBasesQualityDensity()
             break
           case 6:
-            this.csvReadsDistribution()
+            this.csvBasesCGContent()
             break
           case 7:
-            this.csvDuplicatedReads()
+            this.csvSequencesDistribution()
+            break
+          case 8:
+            this.csvDuplicatedSequences()
             break
         }
       },

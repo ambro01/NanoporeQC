@@ -132,7 +132,7 @@ public class RService {
         final RScriptEnum rScriptEnum = getSaveSummaryScript(type.name());
         lock.lock();
         try {
-            eval("summaryName <- " + "'" + summaryPath + "'");
+            eval("summaryPath <- " + "'" + summaryPath + "'");
             eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
         } finally {
             lock.unlock();
@@ -142,7 +142,7 @@ public class RService {
     public void loadSummaryFromFile(final RScriptEnum rScriptEnum, final String summaryPath) {
         lock.lock();
         try {
-            eval("summaryName <- " + "'" + summaryPath + "'");
+            eval("summaryPath <- " + "'" + summaryPath + "'");
             eval(String.format("source('%s')", fileService.getRScriptPath(rScriptEnum)));
             fileService.cleanDirectory(FileConsts.SUMMARY_DIR);
         } finally {

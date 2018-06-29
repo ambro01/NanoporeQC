@@ -1,1 +1,1 @@
-resultsFast5 <- list.unserialize(summaryName)
+resultsFast5 <- list.unserialize(summaryPath)

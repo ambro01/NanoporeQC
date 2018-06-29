@@ -68,6 +68,10 @@ public class RDataConst {
             "id", new RVariable("id", RVariableTypeEnum.NUMERIC),
             "cgContent", new RVariable("cgContent", RVariableTypeEnum.DOUBLE, 2)));
 
+    private static final RData BASES_CG_DENSITY = new RData(RDataEnum.BASES_CG_DENSITY, Map.of(
+            "cgContent", new RVariable("cgContent", RVariableTypeEnum.DOUBLE, 2),
+            "density", new RVariable("density", RVariableTypeEnum.DOUBLE, 2)));
+
     private static final RData SEQUENCES_DISTRIBUTION = new RData(RDataEnum.SEQUENCES_DISTRIBUTION, Map.of(
             "occurrences", new RVariable("occurrences", RVariableTypeEnum.NUMERIC),
             "reads", new RVariable("reads", RVariableTypeEnum.NUMERIC),
@@ -151,6 +155,7 @@ public class RDataConst {
             Map.entry(RDataEnum.BASES_QUALITY_DENSITY, BASES_QUALITY_DENSITY),
             Map.entry(RDataEnum.BASES_CALLS, BASES_CALLS),
             Map.entry(RDataEnum.BASES_CG_CONTENT, BASES_CG_CONTENT),
+            Map.entry(RDataEnum.BASES_CG_DENSITY, BASES_CG_DENSITY),
             Map.entry(RDataEnum.SEQUENCES_DISTRIBUTION, SEQUENCES_DISTRIBUTION),
             Map.entry(RDataEnum.DUPLICATED_SEQUENCES, DUPLICATED_SEQUENCES),
             Map.entry(RDataEnum.SUMMARY_INFO, SUMMARY_INFO),

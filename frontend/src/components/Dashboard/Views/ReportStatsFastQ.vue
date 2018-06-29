@@ -27,6 +27,7 @@
         <v-tab title="Bases quality"></v-tab>
         <v-tab title="Bases quality density"></v-tab>
         <v-tab title="Bases CG content"></v-tab>
+        <v-tab title="Bases CG density"></v-tab>
         <v-tab title="Sequences distribution"></v-tab>
         <v-tab title="Duplicated sequences"></v-tab>
       </vue-tabs>
@@ -68,8 +69,8 @@
       <div v-if="this.tabIndex === 5">
         <bases-quality-density :chart-data="this.dataBasesQualityDensity"></bases-quality-density>
         <label class="control-label">
-          <p>x - base index in read</p>
-          <p>y - quality factors</p>
+          <p>x - quality</p>
+          <p>y - density</p>
         </label>
       </div>
       <div v-if="this.tabIndex === 6">
@@ -80,11 +81,18 @@
         </label>
       </div>
       <div v-if="this.tabIndex === 7">
+        <bases-cg-density :chart-data="this.dataBasesCgDensity"></bases-cg-density>
+        <label class="control-label">
+          <p>x - CG content</p>
+          <p>y - density</p>
+        </label>
+      </div>
+      <div v-if="this.tabIndex === 8">
         <sequences-distribution :sourceData="this.dataSequencesDistribution"
                                 v-if="this.dataSequencesDistribution != null"></sequences-distribution>
         <label class="control-label"></label>
       </div>
-      <div v-if="this.tabIndex === 8">
+      <div v-if="this.tabIndex === 9">
         <duplicated-sequences :sourceData="this.dataDuplicatedSequences"
                               v-if="this.dataDuplicatedSequences != null"></duplicated-sequences>
         <label class="control-label">Duplicated reads</label>
@@ -97,6 +105,7 @@
   import NucleotidesCounts from 'src/components/Charts/Ioniser/fastq/NucleotidesCounts.vue'
   import BasesCalls from 'src/components/Charts/Ioniser/fastq/BasesCalls.vue'
   import BasesCgContent from 'src/components/Charts/Ioniser/fastq/BasesCgContent.vue'
+  import BasesCgDensity from 'src/components/Charts/Ioniser/fastq/BasesCgDensity.vue'
   import BasesQuality from 'src/components/Charts/Ioniser/fastq/BasesQuality.vue'
   import BasesQualityDensity from 'src/components/Charts/Ioniser/fastq/BasesQualityDensity.vue'
   import ReadsQuality from 'src/components/Charts/Ioniser/fastq/ReadsQuality.vue'
@@ -115,6 +124,7 @@
       NucleotidesCounts,
       BasesCalls,
       BasesCgContent,
+      BasesCgDensity,
       BasesQuality,
       BasesQualityDensity,
       ReadsQuality,
@@ -132,6 +142,7 @@
         dataBasesQuality: null,
         dataBasesQualityDensity: null,
         dataBasesCgContent: null,
+        dataBasesCgDensity: null,
         dataReadsQuality: null,
         dataReadsQualityDensity: null,
         dataSequencesDistribution: null,
@@ -311,6 +322,28 @@
           console.error(e)
         })
       },
+      getBasesCgDensity () {
+        this.$http.get(`api/analysis/stats/basesCgDensity`, {
+          params: {
+            valuesNames: ['cgContent', 'density']
+          }
+        }).then(response => {
+          this.dataBasesCgDensity = {
+            labels: response.data.values['cgContent'],
+            datasets: [
+              {
+                borderColor: '#f87979',
+                fill: false,
+                data: response.data.values['density'],
+                pointRadius: 0,
+                borderWidth: 1
+              }
+            ]
+          }
+        }).catch(e => {
+          console.error(e)
+        })
+      },
       getSequencesDistribution () {
         this.$http.get(`api/analysis/stats/sequences-distribution`, {
           params: {
@@ -387,6 +420,7 @@
         this.getBasesQuality()
         this.getBasesQualityDensity()
         this.getBasesCgContent()
+        this.getBasesCgDensity()
         this.getReadsQuality()
         this.getReadsQualityDensity()
         this.getSequencesDistribution()
@@ -417,9 +451,12 @@
             this.getBasesCgContent()
             break
           case 7:
-            this.getSequencesDistribution()
+            this.getBasesCgDensity()
             break
           case 8:
+            this.getSequencesDistribution()
+            break
+          case 9:
             this.getDuplicatedSequences()
             break
         }
@@ -489,6 +526,21 @@
         this.$http.get(`api/csv/basesCgContent`, {
           params: {
             valuesNames: ['id', 'cgContent']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'bases_cg_content.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      csvBasesCGDensity () {
+        this.$http.get(`api/csv/basesCgDensity`, {
+          params: {
+            valuesNames: ['cgContent', 'density']
           }
         }).then(response => {
           const blob = new Blob([response.data], {type: TEXT_CSV})
@@ -585,9 +637,12 @@
             this.csvBasesCGContent()
             break
           case 7:
-            this.csvSequencesDistribution()
+            this.csvBasesCGDensity()
             break
           case 8:
+            this.csvSequencesDistribution()
+            break
+          case 9:
             this.csvDuplicatedSequences()
             break
         }

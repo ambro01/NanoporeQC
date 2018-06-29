@@ -70,8 +70,8 @@ public class AnalysisService {
         LOGGER.info("Analysis: Running new analyse of type: " + analysisDto.getType());
         rService.loadFilesFromDirToR(rService.getSummaryFromDirScript(analysisDto.getType()));
         rService.evaluateRScript(rService.getGenerateDataScript(analysisDto.getType()));
-        reportService.saveLocallyFastQCHtmlReport(analysisDto.getType());
         generateFastQDataFromFast5(analysisDto);
+        reportService.saveLocallyFastQCHtmlReport(analysisDto.getType());
         fileService.cleanDirectory(FileConsts.FILES_DIR);
     }
 
@@ -84,7 +84,7 @@ public class AnalysisService {
             LOGGER.info("Analysis: Saving summary file of type: " + analysisDto.getType());
             rService.saveSummaryToFile(type, summaryPath);
             if (Type.Fast5.equals(Type.valueOf(analysisDto.getType()))) {
-                rService.evaluateRScript(RScriptEnum.SAVE_SUMMARY_FASTQ);
+                rService.saveSummaryToFile(Type.FastQ, FileConsts.SUMMARY_FASTQ_FILE);
             }
             saveAnalysis(analysisDto);
         } finally {

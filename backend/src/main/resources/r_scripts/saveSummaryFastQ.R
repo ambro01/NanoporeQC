@@ -1,1 +1,1 @@
-list.serialize(resultsFastQ, '/home/ra/nanporeqc/summary/fastq.json')
+list.serialize(resultsFastQ, summaryPath)

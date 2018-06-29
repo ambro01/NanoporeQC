@@ -1,1 +1,1 @@
-list.serialize(resultsFast5, '/home/ra/nanporeqc/summary/fast5.json')
+list.serialize(resultsFast5, summaryPath)

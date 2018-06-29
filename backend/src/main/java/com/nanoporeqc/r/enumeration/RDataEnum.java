@@ -13,6 +13,7 @@ public enum RDataEnum {
     BASES_QUALITY_DENSITY("basesQualityDensity", Type.FastQ),
     BASES_CALLS("basesCalls", Type.FastQ),
     BASES_CG_CONTENT("basesCgContent", Type.FastQ),
+    BASES_CG_DENSITY("basesCgDensity", Type.FastQ),
     SEQUENCES_DISTRIBUTION("sequencesDistribution", Type.FastQ),
     DUPLICATED_SEQUENCES("duplicatedSequences", Type.FastQ),
 

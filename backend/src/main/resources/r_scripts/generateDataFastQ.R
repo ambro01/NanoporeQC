@@ -20,39 +20,78 @@ q50 <- quantileOut[2]
 q75 <- quantileOut[3]
 resultsFastQ <- list.append(resultsFastQ, readsQuality = list(id=id, quality=quality, mean=mean, median=median, q25=q25, q50=q50, q75=q75))
 
-# Quality denisty
+# Reads quality denisty
 density_quality <- density(quality)
 quality <- density_quality$x
 density <- density_quality$y
 resultsFastQ <- list.append(resultsFastQ, readsQualityDensity = list(quality=quality, density=density))
 
 # Base quality
-d <- tryCatch(as(quality(fq), "matrix"), error = function(cond){return (matrix())})
-quality <- colMeans(d, na.rm = TRUE, dims = 1)
-id <- seq(1, length(quality))
-quantileOut <- quantile(quality, probs = c(0.25, 0.50, 0.75), na.rm = TRUE, names = FALSE)
-mean <- mean(quality, na.rm = TRUE)
-median <- median(quality, na.rm = TRUE)
-q25 <- quantileOut[1]
-q50 <- quantileOut[2]
-q75 <- quantileOut[3]
+df <- qaSummary[["perCycle"]]
+df <- df$quality
 
-resultsFastQ <- list.append(resultsFastQ, basesQuality = list(id=id, quality=quality, mean=mean, median=median, q25=q25, q50=q50, q75=q75))
+df <- df %>% mutate(ScoreCount = Score * Count)
+score <- df %>% group_by(Cycle) %>% summarise_at(.vars = names(.)[6],.funs = c(Score="sum"))
+count <- df %>% group_by(Cycle) %>% summarise_at(.vars = names(.)[4],.funs = c(Count="sum"))
+df <- merge(score, count, by = "Cycle")
+df <- df %>% mutate(meanQuality = Score/Count)
+id <- df$Cycle
+quality <- df$meanQuality
 
-# Quality denisty
-density_quality <- density(quality)
+resultsFastQ <- list.append(resultsFastQ, basesQuality = list(id=id, quality=quality))
+
+# Base quality denisty
+df <- qaSummary[["perCycle"]]
+df <- df$quality
+density_quality <- density(df[rep(row.names(df), df$Count), 3])
 quality <- density_quality$x
 density <- density_quality$y
+
 resultsFastQ <- list.append(resultsFastQ, basesQualityDensity = list(quality=quality, density=density))
 
 # Base call
-d <- tryCatch(as(sread(fq), "matrix"), error = function(cond){return (matrix())})
-id <- seq(1, ncol(d))
-A <- colSums(d == 'A', na.rm = TRUE, dims = 1)
-T <- colSums(d == 'T', na.rm = TRUE, dims = 1)
-C <- colSums(d == 'C', na.rm = TRUE, dims = 1)
-G <- colSums(d == 'G', na.rm = TRUE, dims = 1)
-N <- colSums(d == 'N', na.rm = TRUE, dims = 1)
+df <- qaSummary[["perCycle"]]
+df <- df$baseCall
+df <- df[rep(row.names(df), df$Count), 1:3]
+
+df <- df[order(df$Base, df$Cycle), ]
+
+df <- df %>% group_by(Cycle, Base) %>% summarise_at(.vars = names(.)[3],.funs = c(Count="sum"))
+
+
+A <- subset(df %>% filter(Base == "A"), select = c("Cycle", "Count"))
+colnames(A)[2] <- "Count_A"
+
+C <- subset(df %>% filter(Base == "C"), select = c("Cycle", "Count"))
+colnames(C)[2] <- "Count_C"
+
+G <- subset(df %>% filter(Base == "G"), select = c("Cycle", "Count"))
+colnames(G)[2] <- "Count_G"
+
+T <- subset(df %>% filter(Base == "T"), select = c("Cycle", "Count"))
+colnames(T)[2] <- "Count_T"
+
+N <- subset(df %>% filter(Base == "N" || Base == "-"), select = c("Cycle", "Count"))
+colnames(N)[2] <- "Count_N"
+
+out <- merge(x = A, y = C, by="Cycle", all.x = TRUE)
+out <- merge(x = out, y = G, by="Cycle", all.x = TRUE)
+out <- merge(x = out, y = T, by="Cycle", all.x = TRUE)
+out <- merge(x = out, y = N, by="Cycle", all.x = TRUE)
+
+out[is.na(out)] <- 0
+
+id <- out$Cycle
+A <- as.double(out$Count_A)
+C <- as.double(out$Count_C)
+G <- as.double(out$Count_G)
+T <- as.double(out$Count_T)
+N <- out$count_N
+
+if (is.null(N) || is.na(N)) {
+    N = 0
+}
+
 resultsFastQ <- list.append(resultsFastQ, basesCalls = list(id=id, A=A, T=T, C=C, G=G, N=N))
 
 # Base CG content
@@ -60,6 +99,13 @@ all <- A+T+C+G+N
 cg <- C+G
 cgPart <- cg/all
 resultsFastQ <- list.append(resultsFastQ, basesCgContent = list(id=id, cgContent=cgPart))
+
+# Base CG density
+density_cg <- density(cgPart)
+cgPart <- density_cg$x
+density <- density_cg$y
+
+resultsFastQ <- list.append(resultsFastQ, basesCgDensity = list(cgContent=cgPart, density=density))
 
 # Reads distribution
 df <- qaSummary[["sequenceDistribution"]]

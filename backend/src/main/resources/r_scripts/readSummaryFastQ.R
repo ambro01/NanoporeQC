@@ -1,1 +1,1 @@
-resultsFastQ <- list.unserialize(summaryName)
+resultsFastQ <- list.unserialize(summaryPath)

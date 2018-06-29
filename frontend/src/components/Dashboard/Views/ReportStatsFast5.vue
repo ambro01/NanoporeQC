@@ -36,7 +36,7 @@
         </label>
       </div>
       <div v-if="this.tabIndex === 1">
-        <read-accumulation :chart-data="this.dataReadsAccumulation"></read-accumulation>
+        <reads-accumulation :chart-data="this.dataReadsAccumulation"></reads-accumulation>
         <label class="control-label">
           <p>x - duration of an experiment [sec]</p>
           <p>y - accumulation of reads</p>
@@ -62,12 +62,12 @@
           <p>x - mean 2d base quality</p>
           <p>y - quality density</p>
         </label>
-        <line-chart :chart-data="this.dataReadsQualityDensityTemplate"></line-chart>
+        <reads-quality-density-multi :chart-data="this.dataReadsQualityDensityTemplate"></reads-quality-density-multi>
         <label class="control-label">
           <p>x - mean template base quality</p>
           <p>y - quality density</p>
         </label>
-        <line-charty :chart-data="this.dataReadsQualityDensityComplement"></line-charty>
+        <reads-quality-density-multi :chart-data="this.dataReadsQualityDensityComplement"></reads-quality-density-multi>
         <label class="control-label">
           <p>x - mean complement base quality</p>
           <p>y - quality density</p>

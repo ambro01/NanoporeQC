@@ -26,6 +26,9 @@ q_2D <- (out %>% filter(readType == "2D"))$meanBaseQuality
 id <- seq(1, length(q_template))
 
 resultsFast5 <- list.append(resultsFast5, readsQualityMulti = list(id=id, q_template=q_template, q_complement=q_complement, q_2D=q_2D))
+resultsFast5NotSaved <- list(reads2DQualityOutliers=outliersFinder(q_2D))
+resultsFast5NotSaved <- list.append(resultsFast5NotSaved, readsTemplateQualityOutliers=outliersFinder(q_template))
+resultsFast5NotSaved <- list.append(resultsFast5NotSaved, readsComplementQualityOutliers=outliersFinder(q_complement))
 
 # Reads quality density
 out <- tryCatch(readQuality(summaryData), error = function(cond){return (tibble())})

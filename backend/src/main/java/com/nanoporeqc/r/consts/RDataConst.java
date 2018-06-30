@@ -5,7 +5,6 @@ import com.nanoporeqc.r.domain.RVariable;
 import com.nanoporeqc.r.enumeration.RDataEnum;
 import com.nanoporeqc.r.enumeration.RVariableTypeEnum;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,7 +16,7 @@ public class RDataConst {
 
     public static final List<String> SEQUENCES_DISTRIBUTION_DTO_VARIABLES = List.of("fileName", "occurrences", "reads");
 
-    public static final List<String> SUMMARY_INFO_DTO_VARIABLES =  Stream.of(
+    public static final List<String> SUMMARY_INFO_DTO_VARIABLES = Stream.of(
             "id", "fileName", "strandIndexInChannel", "channelIndex", "startTime", "duration", "eventsNo", "hasTemplate",
             "eventsNoTemplate", "hasComplement", "eventsNoComplement", "is2d")
             .collect(Collectors.toList());
@@ -147,6 +146,24 @@ public class RDataConst {
             "density_complement", new RVariable("density_complement", RVariableTypeEnum.DOUBLE, 2),
             "density_2D", new RVariable("density_2D", RVariableTypeEnum.DOUBLE, 2)));
 
+    private static final Map<String, RVariable> OUTLIERS_VARIABLES = Map.of(
+            "outliersCount", new RVariable("outliersCount", RVariableTypeEnum.NUMERIC),
+            "total", new RVariable("total", RVariableTypeEnum.NUMERIC),
+            "proportion", new RVariable("proportion", RVariableTypeEnum.DOUBLE, 2),
+            "outliersMean", new RVariable("outliersMean", RVariableTypeEnum.DOUBLE, 2),
+            "meanWithOutliers", new RVariable("meanWithOutliers", RVariableTypeEnum.DOUBLE, 2),
+            "meanWithoutOutliers", new RVariable("meanWithoutOutliers", RVariableTypeEnum.DOUBLE, 2),
+            "outliersId", new RVariable("outliersId", RVariableTypeEnum.NUMERIC),
+            "outliersValues", new RVariable("outliersValues", RVariableTypeEnum.DOUBLE, 2),
+            "notOutliersId", new RVariable("notOutliersId", RVariableTypeEnum.NUMERIC),
+            "notOutliersValues", new RVariable("notOutliersValues", RVariableTypeEnum.DOUBLE, 2));
+
+    private static final RData BASE_OUTLIERS_QUALITY = new RData(RDataEnum.BASE_OUTLIERS_QUALITY, OUTLIERS_VARIABLES);
+    private static final RData READS_OUTLIERS_QUALITY = new RData(RDataEnum.READS_OUTLIERS_QUALITY, OUTLIERS_VARIABLES);
+    private static final RData READS_2D_OUTLIERS_QUALITY = new RData(RDataEnum.READS_2D_OUTLIERS_QUALITY, OUTLIERS_VARIABLES);
+    private static final RData READS_TEMPLATE_OUTLIERS_QUALITY = new RData(RDataEnum.READS_TEMPLATE_OUTLIERS_QUALITY, OUTLIERS_VARIABLES);
+    private static final RData READS_COMPLEMENT_OUTLIERS_QUALITY = new RData(RDataEnum.READS_COMPLEMENT_OUTLIERS_QUALITY, OUTLIERS_VARIABLES);
+
     public static final Map<RDataEnum, RData> RDataMap = Map.ofEntries(
             Map.entry(RDataEnum.NUCLEOTIDES_COUNTS, NUCLEOTIDES_COUNTS),
             Map.entry(RDataEnum.READS_QUALITY, READS_QUALITY),
@@ -167,6 +184,11 @@ public class RDataConst {
             Map.entry(RDataEnum.KB_PER_CHANNEL, KB_PER_CHANNEL),
             Map.entry(RDataEnum.READS_PER_CHANNEL, READS_PER_CHANNEL),
             Map.entry(RDataEnum.READS_QUALITY_MULTI, READS_QUALITY_MULTI),
-            Map.entry(RDataEnum.READS_QUALITY_DENSITY_MULTI, READS_QUALITY_DENSITY_MULTI));
+            Map.entry(RDataEnum.READS_QUALITY_DENSITY_MULTI, READS_QUALITY_DENSITY_MULTI),
+            Map.entry(RDataEnum.BASE_OUTLIERS_QUALITY, BASE_OUTLIERS_QUALITY),
+            Map.entry(RDataEnum.READS_OUTLIERS_QUALITY, READS_OUTLIERS_QUALITY),
+            Map.entry(RDataEnum.READS_2D_OUTLIERS_QUALITY, READS_2D_OUTLIERS_QUALITY),
+            Map.entry(RDataEnum.READS_TEMPLATE_OUTLIERS_QUALITY, READS_TEMPLATE_OUTLIERS_QUALITY),
+            Map.entry(RDataEnum.READS_COMPLEMENT_OUTLIERS_QUALITY, READS_COMPLEMENT_OUTLIERS_QUALITY));
 
 }

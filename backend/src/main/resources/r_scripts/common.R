@@ -31,3 +31,11 @@
 
     return(record_table)
 }
+
+checkIsEmpty <- function(vector) {
+    if (length(vector) == 0) {
+        return (0)
+    } else {
+        return (vector)
+    }
+}

@@ -19,6 +19,7 @@ q25 <- quantileOut[1]
 q50 <- quantileOut[2]
 q75 <- quantileOut[3]
 resultsFastQ <- list.append(resultsFastQ, readsQuality = list(id=id, quality=quality, mean=mean, median=median, q25=q25, q50=q50, q75=q75))
+resultsFastQNotSaved <- list(readsQualityOutliers = outliersFinder(quality))
 
 # Reads quality denisty
 density_quality <- density(quality)
@@ -39,6 +40,7 @@ id <- df$Cycle
 quality <- df$meanQuality
 
 resultsFastQ <- list.append(resultsFastQ, basesQuality = list(id=id, quality=quality))
+resultsFastQNotSaved <- list.append(resultsFastQNotSaved, basesQualityOutliers = outliersFinder(quality))
 
 # Base quality denisty
 df <- qaSummary[["perCycle"]]

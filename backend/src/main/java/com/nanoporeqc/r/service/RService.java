@@ -83,7 +83,8 @@ public class RService {
     }
 
     private List getDataSetFromR(final RDataEnum rDataEnum, final RVariable rVariable) {
-        final String commandPrefix = "results" + rDataEnum.getType().name() + "$" + rDataEnum.getValue() + "$";
+        final String notSaved = rDataEnum.isNotSaved() ? "NotSaved" : "";
+        final String commandPrefix = "results" + rDataEnum.getType() + notSaved + "$" + rDataEnum.getValue() + "$";
         try {
             switch (rVariable.getType()) {
                 case LOGICAL:

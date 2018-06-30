@@ -55,6 +55,62 @@
           <p>x - read</p>
           <p>y - mean base quality</p>
         </label>
+        <div class="row">
+          <div class="col-sm-4">
+          <pre style="display: block; white-space: pre-line; font-size: 15px">
+            <strong>2D reads</strong>
+            Outliers identified: {{this.dataReadsQualityOutliers2D['outliersCount'][0]}} from {{this.dataReadsQualityOutliers2D['total'][0]}} observations
+            Proportion (%) of outliers: {{this.dataReadsQualityOutliers2D['proportion'][0]}}
+            Mean of the outliers: {{this.dataReadsQualityOutliers2D['outliersMean'][0]}}
+            Mean without removing outliers: {{this.dataReadsQualityOutliers2D['meanWithOutliers'][0]}}
+            Mean if we remove outliers: {{this.dataReadsQualityOutliers2D['meanWithoutOutliers'][0]}}
+            <button style="margin-top:20px" class="btn btn-primary btn-wd code-button"
+                    @click.prevent="csvReadsQualityOutliers('2D')">
+              Get outliers
+            </button>
+            <button class="btn btn-primary btn-wd refresh-button"
+                    @click.prevent="csvReadsQualityDataWithoutOutliers('2D')">
+              Get data without outliers
+            </button>
+          </pre>
+          </div>
+          <div class="col-sm-4">
+          <pre style="display: block; white-space: pre-line; font-size: 15px">
+            <strong>Template reads</strong>
+            Outliers identified: {{this.dataReadsQualityOutliers2D['outliersCount'][0]}} from {{this.dataReadsQualityOutliers2D['total'][0]}} observations
+            Proportion (%) of outliers: {{this.dataReadsQualityOutliers2D['proportion'][0]}}
+            Mean of the outliers: {{this.dataReadsQualityOutliers2D['outliersMean'][0]}}
+            Mean without removing outliers: {{this.dataReadsQualityOutliers2D['meanWithOutliers'][0]}}
+            Mean if we remove outliers: {{this.dataReadsQualityOutliers2D['meanWithoutOutliers'][0]}}
+            <button style="margin-top:20px" class="btn btn-primary btn-wd code-button"
+                    @click.prevent="csvReadsQualityOutliers('Template')">
+              Get outliers
+            </button>
+            <button class="btn btn-primary btn-wd refresh-button"
+                    @click.prevent="csvReadsQualityDataWithoutOutliers('Template')">
+              Get data without outliers
+            </button>
+          </pre>
+          </div>
+          <div class="col-sm-4">
+          <pre style="display: block; white-space: pre-line; font-size: 15px">
+            <strong>Complement reads</strong>
+            Outliers identified: {{this.dataReadsQualityOutliersTemplate['outliersCount'][0]}} from {{this.dataReadsQualityOutliersTemplate['total'][0]}} observations
+            Proportion (%) of outliers: {{this.dataReadsQualityOutliersTemplate['proportion'][0]}}
+            Mean of the outliers: {{this.dataReadsQualityOutliersTemplate['outliersMean'][0]}}
+            Mean without removing outliers: {{this.dataReadsQualityOutliersTemplate['meanWithOutliers'][0]}}
+            Mean if we remove outliers: {{this.dataReadsQualityOutliersTemplate['meanWithoutOutliers'][0]}}
+            <button style="margin-top:20px" class="btn btn-primary btn-wd code-button"
+                    @click.prevent="csvReadsQualityOutliers('Complement')">
+              Get outliers
+            </button>
+            <button class="btn btn-primary btn-wd refresh-button"
+                    @click.prevent="csvReadsQualityDataWithoutOutliers('Complement')">
+              Get data without outliers
+            </button>
+          </pre>
+          </div>
+        </div>
       </div>
       <div v-if="this.tabIndex === 4">
         <reads-quality-density-multi :chart-data="this.dataReadsQualityDensity2D"></reads-quality-density-multi>
@@ -160,6 +216,9 @@
         dataReadsQualityDensityTemplate: null,
         dataReadsQualityDensityComplement: null,
         dataReadsQualityDensity2D: null,
+        dataReadsQualityOutliers2D: null,
+        dataReadsQualityOutliersTemplate: null,
+        dataReadsQualityOutliersComplement: null,
         tabIndex: 0
       }
     },
@@ -468,6 +527,9 @@
         this.getReadsQualityDensityMulti()
         this.getReadsPerChannel()
         this.getKbPerChannel()
+        this.getReadsQualityOutliers2D()
+        this.getReadsQualityOutliersTemplate()
+        this.getReadsQualityOutliersComplement()
       },
 
       refreshData () {
@@ -483,6 +545,9 @@
             break
           case 3:
             this.getReadsQualityMulti()
+            this.getReadsQualityOutliers2D()
+            this.getReadsQualityOutliersTemplate()
+            this.getReadsQualityOutliersComplement()
             break
           case 4:
             this.getReadsQualityDensityMulti()
@@ -698,7 +763,73 @@
         }).catch(e => {
           console.error(e)
         })
+      },
+
+      getReadsQualityOutliers2D () {
+        this.$http.get(`api/analysis/stats/reads2DQualityOutliers`, {
+          params: {
+            valuesNames: ['outliersCount', 'total', 'proportion', 'outliersMean', 'meanWithOutliers', 'meanWithoutOutliers']
+          }
+        }).then(response => {
+          this.dataReadsQualityOutliers2D = response.data.values
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      getReadsQualityOutliersTemplate () {
+        this.$http.get(`api/analysis/stats/readsTemplateQualityOutliers`, {
+          params: {
+            valuesNames: ['outliersCount', 'total', 'proportion', 'outliersMean', 'meanWithOutliers', 'meanWithoutOutliers']
+          }
+        }).then(response => {
+          this.dataReadsQualityOutliersTemplate = response.data.values
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      getReadsQualityOutliersComplement () {
+        this.$http.get(`api/analysis/stats/readsComplementQualityOutliers`, {
+          params: {
+            valuesNames: ['outliersCount', 'total', 'proportion', 'outliersMean', 'meanWithOutliers', 'meanWithoutOutliers']
+          }
+        }).then(response => {
+          this.dataReadsQualityOutliersComplement = response.data.values
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+
+      csvReadsQualityOutliers (type) {
+        this.$http.get(`api/csv/reads` + type + `QualityOutliers`, {
+          params: {
+            valuesNames: ['outliersId', 'outliersValues']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'reads_quality_outliers.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      csvReadsQualityDataWithoutOutliers (type) {
+        this.$http.get(`api/csv/reads` + type + `QualityOutliers`, {
+          params: {
+            valuesNames: ['notOutliersId', 'notOutliersValues']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'reads_quality_without_outliers.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
       }
+
     }
   }
 </script>
@@ -722,7 +853,12 @@
     float: right;
   }
 
+  .code-button {
+    float: left;
+  }
+
   .left-margin {
     margin-left: 20px;
   }
+
 </style>

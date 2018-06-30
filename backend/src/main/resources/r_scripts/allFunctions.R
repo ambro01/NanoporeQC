@@ -75,8 +75,38 @@ readQuality <- function(summaryData) {
 }
 
 readQualityFromShortReadQ <- function(fq) {
-    readType <- factor(.readtypeFromFASTQ(fq), levels = c('template', 'complement', '2D'))
     meanBaseQuality <- ShortRead::alphabetScore(Biostrings::quality(fq)) / ShortRead::width(fq)
-    res <- data.frame(readType, meanBaseQuality)
+    res <- data.frame(meanBaseQuality)
     return (res)
+}
+
+outliersFinder <- function(dataSet) {
+    input <- dataSet
+    total <- sum(!is.na(dataSet))
+    unknownCount <- sum(is.na(dataSet))
+    meanWithOutliers <- mean(dataSet, na.rm = TRUE)
+    par(mfrow=c(2, 2), oma=c(0,0,3,0))
+    outlier <- boxplot.stats(dataSet)$out
+    outliersMean <- mean(outlier)
+    outliersMean[is.na(outliersMean) || is.nan(outliersMean)] <- 0
+    dataSet <- ifelse(dataSet %in% outlier, NA, dataSet)
+    otliersCount <- sum(is.na(dataSet))
+    meanWithoutOutliers <- mean(dataSet, na.rm = TRUE)
+    outliersIndices <- which(is.na(dataSet))
+    inputNa <- which(is.na(input))
+    outliersIndices <- outliersIndices[!outliersIndices %in% inputNa]
+    notOutliersIndices <- which(!is.na(dataSet))
+
+    outliersResults <- list(outliersCount = otliersCount-unknownCount)
+    outliersResults <- list.append(outliersResults, total = total)
+    outliersResults <- list.append(outliersResults, proportion = (otliersCount - unknownCount) / total*100)
+    outliersResults <- list.append(outliersResults, outliersMean = outliersMean)
+    outliersResults <- list.append(outliersResults, meanWithOutliers = meanWithOutliers)
+    outliersResults <- list.append(outliersResults, meanWithoutOutliers = meanWithoutOutliers)
+    outliersResults <- list.append(outliersResults, outliersId=checkIsEmpty(outliersIndices))
+    outliersResults <- list.append(outliersResults, outliersValues=checkIsEmpty(input[outliersIndices]))
+    outliersResults <- list.append(outliersResults, notOutliersId=checkIsEmpty(notOutliersIndices))
+    outliersResults <- list.append(outliersResults, notOutliersValues=checkIsEmpty(input[notOutliersIndices]))
+
+    return (outliersResults)
 }

@@ -5,6 +5,9 @@ import com.nanoporeqc.analysis.domain.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+
 public enum RDataEnum {
     NUCLEOTIDES_COUNTS("nucleotidesCounts", Type.FastQ),
     READS_QUALITY("readsQuality", Type.FastQ),
@@ -30,10 +33,18 @@ public enum RDataEnum {
     EVENTS_DATA("eventsData", Type.Fast5),
     BASE_CALLED("baseCalled", Type.Fast5),
     BASE_CALLED_TEMPLATE("baseCalledTemplate", Type.Fast5),
-    BASE_CALLED_COMPLEMENT("baseCalledComplement", Type.Fast5);
+    BASE_CALLED_COMPLEMENT("baseCalledComplement", Type.Fast5),
+
+    BASE_OUTLIERS_QUALITY("basesQualityOutliers", Type.FastQ, TRUE),
+    READS_OUTLIERS_QUALITY("readsQualityOutliers", Type.FastQ, TRUE),
+    READS_2D_OUTLIERS_QUALITY("reads2DQualityOutliers", Type.Fast5, TRUE),
+    READS_TEMPLATE_OUTLIERS_QUALITY("readsTemplateQualityOutliers", Type.Fast5, TRUE),
+    READS_COMPLEMENT_OUTLIERS_QUALITY("readsComplementQualityOutliers", Type.Fast5, TRUE);
+
 
     private String value;
     private Type type;
+    private Boolean notSaved = FALSE;
 
     private static final Map<String, RDataEnum> map = new HashMap<>();
 
@@ -52,13 +63,22 @@ public enum RDataEnum {
         this.type = type;
     }
 
+    RDataEnum(final String value, final Type type, final Boolean notSaved) {
+        this.value = value;
+        this.type = type;
+        this.notSaved = notSaved;
+    }
+
     public String getValue() {
-        return value;
+        return this.value;
     }
 
     public Type getType() {
-        return type;
+        return this.type;
     }
 
+    public Boolean isNotSaved() {
+        return this.notSaved;
+    }
 
 }

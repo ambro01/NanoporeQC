@@ -1,5 +1,7 @@
 package com.nanoporeqc.analysis.dto;
 
+import com.nanoporeqc.analysis.domain.QualityStatus;
+import com.nanoporeqc.analysis.domain.Type;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,7 +31,9 @@ public class AnalysisDto {
 
     @NotNull
     @NotEmpty
-    private String type;
+    private Type type;
+
+    private QualityStatus qualityStatus;
 
     private Boolean hasHtmlReport;
 

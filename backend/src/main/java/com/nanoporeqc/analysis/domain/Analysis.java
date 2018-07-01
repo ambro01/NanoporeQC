@@ -48,6 +48,10 @@ public class Analysis {
     @Column(name = "TYPE")
     private Type type;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "QUALITY_STATUS")
+    private QualityStatus qualityStatus;
+
     @Column(name = "MAIN_SUMMARY")
     private Blob mainSummary;
 

@@ -1,62 +1,65 @@
 <template>
-  <div class="card">
-    <div class="header">
-      <h4 class="title">Report of analysis</h4>
-      <button class="btn btn-primary btn-wd refresh-button left-margin"
-              title="Download HTML report from FastQC tool"
-              @click.prevent="downloadHtmlReport">
-        HTML report
-      </button>
-      <button class="btn btn-primary btn-wd refresh-button left-margin"
-              @click.prevent="exportCsv">
-        Export CSV
-      </button>
-      <button class="btn btn-primary btn-wd refresh-button left-margin"
-              @click.prevent="refreshData">
-        Refresh
-      </button>
-    </div>
-    <div class="content">
-      <vue-tabs active-tab-color="#f4f3ef" @tab-change="handleTabChange">
-        <v-tab title="Summary info"></v-tab>
-        <v-tab title="Reads accumulation"></v-tab>
-        <v-tab title="Active channels"></v-tab>
-        <v-tab title="Reads quality"></v-tab>
-        <v-tab title="Reads quality density"></v-tab>
-        <v-tab title="Reads quality factors"></v-tab>
-        <v-tab title="Reads category counts"></v-tab>
-        <v-tab title="Events"></v-tab>
-        <v-tab title="Reads per channel"></v-tab>
-        <v-tab title="Kilobases per channel"></v-tab>
-      </vue-tabs>
-      <div v-if="this.tabIndex === 0">
-        <summary-info :sourceData="this.dataSummaryInfo" v-if="this.dataSummaryInfo != null"></summary-info>
-        <label class="control-label">
-          <p>Summary information about files of analysis</p>
-        </label>
+  <div>
+    <div class="card">
+      <div class="header">
+        <h4 class="title">Report of analysis</h4>
+        <button class="btn btn-primary btn-wd refresh-button left-margin"
+                title="Download HTML report from FastQC tool"
+                @click.prevent="downloadHtmlReport">
+          HTML report
+        </button>
+        <button class="btn btn-primary btn-wd refresh-button left-margin"
+                @click.prevent="exportCsv">
+          Export CSV
+        </button>
+        <button class="btn btn-primary btn-wd refresh-button left-margin"
+                @click.prevent="refreshData">
+          Refresh
+        </button>
       </div>
-      <div v-if="this.tabIndex === 1">
-        <reads-accumulation :chart-data="this.dataReadsAccumulation"></reads-accumulation>
-        <label class="control-label">
-          <p>x - duration of an experiment [sec]</p>
-          <p>y - accumulation of reads</p>
-        </label>
-      </div>
-      <div v-if="this.tabIndex === 2">
-        <active-channels :chart-data="this.dataActiveChannels"></active-channels>
-        <label class="control-label">
-          <p>x - duration of an experiment [sec]</p>
-          <p>y - number of active channels</p>
-        </label>
-      </div>
-      <div v-if="this.tabIndex === 3">
-        <reads-quality-multi :chart-data="this.dataReadsQualityMulti"></reads-quality-multi>
-        <label class="control-label">
-          <p>x - read</p>
-          <p>y - mean base quality</p>
-        </label>
-        <div class="row">
-          <div class="col-sm-4">
+      <div class="content">
+        <vue-tabs active-tab-color="#f4f3ef" @tab-change="handleTabChange">
+          <v-tab title="Summary info"></v-tab>
+          <v-tab title="Reads accumulation"></v-tab>
+          <v-tab title="Active channels"></v-tab>
+          <v-tab title="Reads quality"></v-tab>
+          <v-tab title="Reads quality density"></v-tab>
+          <v-tab title="Reads quality factors"></v-tab>
+          <v-tab title="Reads category counts"></v-tab>
+          <v-tab title="Events"></v-tab>
+          <v-tab title="Reads per channel"></v-tab>
+          <v-tab title="Kilobases per channel"></v-tab>
+        </vue-tabs>
+        <div v-if="this.tabIndex === 0">
+          <summary-info :sourceData="this.dataSummaryInfo" v-if="this.dataSummaryInfo != null"></summary-info>
+          <label class="control-label">
+            <p>Summary information about files of analysis</p>
+          </label>
+        </div>
+        <div v-if="this.tabIndex === 1">
+          <reads-accumulation :chart-data="this.dataReadsAccumulation"></reads-accumulation>
+          <label class="control-label">
+            <p>x - duration of an experiment [sec]</p>
+            <p>y - accumulation of reads</p>
+          </label>
+        </div>
+        <div v-if="this.tabIndex === 2">
+          <active-channels :chart-data="this.dataActiveChannels"></active-channels>
+          <label class="control-label">
+            <p>x - duration of an experiment [sec]</p>
+            <p>y - number of active channels</p>
+          </label>
+        </div>
+        <div v-if="this.tabIndex === 3">
+          <reads-quality-multi :chart-data="this.dataReadsQualityMulti"></reads-quality-multi>
+          <label class="control-label">
+            <p>x - read</p>
+            <p>y - mean base quality</p>
+          </label>
+          <hr>
+          <div class="row">
+            <h3 style="margin-left: 20px">Outliers summary</h3>
+            <div class="col-sm-4">
           <pre style="display: block; white-space: pre-line; font-size: 15px">
             <strong>2D reads</strong>
             Outliers identified: {{this.dataReadsQualityOutliers2D['outliersCount'][0]}} from {{this.dataReadsQualityOutliers2D['total'][0]}} observations
@@ -73,8 +76,8 @@
               Get data without outliers
             </button>
           </pre>
-          </div>
-          <div class="col-sm-4">
+            </div>
+            <div class="col-sm-4">
           <pre style="display: block; white-space: pre-line; font-size: 15px">
             <strong>Template reads</strong>
             Outliers identified: {{this.dataReadsQualityOutliers2D['outliersCount'][0]}} from {{this.dataReadsQualityOutliers2D['total'][0]}} observations
@@ -91,8 +94,8 @@
               Get data without outliers
             </button>
           </pre>
-          </div>
-          <div class="col-sm-4">
+            </div>
+            <div class="col-sm-4">
           <pre style="display: block; white-space: pre-line; font-size: 15px">
             <strong>Complement reads</strong>
             Outliers identified: {{this.dataReadsQualityOutliersTemplate['outliersCount'][0]}} from {{this.dataReadsQualityOutliersTemplate['total'][0]}} observations
@@ -109,61 +112,64 @@
               Get data without outliers
             </button>
           </pre>
+            </div>
           </div>
         </div>
-      </div>
-      <div v-if="this.tabIndex === 4">
-        <reads-quality-density-multi :chart-data="this.dataReadsQualityDensity2D"></reads-quality-density-multi>
-        <label class="control-label">
-          <p>x - mean 2d base quality</p>
-          <p>y - quality density</p>
-        </label>
-        <reads-quality-density-multi :chart-data="this.dataReadsQualityDensityTemplate"></reads-quality-density-multi>
-        <label class="control-label">
-          <p>x - mean template base quality</p>
-          <p>y - quality density</p>
-        </label>
-        <reads-quality-density-multi :chart-data="this.dataReadsQualityDensityComplement"></reads-quality-density-multi>
-        <label class="control-label">
-          <p>x - mean complement base quality</p>
-          <p>y - quality density</p>
-        </label>
-      </div>
-      <div v-if="this.tabIndex === 5">
-        <reads-category-quality :chart-data="this.dataReadsCategoryQuality"></reads-category-quality>
-        <label class="control-label">
-          <p>x - read categories</p>
-          <p>y - mean base quality factors</p>
-        </label>
-      </div>
-      <div v-if="this.tabIndex === 6">
-        <reads-category-counts :chart-data="this.dataReadsCategoryCounts"></reads-category-counts>
-        <label class="control-label">
-          <p>y - number of readings for file and each strand category</p>
-        </label>
-      </div>
-      <div v-if="this.tabIndex === 7">
-        <events-counts :chart-data="this.dataEventsCounts"></events-counts>
-        <label class="control-label">
-          <p>x - duration of an experiment [sec]</p>
-          <p>y - number of events</p>
-        </label>
-      </div>
-      <div v-if="this.tabIndex === 8">
-        <reads-per-channel :chart-data="this.dataReadsPerChannel"></reads-per-channel>
-        <label class="control-label">
-          <p>x - channel</p>
-          <p>y - number of reads</p>
-        </label>
-      </div>
-      <div v-if="this.tabIndex === 9">
-        <kb-per-channel :chart-data="this.dataKbPerChannel"></kb-per-channel>
-        <label class="control-label">
-          <p>x - channel</p>
-          <p>y - kb (kilobase pair) of data </p>
-        </label>
+        <div v-if="this.tabIndex === 4">
+          <reads-quality-density-multi :chart-data="this.dataReadsQualityDensity2D"></reads-quality-density-multi>
+          <label class="control-label">
+            <p>x - mean 2d base quality</p>
+            <p>y - quality density</p>
+          </label>
+          <reads-quality-density-multi :chart-data="this.dataReadsQualityDensityTemplate"></reads-quality-density-multi>
+          <label class="control-label">
+            <p>x - mean template base quality</p>
+            <p>y - quality density</p>
+          </label>
+          <reads-quality-density-multi
+            :chart-data="this.dataReadsQualityDensityComplement"></reads-quality-density-multi>
+          <label class="control-label">
+            <p>x - mean complement base quality</p>
+            <p>y - quality density</p>
+          </label>
+        </div>
+        <div v-if="this.tabIndex === 5">
+          <reads-category-quality :chart-data="this.dataReadsCategoryQuality"></reads-category-quality>
+          <label class="control-label">
+            <p>x - read categories</p>
+            <p>y - mean base quality factors</p>
+          </label>
+        </div>
+        <div v-if="this.tabIndex === 6">
+          <reads-category-counts :chart-data="this.dataReadsCategoryCounts"></reads-category-counts>
+          <label class="control-label">
+            <p>y - number of readings for file and each strand category</p>
+          </label>
+        </div>
+        <div v-if="this.tabIndex === 7">
+          <events-counts :chart-data="this.dataEventsCounts"></events-counts>
+          <label class="control-label">
+            <p>x - duration of an experiment [sec]</p>
+            <p>y - number of events</p>
+          </label>
+        </div>
+        <div v-if="this.tabIndex === 8">
+          <reads-per-channel :chart-data="this.dataReadsPerChannel"></reads-per-channel>
+          <label class="control-label">
+            <p>x - channel</p>
+            <p>y - number of reads</p>
+          </label>
+        </div>
+        <div v-if="this.tabIndex === 9">
+          <kb-per-channel :chart-data="this.dataKbPerChannel"></kb-per-channel>
+          <label class="control-label">
+            <p>x - channel</p>
+            <p>y - kb (kilobase pair) of data </p>
+          </label>
+        </div>
       </div>
     </div>
+    <quality-status :qualityStatus="this.qualityStatus"></quality-status>
   </div>
 </template>
 
@@ -177,7 +183,8 @@
   import EventsCounts from 'src/components/Charts/Ioniser/fast5/EventsCounts.vue'
   import ReadsPerChannel from 'src/components/Charts/Ioniser/fast5/ReadsPerChannel.vue'
   import KbPerChannel from 'src/components/Charts/Ioniser/fast5/KbPerChannel.vue'
-  import SummaryInfo from 'src/components/Stats/Ioniser/SummaryInfo.vue'
+  import SummaryInfo from 'src/components/Stats/SummaryInfo.vue'
+  import QualityStatus from 'src/components/Parts/QualityStatus.vue'
   import StatsCard from '../../UIComponents/Cards/StatsCard.vue'
 
   const TEXT_CSV = 'text/csv'
@@ -196,10 +203,12 @@
       EventsCounts,
       ReadsPerChannel,
       KbPerChannel,
-      SummaryInfo
+      SummaryInfo,
+      QualityStatus
     },
     props: [
-      'id'
+      'id',
+      'qualityStatus'
     ],
     data () {
       return {
@@ -326,7 +335,7 @@
       getReadsCategoryQuality () {
         this.$http.get(`api/analysis/stats/readsCategoryQuality`, {
           params: {
-            valuesNames: ['category', 'min', 'max', 'mean', 'median']
+            valuesNames: ['category', 'min', 'max', 'mean', 'median', 'q25', 'q75']
           }
         }).then(response => {
           this.dataReadsCategoryQuality = {
@@ -343,9 +352,19 @@
                 data: response.data.values['mean']
               },
               {
-                label: 'median',
+                label: 'q25',
+                backgroundColor: '#d392f8',
+                data: response.data.values['q25']
+              },
+              {
+                label: 'median/q50',
                 backgroundColor: '#47f889',
                 data: response.data.values['median']
+              },
+              {
+                label: 'q75',
+                backgroundColor: '#8f8792',
+                data: response.data.values['q75']
               },
               {
                 label: 'max',
@@ -511,6 +530,39 @@
               }
             ]
           }
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      getReadsQualityOutliers2D () {
+        this.$http.get(`api/analysis/stats/reads2DQualityOutliers`, {
+          params: {
+            valuesNames: ['outliersCount', 'total', 'proportion', 'outliersMean', 'meanWithOutliers', 'meanWithoutOutliers']
+          }
+        }).then(response => {
+          this.dataReadsQualityOutliers2D = response.data.values
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      getReadsQualityOutliersTemplate () {
+        this.$http.get(`api/analysis/stats/readsTemplateQualityOutliers`, {
+          params: {
+            valuesNames: ['outliersCount', 'total', 'proportion', 'outliersMean', 'meanWithOutliers', 'meanWithoutOutliers']
+          }
+        }).then(response => {
+          this.dataReadsQualityOutliersTemplate = response.data.values
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      getReadsQualityOutliersComplement () {
+        this.$http.get(`api/analysis/stats/readsComplementQualityOutliers`, {
+          params: {
+            valuesNames: ['outliersCount', 'total', 'proportion', 'outliersMean', 'meanWithOutliers', 'meanWithoutOutliers']
+          }
+        }).then(response => {
+          this.dataReadsQualityOutliersComplement = response.data.values
         }).catch(e => {
           console.error(e)
         })
@@ -717,6 +769,36 @@
           console.error(e)
         })
       },
+      csvReadsQualityOutliers (type) {
+        this.$http.get(`api/csv/reads` + type + `QualityOutliers`, {
+          params: {
+            valuesNames: ['outliersId', 'outliersValues']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'reads_quality_outliers.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      csvReadsQualityDataWithoutOutliers (type) {
+        this.$http.get(`api/csv/reads` + type + `QualityOutliers`, {
+          params: {
+            valuesNames: ['notOutliersId', 'notOutliersValues']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'reads_quality_without_outliers.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
 
       exportCsv () {
         switch (this.tabIndex) {
@@ -759,71 +841,6 @@
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(blob)
           link.download = 'fastqc_report.html'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-
-      getReadsQualityOutliers2D () {
-        this.$http.get(`api/analysis/stats/reads2DQualityOutliers`, {
-          params: {
-            valuesNames: ['outliersCount', 'total', 'proportion', 'outliersMean', 'meanWithOutliers', 'meanWithoutOutliers']
-          }
-        }).then(response => {
-          this.dataReadsQualityOutliers2D = response.data.values
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      getReadsQualityOutliersTemplate () {
-        this.$http.get(`api/analysis/stats/readsTemplateQualityOutliers`, {
-          params: {
-            valuesNames: ['outliersCount', 'total', 'proportion', 'outliersMean', 'meanWithOutliers', 'meanWithoutOutliers']
-          }
-        }).then(response => {
-          this.dataReadsQualityOutliersTemplate = response.data.values
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      getReadsQualityOutliersComplement () {
-        this.$http.get(`api/analysis/stats/readsComplementQualityOutliers`, {
-          params: {
-            valuesNames: ['outliersCount', 'total', 'proportion', 'outliersMean', 'meanWithOutliers', 'meanWithoutOutliers']
-          }
-        }).then(response => {
-          this.dataReadsQualityOutliersComplement = response.data.values
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-
-      csvReadsQualityOutliers (type) {
-        this.$http.get(`api/csv/reads` + type + `QualityOutliers`, {
-          params: {
-            valuesNames: ['outliersId', 'outliersValues']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'reads_quality_outliers.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvReadsQualityDataWithoutOutliers (type) {
-        this.$http.get(`api/csv/reads` + type + `QualityOutliers`, {
-          params: {
-            valuesNames: ['notOutliersId', 'notOutliersValues']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'reads_quality_without_outliers.csv'
           link.click()
         }).catch(e => {
           console.error(e)

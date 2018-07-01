@@ -17,6 +17,7 @@ create table ANALYSES (
   NAME varchar(50),
   COMMENT varchar(150),
   TYPE varchar(10),
+  QUALITY_STATUS varchar(10),
   MAIN_SUMMARY mediumblob,
   ADDITIONAL_SUMMARY mediumblob,
   HTML_REPORT mediumblob,

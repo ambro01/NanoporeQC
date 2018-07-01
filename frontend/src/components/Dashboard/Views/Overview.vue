@@ -94,19 +94,19 @@
             type: 'warning',
             icon: 'ti-pulse',
             title: 'Last analysis run',
-            value: '$1,345'
+            value: null
           },
           {
             type: 'success',
             icon: 'ti-flag-alt',
-            title: 'Last high quality analysis run',
-            value: '23'
+            title: 'Last success quality analysis run',
+            value: null
           },
           {
             type: 'danger',
             icon: 'ti-stats-up',
-            title: 'High quality analyses rate',
-            value: '+45'
+            title: 'Success quality analyses rate',
+            value: null
           }
         ],
         statsCardsFastQ: [
@@ -120,19 +120,19 @@
             type: 'warning',
             icon: 'ti-pulse',
             title: 'Last analysis run',
-            value: '$1,345'
+            value: null
           },
           {
             type: 'success',
             icon: 'ti-flag-alt',
-            title: 'Last high quality analysis run',
-            value: '23'
+            title: 'Last success quality analysis run',
+            value: null
           },
           {
             type: 'danger',
             icon: 'ti-stats-up',
-            title: 'High quality analyses rate',
-            value: '+45'
+            title: 'Success quality analyses rate',
+            value: null
           }
         ]
       }
@@ -142,6 +142,10 @@
       this.getAnalysesAmount(fastQ)
       this.getLastAnalysisTime(fast5)
       this.getLastAnalysisTime(fastQ)
+      this.getLastSuccessAnalysisTime(fast5)
+      this.getLastSuccessAnalysisTime(fastQ)
+      this.getSuccessAnalysesRatio(fast5)
+      this.getSuccessAnalysesRatio(fastQ)
     },
     methods: {
       goToNewAnalysis () {
@@ -172,6 +176,34 @@
             }
             if (type === fastQ) {
               this.statsCardsFastQ[1].value = response.data
+            }
+          })
+          .catch(e => {
+            console.error(e)
+          })
+      },
+      getLastSuccessAnalysisTime (type) {
+        this.$http.get(`api/analysis/last-success/` + type)
+          .then(response => {
+            if (type === fast5) {
+              this.statsCardsFast5[2].value = response.data
+            }
+            if (type === fastQ) {
+              this.statsCardsFastQ[2].value = response.data
+            }
+          })
+          .catch(e => {
+            console.error(e)
+          })
+      },
+      getSuccessAnalysesRatio (type) {
+        this.$http.get(`api/analysis/success-ratio/` + type)
+          .then(response => {
+            if (type === fast5) {
+              this.statsCardsFast5[3].value = response.data
+            }
+            if (type === fastQ) {
+              this.statsCardsFastQ[3].value = response.data
             }
           })
           .catch(e => {

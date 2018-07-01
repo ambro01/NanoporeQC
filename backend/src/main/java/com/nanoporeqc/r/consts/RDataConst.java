@@ -122,7 +122,9 @@ public class RDataConst {
             "min", new RVariable("min", RVariableTypeEnum.DOUBLE, 2),
             "max", new RVariable("max", RVariableTypeEnum.DOUBLE, 2),
             "mean", new RVariable("mean", RVariableTypeEnum.DOUBLE, 2),
-            "median", new RVariable("median", RVariableTypeEnum.DOUBLE, 2)));
+            "median", new RVariable("median", RVariableTypeEnum.DOUBLE, 2),
+            "q25", new RVariable("q25", RVariableTypeEnum.DOUBLE, 2),
+            "q75", new RVariable("q75", RVariableTypeEnum.DOUBLE, 2)));
 
     private static final RData READS_PER_CHANNEL = new RData(RDataEnum.READS_PER_CHANNEL, Map.of(
             "channel", new RVariable("channel", RVariableTypeEnum.NUMERIC),
@@ -158,6 +160,12 @@ public class RDataConst {
             "notOutliersId", new RVariable("notOutliersId", RVariableTypeEnum.NUMERIC),
             "notOutliersValues", new RVariable("notOutliersValues", RVariableTypeEnum.DOUBLE, 2));
 
+    private static final RData READS_QUALITY_STATUS = new RData(RDataEnum.READS_QUALITY_STATUS, Map.of(
+            "status", new RVariable("status", RVariableTypeEnum.CHARACTER)));
+
+    private static final RData BASES_QUALITY_STATUS = new RData(RDataEnum.BASES_QUALITY_STATUS, Map.of(
+            "status", new RVariable("status", RVariableTypeEnum.CHARACTER)));
+
     private static final RData BASE_OUTLIERS_QUALITY = new RData(RDataEnum.BASE_OUTLIERS_QUALITY, OUTLIERS_VARIABLES);
     private static final RData READS_OUTLIERS_QUALITY = new RData(RDataEnum.READS_OUTLIERS_QUALITY, OUTLIERS_VARIABLES);
     private static final RData READS_2D_OUTLIERS_QUALITY = new RData(RDataEnum.READS_2D_OUTLIERS_QUALITY, OUTLIERS_VARIABLES);
@@ -189,6 +197,8 @@ public class RDataConst {
             Map.entry(RDataEnum.READS_OUTLIERS_QUALITY, READS_OUTLIERS_QUALITY),
             Map.entry(RDataEnum.READS_2D_OUTLIERS_QUALITY, READS_2D_OUTLIERS_QUALITY),
             Map.entry(RDataEnum.READS_TEMPLATE_OUTLIERS_QUALITY, READS_TEMPLATE_OUTLIERS_QUALITY),
-            Map.entry(RDataEnum.READS_COMPLEMENT_OUTLIERS_QUALITY, READS_COMPLEMENT_OUTLIERS_QUALITY));
+            Map.entry(RDataEnum.READS_COMPLEMENT_OUTLIERS_QUALITY, READS_COMPLEMENT_OUTLIERS_QUALITY),
+            Map.entry(RDataEnum.READS_QUALITY_STATUS, READS_QUALITY_STATUS),
+            Map.entry(RDataEnum.BASES_QUALITY_STATUS, BASES_QUALITY_STATUS));
 
 }

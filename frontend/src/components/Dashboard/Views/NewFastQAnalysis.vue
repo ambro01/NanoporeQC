@@ -1,17 +1,25 @@
 <template>
   <div>
-    <files-management :analysisType="this.typeName" v-on:filesupload="onFilesUploaded"
-                      v-if="!this.showSave && !this.showReport"></files-management>
-    <analysis-save :analysisType="this.typeName" @savedAnalysis="onSavedAnalysis" v-if=this.showSave></analysis-save>
+    <files-management :analysisType="this.typeName"
+                      v-on:filesupload="onFilesUploaded"
+                      v-if="!this.showSave && !this.showReport">
+    </files-management>
+    <analysis-save :analysisType="this.typeName"
+                   :qualityStatus="this.basesQualityStatus"
+                   @savedAnalysis="onSavedAnalysis"
+                   v-if=this.showSave>
+    </analysis-save>
     <div class="card" v-if=this.showReport>
-      <report-stats-fast-q :id=0 v-if=this.showReport></report-stats-fast-q>
+      <report-stats-fast-q :id=0
+                           v-if=this.showReport>
+      </report-stats-fast-q>
     </div>
   </div>
 </template>
 
 <script>
-  import FilesManagement from 'src/components/UIComponents/Inputs/FilesManagement.vue'
-  import AnalysisSave from 'src/components/UIComponents/Inputs/AnalysisSave.vue'
+  import FilesManagement from 'src/components/Parts/FilesManagement.vue'
+  import AnalysisSave from 'src/components/Parts/AnalysisSave.vue'
   import ReportStatsFastQ from 'src/components/Dashboard/Views/ReportStatsFastQ.vue'
 
   export default {
@@ -26,7 +34,8 @@
         loading: false,
         percent: null,
         showReport: false,
-        showSave: false
+        showSave: false,
+        basesQualityStatus: null
       }
     },
     methods: {
@@ -39,6 +48,7 @@
         }).then(response => {
           this.showSave = true
           this.showReport = true
+          this.getBasesQualityStatus()
         }).catch(e => {
           this.$toast.error({
             title: 'Error',
@@ -46,24 +56,15 @@
           })
         })
       },
-      loadAnalysis () {
-        this.$http.get(`api/analysis/0`, {
+      getBasesQualityStatus () {
+        this.$http.get(`api/analysis/stats/basesQualityStatus`, {
           params: {
-            type: 'FastQ'
+            valuesNames: ['status']
           }
         }).then(response => {
-          this.reloadData = true
-          this.$toast.success({
-            title: 'Success',
-            message: 'Successful data loading'
-          })
-          this.showSave = true
-          this.showReport = true
+          this.basesQualityStatus = response.data.values['status'][0]
         }).catch(e => {
-          this.$toast.error({
-            title: 'Error',
-            message: 'Data loading failed'
-          })
+          console.error(e)
         })
       }
     }

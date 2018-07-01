@@ -49,10 +49,10 @@ public class ReportService {
         this.analysisRepository = analysisRepository;
     }
 
-    public void saveLocallyFastQCHtmlReport(final String type) {
+    public void saveLocallyFastQCHtmlReport(final Type type) {
         final String dirToSave = findHtmlReportDir();
         fileService.createNewDir(dirToSave);
-        switch (Type.valueOf(type)) {
+        switch (type) {
             case Fast5:
                 generateFastQCHtmlReportFromFile(dirToSave);
                 break;

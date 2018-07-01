@@ -25,9 +25,11 @@
                    v-if=this.showSave>
     </analysis-save>
     <report-stats-fast5 :id="this.detailsId"
+                        :qualityStatus="this.qualityStatus"
                         v-if="this.detailsId > 0 && this.analysisType == 'Fast5'">
     </report-stats-fast5>
     <report-stats-fastQ :id="this.detailsId"
+                        :qualityStatus="this.qualityStatus"
                         v-if="this.detailsId > 0 && this.analysisType == 'FastQ'">
     </report-stats-fastQ>
   </div>
@@ -36,7 +38,7 @@
 <script>
   import ReportStatsFast5 from 'src/components/Dashboard/Views/ReportStatsFast5.vue'
   import ReportStatsFastQ from 'src/components/Dashboard/Views/ReportStatsFastQ.vue'
-  import AnalysisSave from 'src/components/UIComponents/Inputs/AnalysisSave.vue'
+  import AnalysisSave from 'src/components/Parts/AnalysisSave.vue'
 
   const TEXT_HTML = 'text/html'
 
@@ -52,12 +54,14 @@
         parentAnalysisId: null,
         analysisType: '',
         detailsId: 0,
-        columns: ['name', 'comment', 'type', 'runTime', 'viewResults', 'deleteRow', 'runFastQ', 'htmlReport'],
+        qualityStatus: null,
+        columns: ['name', 'comment', 'type', 'qualityStatus', 'runTime', 'viewResults', 'deleteRow', 'runFastQ', 'htmlReport'],
         data: [],
         options: {
           headings: {
             name: 'Analysis name',
             type: 'Type',
+            qualityStatus: 'Quality status',
             runTime: 'Run time',
             comment: 'Comment',
             deleteRow: 'Delete',
@@ -65,7 +69,7 @@
             runFastQ: 'Run FastQ',
             htmlReport: 'HTML report'
           },
-          sortable: ['name', 'type', 'runTime'],
+          sortable: ['name', 'type', 'runTime', 'qualityStatus'],
           filterable: ['name'],
           pagination: {
             edge: false
@@ -85,6 +89,7 @@
             runFastQ: 'button-width',
             htmlReport: 'button-width',
             type: 'type',
+            qualityStatus: 'quality-status',
             runTime: 'run-time',
             comment: 'comment'
           }
@@ -109,7 +114,7 @@
         })
       },
       onShowDetails (row) {
-        this.loadAnalysis(row.id, row.type, row.fastQFromFast5)
+        this.loadAnalysis(row.id, row.type, row.qualityStatus)
       },
       onDeleteRow (rowId, analyseId) {
         this.$http.post(`api/analysis/delete/` + analyseId).then(response => {
@@ -149,7 +154,7 @@
           })
         })
       },
-      loadAnalysis (id, type, fastQFromFast5) {
+      loadAnalysis (id, type, qualityStatus) {
         this.$http.get(`api/analysis/` + id, {
           params: {
             type: type
@@ -162,6 +167,7 @@
           })
           this.detailsId = id
           this.analysisType = type
+          this.qualityStatus = qualityStatus
         }).catch(e => {
           this.$toast.error({
             title: 'Error',
@@ -203,10 +209,14 @@
   }
 
   .run-time {
-    width: 10%;
+    width: 8%;
+  }
+
+  .quality-status {
+    width: 8%;
   }
 
   .comment {
-    width: 20%;
+    width: 30%;
   }
 </style>

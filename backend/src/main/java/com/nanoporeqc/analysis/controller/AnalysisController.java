@@ -1,5 +1,6 @@
 package com.nanoporeqc.analysis.controller;
 
+import com.nanoporeqc.analysis.domain.Type;
 import com.nanoporeqc.analysis.dto.AnalysisDto;
 import com.nanoporeqc.analysis.dto.ChartDto;
 import com.nanoporeqc.analysis.dto.DuplicatedSequencesDto;
@@ -90,13 +91,23 @@ public class AnalysisController {
     }
 
     @GetMapping(value = "/amount/{type}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Long getAnalysesAmount(@PathVariable("type") String type) {
+    public Long getAnalysesAmount(@PathVariable("type") Type type) {
         return analysisService.getAnalysesAmount(type);
     }
 
+    @GetMapping(value = "/success-ratio/{type}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Long getSuccessAnalysesRatio(@PathVariable("type") Type type) {
+        return analysisService.getSuccessAnalysesRatio(type);
+    }
+
     @GetMapping(value = "/last/{type}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getLastAnalysisTime(@PathVariable("type") String type) {
+    public String getLastAnalysisTime(@PathVariable("type") Type type) {
         return analysisService.getLastAnalysisTime(type);
+    }
+
+    @GetMapping(value = "/last-success/{type}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getLastSuccessAnalysisTime(@PathVariable("type") Type type) {
+        return analysisService.getLastSuccessAnalysisTime(type);
     }
 
     @GetMapping(value = "/download-report/{id}")

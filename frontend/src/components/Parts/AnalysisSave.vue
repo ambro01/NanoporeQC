@@ -45,6 +45,7 @@
   export default {
     props: [
       'analysisType',
+      'qualityStatus',
       'parentAnalysisId'
     ],
     data () {
@@ -66,6 +67,7 @@
           name: this.analysisName,
           comment: this.comment,
           type: this.analysisType,
+          qualityStatus: this.qualityStatus,
           parentAnalysisId: this.parentAnalysisId
         }).then(response => {
           if (response.status === 200) {

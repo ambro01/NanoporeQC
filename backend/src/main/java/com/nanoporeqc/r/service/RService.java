@@ -167,8 +167,8 @@ public class RService {
         }
     }
 
-    public RScriptEnum getSummaryFromDirScript(final String type) {
-        switch (Type.valueOf(type)) {
+    public RScriptEnum getSummaryFromDirScript(final Type type) {
+        switch (type) {
             case Fast5:
                 return RScriptEnum.READ_FAST5_SUMMARY_FROM_DIR;
             case FastQ:
@@ -178,8 +178,8 @@ public class RService {
         }
     }
 
-    public RScriptEnum getGenerateDataScript(final String type) {
-        switch (Type.valueOf(type)) {
+    public RScriptEnum getGenerateDataScript(final Type type) {
+        switch (type) {
             case Fast5:
                 return RScriptEnum.GENERATE_DATA_FAST5;
             case FastQ:

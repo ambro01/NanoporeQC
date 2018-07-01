@@ -26,9 +26,23 @@ q_2D <- (out %>% filter(readType == "2D"))$meanBaseQuality
 id <- seq(1, length(q_template))
 
 resultsFast5 <- list.append(resultsFast5, readsQualityMulti = list(id=id, q_template=q_template, q_complement=q_complement, q_2D=q_2D))
+
+# Outliers of reads quality
 resultsFast5NotSaved <- list(reads2DQualityOutliers=outliersFinder(q_2D))
 resultsFast5NotSaved <- list.append(resultsFast5NotSaved, readsTemplateQualityOutliers=outliersFinder(q_template))
 resultsFast5NotSaved <- list.append(resultsFast5NotSaved, readsComplementQualityOutliers=outliersFinder(q_complement))
+
+# Checking qaulity status
+quantile25 <- quantile(q_2D, 0.25, na.rm = TRUE, names = FALSE)
+median <- median(q_2D, na.rm = TRUE)
+status <- 'Success'
+if (median < 20 || quantile25 < 10) {
+    status <- 'Warning'
+}
+if (median < 10 || quantile25 < 5) {
+    status <- 'Failure'
+}
+resultsFast5 <- list.append(resultsFast5, readsQualityStatus = list(status=status))
 
 # Reads quality density
 out <- tryCatch(readQuality(summaryData), error = function(cond){return (tibble())})

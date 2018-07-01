@@ -1,51 +1,53 @@
 <template>
-  <div class="card">
-    <div class="header">
-      <h4 class="title">Report of analysis</h4>
-      <button class="btn btn-primary btn-wd refresh-button left-margin"
-              title="Download HTML report from FastQC tool"
-              @click.prevent="downloadHtmlReport">
-        HTML report
-      </button>
-      <button class="btn btn-primary btn-wd refresh-button left-margin"
-              title="Download CSV data set"
-              @click.prevent="exportCsv">
-        Export CSV
-      </button>
-      <button class="btn btn-primary btn-wd refresh-button left-margin"
-              title="Send request again"
-              @click.prevent="refreshData">
-        Refresh
-      </button>
-    </div>
-    <div class="content">
-      <vue-tabs active-tab-color="#f4f3ef" @tab-change="handleTabChange">
-        <v-tab title="Nucleotides counts"></v-tab>
-        <v-tab title="Reads quality"></v-tab>
-        <v-tab title="Reads quality density"></v-tab>
-        <v-tab title="Bases calls"></v-tab>
-        <v-tab title="Bases quality"></v-tab>
-        <v-tab title="Bases quality density"></v-tab>
-        <v-tab title="Bases CG content"></v-tab>
-        <v-tab title="Bases CG density"></v-tab>
-        <v-tab title="Sequences distribution"></v-tab>
-        <v-tab title="Duplicated sequences"></v-tab>
-      </vue-tabs>
-      <div v-if="this.tabIndex === 0">
-        <nucleotides-counts :chart-data="this.dataNucleotidesCounts"></nucleotides-counts>
-        <label class="control-label">
-          <p>A - adenine, G - guanine, C - cytosine. T - thymine, N - undefined</p>
-          <p>y - number of nucleotides in each category</p>
-        </label>
+  <div>
+    <div class="card">
+      <div class="header">
+        <h4 class="title">Report of analysis</h4>
+        <button class="btn btn-primary btn-wd refresh-button left-margin"
+                title="Download HTML report from FastQC tool"
+                @click.prevent="downloadHtmlReport">
+          HTML report
+        </button>
+        <button class="btn btn-primary btn-wd refresh-button left-margin"
+                title="Download CSV data set"
+                @click.prevent="exportCsv">
+          Export CSV
+        </button>
+        <button class="btn btn-primary btn-wd refresh-button left-margin"
+                title="Send request again"
+                @click.prevent="refreshData">
+          Refresh
+        </button>
       </div>
-      <div v-if="this.tabIndex === 1">
-        <reads-quality :chart-data="this.dataReadsQuality"></reads-quality>
-        <label class="control-label">
-          <p>x - read index</p>
-          <p>y - mean base quality</p>
-        </label>
-        <div class="row">
-          <div class="col-sm-4">
+      <div class="content">
+        <vue-tabs active-tab-color="#f4f3ef" @tab-change="handleTabChange">
+          <v-tab title="Nucleotides counts"></v-tab>
+          <v-tab title="Reads quality"></v-tab>
+          <v-tab title="Reads quality density"></v-tab>
+          <v-tab title="Bases calls"></v-tab>
+          <v-tab title="Bases quality"></v-tab>
+          <v-tab title="Bases quality density"></v-tab>
+          <v-tab title="Bases CG content"></v-tab>
+          <v-tab title="Bases CG density"></v-tab>
+          <v-tab title="Sequences distribution"></v-tab>
+          <v-tab title="Duplicated sequences"></v-tab>
+        </vue-tabs>
+        <div v-if="this.tabIndex === 0">
+          <nucleotides-counts :chart-data="this.dataNucleotidesCounts"></nucleotides-counts>
+          <label class="control-label">
+            <p>A - adenine, G - guanine, C - cytosine. T - thymine, N - undefined</p>
+            <p>y - number of nucleotides in each category</p>
+          </label>
+        </div>
+        <div v-if="this.tabIndex === 1">
+          <reads-quality :chart-data="this.dataReadsQuality"></reads-quality>
+          <label class="control-label">
+            <p>x - read index</p>
+            <p>y - mean base quality</p>
+          </label>
+          <div class="row">
+            <h3 style="margin-left: 20px">Outliers summary</h3>
+            <div class="col-sm-4">
             <pre style="display: block; white-space: pre-line; font-size: 15px">
                 Outliers identified: {{this.dataReadsQualityOutliers['outliersCount'][0]}} from {{this.dataReadsQualityOutliers['total'][0]}} observations
                 Proportion (%) of outliers: {{this.dataReadsQualityOutliers['proportion'][0]}}
@@ -61,31 +63,31 @@
                   Get data without outliers
                 </button>
               </pre>
+            </div>
           </div>
         </div>
-      </div>
-      <div v-if="this.tabIndex === 2">
-        <reads-quality-density :chart-data="this.dataReadsQualityDensity"></reads-quality-density>
-        <label class="control-label">
-          <p>x - mean base quality</p>
-          <p>y - quality density</p>
-        </label>
-      </div>
-      <div v-if="this.tabIndex === 3">
-        <bases-calls :chart-data="this.dataBasesCalls"></bases-calls>
-        <label class="control-label">
-          <p>x - base index in read</p>
-          <p>y - number of read nucleotides</p>
-        </label>
-      </div>
-      <div v-if="this.tabIndex === 4">
-        <bases-quality :chart-data="this.dataBasesQuality"></bases-quality>
-        <label class="control-label">
-          <p>x - base index in read</p>
-          <p>y - quality factors</p>
-        </label>
-        <div class="row">
-          <div class="col-sm-4">
+        <div v-if="this.tabIndex === 2">
+          <reads-quality-density :chart-data="this.dataReadsQualityDensity"></reads-quality-density>
+          <label class="control-label">
+            <p>x - mean base quality</p>
+            <p>y - quality density</p>
+          </label>
+        </div>
+        <div v-if="this.tabIndex === 3">
+          <bases-calls :chart-data="this.dataBasesCalls"></bases-calls>
+          <label class="control-label">
+            <p>x - base index in read</p>
+            <p>y - number of read nucleotides</p>
+          </label>
+        </div>
+        <div v-if="this.tabIndex === 4">
+          <bases-quality :chart-data="this.dataBasesQuality"></bases-quality>
+          <label class="control-label">
+            <p>x - base index in read</p>
+            <p>y - quality factors</p>
+          </label>
+          <div class="row">
+            <div class="col-sm-4">
             <pre style="display: block; white-space: pre-line; font-size: 15px">
                 Outliers identified: {{this.dataBasesQualityOutliers['outliersCount'][0]}} from {{this.dataBasesQualityOutliers['total'][0]}} observations
                 Proportion (%) of outliers: {{this.dataBasesQualityOutliers['proportion'][0]}}
@@ -101,41 +103,43 @@
                   Get data without outliers
                 </button>
               </pre>
+            </div>
           </div>
         </div>
-      </div>
-      <div v-if="this.tabIndex === 5">
-        <bases-quality-density :chart-data="this.dataBasesQualityDensity"></bases-quality-density>
-        <label class="control-label">
-          <p>x - quality</p>
-          <p>y - density</p>
-        </label>
-      </div>
-      <div v-if="this.tabIndex === 6">
-        <bases-cg-content :chart-data="this.dataBasesCgContent"></bases-cg-content>
-        <label class="control-label">
-          <p>x - base index in read</p>
-          <p>y - CG content</p>
-        </label>
-      </div>
-      <div v-if="this.tabIndex === 7">
-        <bases-cg-density :chart-data="this.dataBasesCgDensity"></bases-cg-density>
-        <label class="control-label">
-          <p>x - CG content</p>
-          <p>y - density</p>
-        </label>
-      </div>
-      <div v-if="this.tabIndex === 8">
-        <sequences-distribution :sourceData="this.dataSequencesDistribution"
-                                v-if="this.dataSequencesDistribution != null"></sequences-distribution>
-        <label class="control-label"></label>
-      </div>
-      <div v-if="this.tabIndex === 9">
-        <duplicated-sequences :sourceData="this.dataDuplicatedSequences"
-                              v-if="this.dataDuplicatedSequences != null"></duplicated-sequences>
-        <label class="control-label">Duplicated reads</label>
+        <div v-if="this.tabIndex === 5">
+          <bases-quality-density :chart-data="this.dataBasesQualityDensity"></bases-quality-density>
+          <label class="control-label">
+            <p>x - quality</p>
+            <p>y - density</p>
+          </label>
+        </div>
+        <div v-if="this.tabIndex === 6">
+          <bases-cg-content :chart-data="this.dataBasesCgContent"></bases-cg-content>
+          <label class="control-label">
+            <p>x - base index in read</p>
+            <p>y - CG content</p>
+          </label>
+        </div>
+        <div v-if="this.tabIndex === 7">
+          <bases-cg-density :chart-data="this.dataBasesCgDensity"></bases-cg-density>
+          <label class="control-label">
+            <p>x - CG content</p>
+            <p>y - density</p>
+          </label>
+        </div>
+        <div v-if="this.tabIndex === 8">
+          <sequences-distribution :sourceData="this.dataSequencesDistribution"
+                                  v-if="this.dataSequencesDistribution != null"></sequences-distribution>
+          <label class="control-label"></label>
+        </div>
+        <div v-if="this.tabIndex === 9">
+          <duplicated-sequences :sourceData="this.dataDuplicatedSequences"
+                                v-if="this.dataDuplicatedSequences != null"></duplicated-sequences>
+          <label class="control-label">Duplicated reads</label>
+        </div>
       </div>
     </div>
+    <quality-status :qualityStatus="this.basesQualityStatus"></quality-status>
   </div>
 </template>
 
@@ -148,8 +152,9 @@
   import BasesQualityDensity from 'src/components/Charts/Ioniser/fastq/BasesQualityDensity.vue'
   import ReadsQuality from 'src/components/Charts/Ioniser/fastq/ReadsQuality.vue'
   import ReadsQualityDensity from 'src/components/Charts/Ioniser/fastq/ReadsQualityDensity.vue'
-  import SequencesDistribution from 'src/components/Stats/Ioniser/SequencesDistribution.vue'
-  import DuplicatedSequences from 'src/components/Stats/Ioniser/DuplicatedSequences.vue'
+  import SequencesDistribution from 'src/components/Stats/SequencesDistribution.vue'
+  import DuplicatedSequences from 'src/components/Stats/DuplicatedSequences.vue'
+  import QualityStatus from 'src/components/Parts/QualityStatus.vue'
   import StatsCard from '../../UIComponents/Cards/StatsCard.vue'
 
   const TEXT_CSV = 'text/csv'
@@ -168,10 +173,12 @@
       ReadsQuality,
       ReadsQualityDensity,
       SequencesDistribution,
-      DuplicatedSequences
+      DuplicatedSequences,
+      QualityStatus
     },
     props: [
-      'id'
+      'id',
+      'qualityStatus'
     ],
     data () {
       return {
@@ -187,6 +194,7 @@
         dataDuplicatedSequences: null,
         dataBasesQualityOutliers: null,
         dataReadsQualityOutliers: null,
+        basesQualityStatus: null,
 
         tabIndex: 0
       }
@@ -196,10 +204,16 @@
         if (oldVal !== newVal && newVal > 0) {
           this.getAllData()
         }
+      },
+      qualityStatus: function (newVal, oldVal) {
+        this.basesQualityStatus = newVal
       }
     },
     mounted () {
       this.getAllData()
+      if (this.basesQualityStatus == null) {
+        this.getBasesQualityStatus()
+      }
     },
     methods: {
       handleTabChange (tabIndex, newTab, oldTab) {
@@ -433,7 +447,7 @@
       getReadsQuality () {
         this.$http.get(`api/analysis/stats/readsQuality`, {
           params: {
-            valuesNames: ['id', 'quality']
+            valuesNames: ['id', 'quality', 'mean', 'median']
           }
         }).then(response => {
           this.dataReadsQuality = {
@@ -444,6 +458,22 @@
                 borderColor: '#f87979',
                 fill: false,
                 data: response.data.values['quality'],
+                pointRadius: 0,
+                borderWidth: 1
+              },
+              {
+                label: 'Mean',
+                borderColor: '#0096f8',
+                fill: false,
+                data: response.data.values['mean'],
+                pointRadius: 0,
+                borderWidth: 1
+              },
+              {
+                label: 'Median',
+                borderColor: '#47f889',
+                fill: false,
+                data: response.data.values['median'],
                 pointRadius: 0,
                 borderWidth: 1
               }
@@ -783,6 +813,18 @@
           link.href = window.URL.createObjectURL(blob)
           link.download = 'reads_quality_without_outliers.csv'
           link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+
+      getBasesQualityStatus () {
+        this.$http.get(`api/analysis/stats/basesQualityStatus`, {
+          params: {
+            valuesNames: ['status']
+          }
+        }).then(response => {
+          this.basesQualityStatus = response.data.values['status'][0]
         }).catch(e => {
           console.error(e)
         })

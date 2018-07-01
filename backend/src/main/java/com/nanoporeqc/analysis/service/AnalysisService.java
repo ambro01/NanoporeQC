@@ -1,6 +1,7 @@
 package com.nanoporeqc.analysis.service;
 
 import com.nanoporeqc.analysis.domain.Analysis;
+import com.nanoporeqc.analysis.domain.QualityStatus;
 import com.nanoporeqc.analysis.domain.Type;
 import com.nanoporeqc.analysis.dto.AnalysisDto;
 import com.nanoporeqc.analysis.repository.AnalysisRepository;
@@ -78,12 +79,12 @@ public class AnalysisService {
     public void saveNewAnalysis(final AnalysisDto analysisDto) {
         lockAnalysis.lock();
         try {
-            final Type type = Type.valueOf(analysisDto.getType());
+            final Type type = analysisDto.getType();
             final String summaryPath = Type.Fast5.equals(type) ? FileConsts.SUMMARY_FAST5_FILE : FileConsts.SUMMARY_FASTQ_FILE;
             fileService.cleanDirectory(FileConsts.SUMMARY_DIR);
             LOGGER.info("Analysis: Saving summary file of type: " + analysisDto.getType());
             rService.saveSummaryToFile(type, summaryPath);
-            if (Type.Fast5.equals(Type.valueOf(analysisDto.getType()))) {
+            if (Type.Fast5.equals(analysisDto.getType())) {
                 rService.saveSummaryToFile(Type.FastQ, FileConsts.SUMMARY_FASTQ_FILE);
             }
             saveAnalysis(analysisDto);
@@ -149,13 +150,33 @@ public class AnalysisService {
         fileService.cleanDirectory(FileConsts.FILES_DIR);
     }
 
-    public Long getAnalysesAmount(final String type) {
-        return analysisRepository.countByType(Type.valueOf(type));
+    public Long getAnalysesAmount(final Type type) {
+        return analysisRepository.countByType(type);
     }
 
-    public String getLastAnalysisTime(final String type) {
-        final LocalDateTime analysisTime = analysisRepository.findFirstByTypeOrderByRunTimeDesc(Type.valueOf(type)).getRunTime();
-        return analysisTime.format(DATE_TIME_FORMATTER);
+    public Long getSuccessAnalysesRatio(final Type type) {
+        final Long all = analysisRepository.countByType(type);
+        final Long success = analysisRepository.countByTypeAndQualityStatus(type, QualityStatus.Success);
+        if (all == null || all == 0L || success == null) {
+            return 0L;
+        }
+        return success/all;
+    }
+
+    public String getLastAnalysisTime(final Type type) {
+        final Analysis analysis = analysisRepository.findFirstByTypeOrderByRunTimeDesc(type);
+        if (analysis == null) {
+            return null;
+        }
+        return analysis.getRunTime().format(DATE_TIME_FORMATTER);
+    }
+
+    public String getLastSuccessAnalysisTime(final Type type) {
+        final Analysis analysis = analysisRepository.findFirstByTypeAndQualityStatusOrderByRunTimeDesc(type, QualityStatus.Success);
+        if (analysis == null) {
+            return null;
+        }
+        return analysis.getRunTime().format(DATE_TIME_FORMATTER);
     }
 
     public void downloadHtmlReport(final Long id, final HttpServletResponse response) {
@@ -203,13 +224,14 @@ public class AnalysisService {
                     .name(analysisDto.getName())
                     .comment(analysisDto.getComment())
                     .runTime(LocalDateTime.now())
-                    .type(Type.valueOf(analysisDto.getType()))
+                    .type(analysisDto.getType())
+                    .qualityStatus(analysisDto.getQualityStatus())
                     .parentAnalysisId(analysisDto.getParentAnalysisId())
                     .mainSummary(new SerialBlob(fileService.getSummaryContent(FileConsts.SUMMARY_FAST5_FILE)))
                     .user(applicationUserService.getCurrentUser())
                     .htmlReport(new SerialBlob(fileService.getSummaryContent(reportService.getHtmlReportPath())))
                     .build();
-            if (Type.Fast5.equals(Type.valueOf(analysisDto.getType()))) {
+            if (Type.Fast5.equals(analysisDto.getType())) {
                 analysis.setAdditionalSummary(new SerialBlob(fileService.getSummaryContent(FileConsts.SUMMARY_FASTQ_FILE)));
             }
             return analysis;
@@ -221,7 +243,7 @@ public class AnalysisService {
     }
 
     private void generateFastQDataFromFast5(final AnalysisDto analysisDto) {
-        if (Type.Fast5.equals(Type.valueOf(analysisDto.getType()))) {
+        if (Type.Fast5.equals(analysisDto.getType())) {
             runPoretoolsFast5ToFastQ();
             rService.evaluateRScript(RScriptEnum.READ_FASTQ_SUMMARY_FROM_DIR);
             rService.evaluateRScript(RScriptEnum.GENERATE_DATA_FASTQ);

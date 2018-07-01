@@ -35,15 +35,19 @@ readCategoryQuals <- function(summaryData) {
     maxRes <- aggregate(meanBaseQuality ~ readType, res, function(x) max(x))
     meanRes <- aggregate(meanBaseQuality ~ readType, res, function(x) mean(x))
     medianRes <- aggregate(meanBaseQuality ~ readType, res, function(x) median(x))
+    q25Res <- aggregate(meanBaseQuality ~ readType, res, function(x) quantile(x, 0.25, na.rm = TRUE, names = FALSE))
+    q75Res <- aggregate(meanBaseQuality ~ readType, res, function(x) quantile(x, 0.75, na.rm = TRUE, names = FALSE))
 
     readType <- tryCatch(select(minRes, readType), error = function(cond){return (tibble(readType = character()))})
     min_ <- tryCatch(select(minRes, meanBaseQuality), error = function(cond){return (tibble(min = numeric()))})
     max_ <- tryCatch(select(maxRes, meanBaseQuality), error = function(cond){return (tibble(max = numeric()))})
     mean_ <- tryCatch(select(meanRes, meanBaseQuality), error = function(cond){return (tibble(mean = numeric()))})
     median_ <- tryCatch(select(medianRes, meanBaseQuality), error = function(cond){return (tibble(median = numeric()))})
+    q25 <- tryCatch(select(q25Res, meanBaseQuality), error = function(cond){return (tibble(q25 = numeric()))})
+    q75 <- tryCatch(select(q25Res, meanBaseQuality), error = function(cond){return (tibble(q27 = numeric()))})
 
-    res <- data.frame(readType, min_, max_, mean_, median_)
-    colnames(res) <- c('category', 'min', 'max', 'mean', 'median')
+    res <- data.frame(readType, min_, max_, mean_, median_, q25, q75)
+    colnames(res) <- c('category', 'min', 'max', 'mean', 'median', 'q25', 'q75')
     return (res)
 }
 
@@ -85,7 +89,6 @@ outliersFinder <- function(dataSet) {
     total <- sum(!is.na(dataSet))
     unknownCount <- sum(is.na(dataSet))
     meanWithOutliers <- mean(dataSet, na.rm = TRUE)
-    par(mfrow=c(2, 2), oma=c(0,0,3,0))
     outlier <- boxplot.stats(dataSet)$out
     outliersMean <- mean(outlier)
     outliersMean[is.na(outliersMean) || is.nan(outliersMean)] <- 0

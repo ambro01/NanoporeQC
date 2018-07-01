@@ -10,7 +10,7 @@ counts <- A+C+G+T+N
 resultsFastQ <- list(nucleotidesCounts = list(counts=counts, A=A, C=C, G=G, T=T, N=N))
 
 # Reads quality
-quality <- qualitySummary$meanBaseQuality
+quality <- data.frame(meanBaseQuality=ShortRead::alphabetScore(Biostrings::quality(fq)) / ShortRead::width(fq))
 id <- seq(1, length(quality))
 quantileOut <- quantile(quality, probs = c(0.25, 0.50, 0.75), na.rm = TRUE, names = FALSE)
 mean <- mean(quality, na.rm = TRUE)

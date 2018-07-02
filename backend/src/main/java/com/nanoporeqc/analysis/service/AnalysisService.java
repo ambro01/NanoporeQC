@@ -93,7 +93,7 @@ public class AnalysisService {
         }
     }
 
-    public void runOldAnalysis(final Long id, final String sourceType) {
+    public void runOldAnalysis(final Long id, final Type sourceType) {
         LOGGER.info("Running old analyse, id: " + id);
         final RScriptEnum rScriptEnum = rService.getReadSummaryScript(sourceType);
         final Analysis analysis = analysisRepository.findById(id)
@@ -142,7 +142,7 @@ public class AnalysisService {
     }
 
     public void runFastQFromFast5(final Long id) {
-        final RScriptEnum rScriptEnum = rService.getReadSummaryScript(Type.FastQ.name());
+        final RScriptEnum rScriptEnum = rService.getReadSummaryScript(Type.FastQ);
         final Analysis analysis = analysisRepository.findById(id)
                 .orElseThrow(AnalysisNotFoundException::new);
         loadAdditionalSummary(analysis, rScriptEnum);

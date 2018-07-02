@@ -41,7 +41,10 @@ public enum RDataEnum {
     READS_TEMPLATE_OUTLIERS_QUALITY("readsTemplateQualityOutliers", Type.Fast5, TRUE),
     READS_COMPLEMENT_OUTLIERS_QUALITY("readsComplementQualityOutliers", Type.Fast5, TRUE),
     READS_QUALITY_STATUS("readsQualityStatus", Type.Fast5),
-    BASES_QUALITY_STATUS("basesQualityStatus", Type.FastQ);
+    BASES_QUALITY_STATUS("basesQualityStatus", Type.FastQ),
+
+    CLUSTERING_READS("clusteringReads", null, TRUE),
+    READS_INFO("clusteringData", Type.FastQ);
 
     private String value;
     private Type type;

@@ -1,6 +1,6 @@
 activeChannels <- function(summaryData) {
     startEndSummary <- dplyr::mutate(eventData(summaryData), first = start_time %/% 60, last = (start_time + duration) %/% 60)
-    tab <- dplyr::data_frame(minute = unlist(apply(startEndSummary, 1, function(x) { x['first']:x['last'] }))) %>% dplyr::count(minute)
+    tab <- dplyr::data_frame(minute = unlist(apply(startEndSummary, 1, function(x) { x['first'] : x['last']}))) %>% dplyr::count(minute)
 }
 
 baseProductionRate <- function(summaryData) {
@@ -8,8 +8,8 @@ baseProductionRate <- function(summaryData) {
     ## ignore the composite 2D reads here
     recordTable <- .matchRecords(summaryData)
     fastqIDX <- c(recordTable[['fastqTemplate']], recordTable[['fastqComplement']])
-    fastqIDX <- fastqIDX[-which(is.na(fastqIDX))]
-    res <- mutate(baseCalled(summaryData), bases_called = ShortRead::width(fastq(summaryData)[ fastqIDX ]))
+    fastqIDX <- fastqIDX[- which(is.na(fastqIDX))]
+    res <- mutate(baseCalled(summaryData), bases_called = ShortRead::width(fastq(summaryData)[fastqIDX]))
 }
 
 readAccumulation <- function(summaryData) {
@@ -57,21 +57,22 @@ readTypeProduction <- function(summaryData, groupedMinutes = 10) {
         dplyr::mutate(time_group = start_time %/% (60 * groupedMinutes)) %>%
         dplyr::group_by(time_group, full_2D, pass) %>%
         dplyr::summarise(count = n()) %>%
-        dplyr::mutate(hour = (time_group * groupedMinutes)/60 )
+        dplyr::mutate(hour = (time_group * groupedMinutes) / 60)
 }
 
 kbPerChannel <- function(summaryData) {
-    tmp <- dplyr::mutate(baseCalled(summaryData), seq_length = BiocGenerics::width(fastq(summaryData)[1:nrow(baseCalled(summaryData))]),
-    channel = readInfo(summaryData)[['channel']][ match(baseCalled(summaryData)[['id']],
-    readInfo(summaryData)[['id']]) ]) %>% dplyr::group_by(channel) %>% dplyr::summarise(kb = sum(seq_length) / 1000)
+    tmp <- dplyr::mutate(baseCalled(summaryData), seq_length = BiocGenerics::width(fastq(summaryData)[1 : nrow(baseCalled(summaryData))]),
+    channel = readInfo(summaryData)[['channel']][match(baseCalled(summaryData)[['id']],
+    readInfo(summaryData)[['id']])]) %>%
+        dplyr::group_by(channel) %>%
+        dplyr::summarise(kb = sum(seq_length) / 1000)
 }
 
 readsPerChannel <- function(summaryData) {
     tmp <- dplyr::group_by(readInfo(summaryData), channel) %>% dplyr::summarise(nreads = n())
 }
 
-readQuality <- function(summaryData) {
-    fq <- fastq(summaryData)
+readQuality <- function(fq) {
     readType <- factor(.readtypeFromFASTQ(fq), levels = c('template', 'complement', '2D'))
     meanBaseQuality <- ShortRead::alphabetScore(Biostrings::quality(fq)) / ShortRead::width(fq)
     res <- data.frame(readType, meanBaseQuality)
@@ -86,7 +87,7 @@ readQualityFromShortReadQ <- function(fq) {
 
 outliersFinder <- function(dataSet) {
     input <- dataSet
-    total <- sum(!is.na(dataSet))
+    total <- sum(! is.na(dataSet))
     unknownCount <- sum(is.na(dataSet))
     meanWithOutliers <- mean(dataSet, na.rm = TRUE)
     outlier <- boxplot.stats(dataSet)$out
@@ -97,19 +98,63 @@ outliersFinder <- function(dataSet) {
     meanWithoutOutliers <- mean(dataSet, na.rm = TRUE)
     outliersIndices <- which(is.na(dataSet))
     inputNa <- which(is.na(input))
-    outliersIndices <- outliersIndices[!outliersIndices %in% inputNa]
-    notOutliersIndices <- which(!is.na(dataSet))
+    outliersIndices <- outliersIndices[! outliersIndices %in% inputNa]
+    notOutliersIndices <- which(! is.na(dataSet))
 
-    outliersResults <- list(outliersCount = otliersCount-unknownCount)
+    outliersResults <- list(outliersCount = otliersCount - unknownCount)
     outliersResults <- list.append(outliersResults, total = total)
-    outliersResults <- list.append(outliersResults, proportion = (otliersCount - unknownCount) / total*100)
+    outliersResults <- list.append(outliersResults, proportion = (otliersCount - unknownCount) / total * 100)
     outliersResults <- list.append(outliersResults, outliersMean = outliersMean)
     outliersResults <- list.append(outliersResults, meanWithOutliers = meanWithOutliers)
     outliersResults <- list.append(outliersResults, meanWithoutOutliers = meanWithoutOutliers)
-    outliersResults <- list.append(outliersResults, outliersId=checkIsEmpty(outliersIndices))
-    outliersResults <- list.append(outliersResults, outliersValues=checkIsEmpty(input[outliersIndices]))
-    outliersResults <- list.append(outliersResults, notOutliersId=checkIsEmpty(notOutliersIndices))
-    outliersResults <- list.append(outliersResults, notOutliersValues=checkIsEmpty(input[notOutliersIndices]))
+    outliersResults <- list.append(outliersResults, outliersId = checkIsEmpty(outliersIndices))
+    outliersResults <- list.append(outliersResults, outliersValues = checkIsEmpty(input[outliersIndices]))
+    outliersResults <- list.append(outliersResults, notOutliersId = checkIsEmpty(notOutliersIndices))
+    outliersResults <- list.append(outliersResults, notOutliersValues = checkIsEmpty(input[notOutliersIndices]))
 
     return (outliersResults)
+}
+
+outliersProportion <- function(dataSet) {
+    total <- sum(! is.na(dataSet))
+    unknownCount <- sum(is.na(dataSet))
+    outlier <- boxplot.stats(dataSet)$out
+    outliersMean <- mean(outlier)
+    outliersMean[is.na(outliersMean) || is.nan(outliersMean)] <- 0
+    dataSet <- ifelse(dataSet %in% outlier, NA, dataSet)
+    otliersCount <- sum(is.na(dataSet))
+
+    proportion <- (otliersCount - unknownCount) / total * 100
+    return (proportion)
+}
+
+getDataForClustering <- function(fq) {
+    id <- as.character(id(fq))
+    d <- data.frame(id=id)
+    for (i in 1:nrow(d)) {
+        q <- as(quality(fq)[i], 'matrix')
+        d[i, 2]<- mean(q)
+        d[i, 3]<- median(q)
+        d[i, 4]<- quantile(q, probs = 0.25, na.rm = TRUE, names = FALSE)
+        d[i, 5]<- quantile(q, probs = 0.75, na.rm = TRUE, names = FALSE)
+        d[i, 6]<- outliersProportion(q)
+        d[i, 7]<- length(q)
+        d[i, 8]<- i
+    }
+    colnames(d) <- c('name', 'mean', 'median', 'q25', 'q75', 'outliersRatio', 'count', 'id')
+    return(d)
+}
+
+runClusteringReads <- function(d, groupsNumber) {
+    d_ <- d[, 2:6]
+    k <- kmeans(d_, groupsNumber)
+    v <- data.frame(k$centers)
+    for (i in 1:nrow(v)) {
+        r <- which(k$cluster %in% i)
+        v[i, 6]<- paste(r, collapse=', ')
+        v[i, 7]<- i
+    }
+    colnames(v) <- c('mean', 'median', 'q25', 'q75', 'outliersRatio', 'readsIndices', 'id')
+
+    return(v)
 }

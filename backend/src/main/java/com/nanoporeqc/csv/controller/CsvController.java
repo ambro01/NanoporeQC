@@ -53,4 +53,10 @@ public class CsvController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @GetMapping(value = "/reads-info")
+    public ResponseEntity getReadsInfo(HttpServletResponse response) {
+        csvService.exportReadsToCsv(RDataEnum.READS_INFO, response);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
 }

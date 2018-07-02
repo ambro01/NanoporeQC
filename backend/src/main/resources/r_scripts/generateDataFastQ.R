@@ -11,6 +11,7 @@ resultsFastQ <- list(nucleotidesCounts = list(counts=counts, A=A, C=C, G=G, T=T,
 
 # Reads quality
 quality <- data.frame(meanBaseQuality=ShortRead::alphabetScore(Biostrings::quality(fq)) / ShortRead::width(fq))
+quality <- quality$meanBaseQuality
 id <- seq(1, length(quality))
 quantileOut <- quantile(quality, probs = c(0.25, 0.50, 0.75), na.rm = TRUE, names = FALSE)
 mean <- mean(quality, na.rm = TRUE)
@@ -141,3 +142,5 @@ df <- ShortRead:::.freqSequences(qaSummary, "read")
 sequence <- df$sequence
 count <- df$count
 resultsFastQ <- list.append(resultsFastQ, duplicatedSequences = list(sequence=sequence, count=count))
+
+resultsFastQ <- list.append(resultsFastQ, clusteringData = getDataForClustering(fq))

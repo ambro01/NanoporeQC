@@ -3,7 +3,9 @@ package com.nanoporeqc.analysis.controller;
 import com.nanoporeqc.analysis.domain.Type;
 import com.nanoporeqc.analysis.dto.AnalysisDto;
 import com.nanoporeqc.analysis.dto.ChartDto;
+import com.nanoporeqc.analysis.dto.ClusteringReadsDto;
 import com.nanoporeqc.analysis.dto.DuplicatedSequencesDto;
+import com.nanoporeqc.analysis.dto.ReadsInfoDto;
 import com.nanoporeqc.analysis.dto.SequencesDistributionDto;
 import com.nanoporeqc.analysis.dto.SummaryInfoDto;
 import com.nanoporeqc.analysis.service.AnalysisService;
@@ -48,7 +50,7 @@ public class AnalysisController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity runOldAnalysis(@PathVariable("id") Long id, @RequestParam("type") String type) {
+    public ResponseEntity runOldAnalysis(@PathVariable("id") Long id, @RequestParam("type") Type type) {
         analysisService.runOldAnalysis(id, type);
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -90,6 +92,11 @@ public class AnalysisController {
         return statsService.getSequencesDistribution();
     }
 
+    @GetMapping(value = "/stats/reads-info", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<ReadsInfoDto> getReadsInfo() {
+        return statsService.getReadsInfo();
+    }
+
     @GetMapping(value = "/amount/{type}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Long getAnalysesAmount(@PathVariable("type") Type type) {
         return analysisService.getAnalysesAmount(type);
@@ -120,6 +127,12 @@ public class AnalysisController {
     public ResponseEntity downloadCurrentHtmlReport(HttpServletResponse response) {
         analysisService.downloadCurrentHtmlReport(response);
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/clustering/reads/{type}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<ClusteringReadsDto> getClusteringReads(@PathVariable("type") Type type,
+                                                       @RequestParam("clustersNumber") Integer clustersNumber) {
+        return statsService.getClusteringReads(type, clustersNumber);
     }
 
 }

@@ -2,20 +2,22 @@
   <div>
     <div class="card">
       <div class="header">
-        <h4 class="title">Report of analysis</h4>
-        <button class="btn btn-primary btn-wd refresh-button left-margin"
-                title="Download HTML report from FastQC tool"
-                @click.prevent="downloadHtmlReport">
-          HTML report
-        </button>
-        <button class="btn btn-primary btn-wd refresh-button left-margin"
-                @click.prevent="exportCsv">
-          Export CSV
-        </button>
-        <button class="btn btn-primary btn-wd refresh-button left-margin"
-                @click.prevent="refreshData">
-          Refresh
-        </button>
+        <div class="row">
+          <h4 class="title" style="margin-left: 20px">Report of analysis</h4>
+          <button class="btn btn-primary btn-wd refresh-button left-margin"
+                  title="Download HTML report from FastQC tool"
+                  @click.prevent="downloadHtmlReport">
+            HTML report
+          </button>
+          <button class="btn btn-primary btn-wd refresh-button left-margin"
+                  @click.prevent="exportCsv">
+            Export CSV
+          </button>
+          <button class="btn btn-primary btn-wd refresh-button left-margin"
+                  @click.prevent="refreshData">
+            Refresh
+          </button>
+        </div>
       </div>
       <div class="content">
         <vue-tabs active-tab-color="#f4f3ef" @tab-change="handleTabChange">
@@ -29,6 +31,7 @@
           <v-tab title="Events"></v-tab>
           <v-tab title="Reads per channel"></v-tab>
           <v-tab title="Kilobases per channel"></v-tab>
+          <v-tab title="Clustering"></v-tab>
         </vue-tabs>
         <div v-if="this.tabIndex === 0">
           <summary-info :sourceData="this.dataSummaryInfo" v-if="this.dataSummaryInfo != null"></summary-info>
@@ -167,9 +170,16 @@
             <p>y - kb (kilobase pair) of data </p>
           </label>
         </div>
+        <div v-if="this.tabIndex === 10">
+          <clustering-panel
+            :analysisType="'Fast5'">
+          </clustering-panel>
+        </div>
       </div>
     </div>
-    <quality-status :qualityStatus="this.qualityStatus"></quality-status>
+    <quality-status v-if="this.tabIndex === 10"
+                    :qualityStatus="this.qualityStatus">
+    </quality-status>
   </div>
 </template>
 
@@ -185,6 +195,7 @@
   import KbPerChannel from 'src/components/Charts/Ioniser/fast5/KbPerChannel.vue'
   import SummaryInfo from 'src/components/Stats/SummaryInfo.vue'
   import QualityStatus from 'src/components/Parts/QualityStatus.vue'
+  import ClusteringPanel from 'src/components/Parts/ClusteringPanel.vue'
   import StatsCard from '../../UIComponents/Cards/StatsCard.vue'
 
   const TEXT_CSV = 'text/csv'
@@ -204,7 +215,8 @@
       ReadsPerChannel,
       KbPerChannel,
       SummaryInfo,
-      QualityStatus
+      QualityStatus,
+      ClusteringPanel
     },
     props: [
       'id',

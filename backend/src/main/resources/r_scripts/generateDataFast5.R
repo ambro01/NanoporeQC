@@ -1,3 +1,4 @@
+fq <- fastq(summaryData)
 # Reads accumulation
 out <- tryCatch(readAccumulation(summaryData), error = function(cond){return (tibble())})
 temp <- tryCatch(select(out, minute), error = function(cond){return (tibble(minute = double()))})
@@ -19,7 +20,7 @@ channels <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
 resultsFast5 <- list.append(resultsFast5, activeChannels = list(minute=minute, channels=channels))
 
 # Reads quality
-out <- tryCatch(readQuality(summaryData), error = function(cond){return (tibble())})
+out <- tryCatch(readQuality(fq), error = function(cond){return (tibble())})
 q_template <- (out %>% filter(readType == "template"))$meanBaseQuality
 q_complement <- (out %>% filter(readType == "complement"))$meanBaseQuality
 q_2D <- (out %>% filter(readType == "2D"))$meanBaseQuality
@@ -45,7 +46,7 @@ if (median < 10 || quantile25 < 5) {
 resultsFast5 <- list.append(resultsFast5, readsQualityStatus = list(status=status))
 
 # Reads quality density
-out <- tryCatch(readQuality(summaryData), error = function(cond){return (tibble())})
+out <- tryCatch(readQuality(fq), error = function(cond){return (tibble())})
 q_template <- (out %>% filter(readType == "template"))$meanBaseQuality
 q_complement <- (out %>% filter(readType == "complement"))$meanBaseQuality
 q_2D <- (out %>% filter(readType == "2D"))$meanBaseQuality
@@ -181,3 +182,5 @@ full_2D_c <- matrix(as.logical(unlist(temp)), nrow = nrow(temp))
 resultsFast5 <- list.append(resultsFast5, summaryInfo = list(id=id, file=file, read=read, channel=channel, start_time=start_time, duration=duration, num_events=num_events,
 num_events_t=num_events_t, duration_t=duration_t, start_time_t=start_time_t, strand_t=strand_t, full_2D_t=full_2D_t,
 num_events_c=num_events_c, duration_c=duration_c, start_time_c=start_time_c, strand_c=strand_c, full_2D_c=full_2D_c))
+
+resultsFast5 <- list.append(resultsFast5, clusteringData = getDataForClustering(fq))

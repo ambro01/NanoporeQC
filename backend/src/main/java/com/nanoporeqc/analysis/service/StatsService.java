@@ -1,7 +1,10 @@
 package com.nanoporeqc.analysis.service;
 
+import com.nanoporeqc.analysis.domain.Type;
 import com.nanoporeqc.analysis.dto.ChartDto;
+import com.nanoporeqc.analysis.dto.ClusteringReadsDto;
 import com.nanoporeqc.analysis.dto.DuplicatedSequencesDto;
+import com.nanoporeqc.analysis.dto.ReadsInfoDto;
 import com.nanoporeqc.analysis.dto.SequencesDistributionDto;
 import com.nanoporeqc.analysis.dto.SummaryInfoDto;
 import com.nanoporeqc.r.consts.RDataConst;
@@ -115,6 +118,50 @@ public class StatsService {
             sequencesDistributionDtoList.add(sequencesDistributionDto);
         }
         return sequencesDistributionDtoList;
+    }
+
+    public List<ReadsInfoDto> getReadsInfo() {
+        LOGGER.info("Getting reads info");
+        final RData readsInfo = loadAllForRScript(RDataEnum.READS_INFO);
+        final List<ReadsInfoDto> readsInfoDtoArrayList = new ArrayList<>();
+
+        for (int i = 0; i < readsInfo.getRVariablesMap().get("id").getRDataSet().size(); ++i) {
+            final ReadsInfoDto readsInfoDto = ReadsInfoDto.builder()
+                    .id((Integer) getValueFromRDataSet(readsInfo, "id", i))
+                    .count((Integer) getValueFromRDataSet(readsInfo, "count", i))
+                    .mean((Double) getValueFromRDataSet(readsInfo, "mean", i))
+                    .median((Double) getValueFromRDataSet(readsInfo, "median", i))
+                    .quantile25((Double) getValueFromRDataSet(readsInfo, "q25", i))
+                    .quantile75((Double) getValueFromRDataSet(readsInfo, "q75", i))
+                    .outliersRatio((Double) getValueFromRDataSet(readsInfo, "outliersRatio", i))
+                    .name((String) getValueFromRDataSet(readsInfo, "name", i))
+                    .build();
+
+            readsInfoDtoArrayList.add(readsInfoDto);
+        }
+        return readsInfoDtoArrayList;
+    }
+
+    public List<ClusteringReadsDto> getClusteringReads(final Type type, final Integer clustersNumber) {
+        LOGGER.info("Running clustering");
+        rService.runClusteringReads(type, clustersNumber);
+        final RData clusteringReads = loadAllForRScript(RDataEnum.CLUSTERING_READS);
+        final List<ClusteringReadsDto> clusteringReadsDtoList = new ArrayList<>();
+
+        for (int i = 0; i < clusteringReads.getRVariablesMap().get("id").getRDataSet().size(); ++i) {
+            final ClusteringReadsDto clusteringReadsDto = ClusteringReadsDto.builder()
+                    .id((Integer) getValueFromRDataSet(clusteringReads, "id", i))
+                    .mean((Double) getValueFromRDataSet(clusteringReads, "mean", i))
+                    .median((Double) getValueFromRDataSet(clusteringReads, "median", i))
+                    .quantile25((Double) getValueFromRDataSet(clusteringReads, "q25", i))
+                    .quantile75((Double) getValueFromRDataSet(clusteringReads, "q75", i))
+                    .outliersRatio((Double) getValueFromRDataSet(clusteringReads, "outliersRatio", i))
+                    .readsIndices((String) getValueFromRDataSet(clusteringReads, "readsIndices", i))
+                    .build();
+
+            clusteringReadsDtoList.add(clusteringReadsDto);
+        }
+        return clusteringReadsDtoList;
     }
 
     private RData loadAllForRScript(final RDataEnum rDataEnum) {

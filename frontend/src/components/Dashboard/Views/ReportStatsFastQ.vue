@@ -2,22 +2,24 @@
   <div>
     <div class="card">
       <div class="header">
-        <h4 class="title">Report of analysis</h4>
-        <button class="btn btn-primary btn-wd refresh-button left-margin"
-                title="Download HTML report from FastQC tool"
-                @click.prevent="downloadHtmlReport">
-          HTML report
-        </button>
-        <button class="btn btn-primary btn-wd refresh-button left-margin"
-                title="Download CSV data set"
-                @click.prevent="exportCsv">
-          Export CSV
-        </button>
-        <button class="btn btn-primary btn-wd refresh-button left-margin"
-                title="Send request again"
-                @click.prevent="refreshData">
-          Refresh
-        </button>
+        <div class="row">
+          <h4 class="title" style="margin-left: 20px">Report of analysis</h4>
+          <button class="btn btn-primary btn-wd refresh-button left-margin"
+                  title="Download HTML report from FastQC tool"
+                  @click.prevent="downloadHtmlReport">
+            HTML report
+          </button>
+          <button class="btn btn-primary btn-wd refresh-button left-margin"
+                  title="Download CSV data set"
+                  @click.prevent="exportCsv">
+            Export CSV
+          </button>
+          <button class="btn btn-primary btn-wd refresh-button left-margin"
+                  title="Send request again"
+                  @click.prevent="refreshData">
+            Refresh
+          </button>
+        </div>
       </div>
       <div class="content">
         <vue-tabs active-tab-color="#f4f3ef" @tab-change="handleTabChange">
@@ -31,6 +33,8 @@
           <v-tab title="Bases CG density"></v-tab>
           <v-tab title="Sequences distribution"></v-tab>
           <v-tab title="Duplicated sequences"></v-tab>
+          <v-tab title="Reads info"></v-tab>
+          <v-tab title="Clustering"></v-tab>
         </vue-tabs>
         <div v-if="this.tabIndex === 0">
           <nucleotides-counts :chart-data="this.dataNucleotidesCounts"></nucleotides-counts>
@@ -137,9 +141,20 @@
                                 v-if="this.dataDuplicatedSequences != null"></duplicated-sequences>
           <label class="control-label">Duplicated reads</label>
         </div>
+        <div v-if="this.tabIndex === 10">
+          <reads-info :sourceData="this.dataReadsInfo"
+                      v-if="this.dataReadsInfo != null"></reads-info>
+        </div>
+        <div v-if="this.tabIndex === 11">
+          <clustering-panel
+            :analysisType="'FastQ'">
+          </clustering-panel>
+        </div>
       </div>
     </div>
-    <quality-status :qualityStatus="this.basesQualityStatus"></quality-status>
+    <quality-status v-if="this.tabIndex !== 11"
+                    :qualityStatus="this.basesQualityStatus">
+    </quality-status>
   </div>
 </template>
 
@@ -155,6 +170,8 @@
   import SequencesDistribution from 'src/components/Stats/SequencesDistribution.vue'
   import DuplicatedSequences from 'src/components/Stats/DuplicatedSequences.vue'
   import QualityStatus from 'src/components/Parts/QualityStatus.vue'
+  import ClusteringPanel from 'src/components/Parts/ClusteringPanel.vue'
+  import ReadsInfo from 'src/components/Stats/ReadsInfo.vue'
   import StatsCard from '../../UIComponents/Cards/StatsCard.vue'
 
   const TEXT_CSV = 'text/csv'
@@ -174,7 +191,9 @@
       ReadsQualityDensity,
       SequencesDistribution,
       DuplicatedSequences,
-      QualityStatus
+      QualityStatus,
+      ReadsInfo,
+      ClusteringPanel
     },
     props: [
       'id',
@@ -194,6 +213,7 @@
         dataDuplicatedSequences: null,
         dataBasesQualityOutliers: null,
         dataReadsQualityOutliers: null,
+        dataReadsInfo: null,
         basesQualityStatus: null,
 
         tabIndex: 0
@@ -399,23 +419,22 @@
         })
       },
       getSequencesDistribution () {
-        this.$http.get(`api/analysis/stats/sequences-distribution`, {
-          params: {
-            valuesNames: ['fileName', 'occurrences', 'reads']
-          }
-        }).then(response => {
+        this.$http.get(`api/analysis/stats/sequences-distribution`).then(response => {
           this.dataSequencesDistribution = response.data
         }).catch(e => {
           console.error(e)
         })
       },
       getDuplicatedSequences () {
-        this.$http.get(`api/analysis/stats/duplicated-sequences`, {
-          params: {
-            valuesNames: ['sequence', 'count']
-          }
-        }).then(response => {
+        this.$http.get(`api/analysis/stats/duplicated-sequences`).then(response => {
           this.dataDuplicatedSequences = response.data
+        }).catch(e => {
+          console.error(e)
+        })
+      },
+      getReadsInfo () {
+        this.$http.get(`api/analysis/stats/reads-info`).then(response => {
+          this.dataReadsInfo = response.data
         }).catch(e => {
           console.error(e)
         })
@@ -497,6 +516,7 @@
         this.getDuplicatedSequences()
         this.getReadsQualityOutliers()
         this.getBasesQualityOutliers()
+        this.getReadsInfo()
       },
 
       refreshData () {
@@ -532,6 +552,9 @@
             break
           case 9:
             this.getDuplicatedSequences()
+            break
+          case 10:
+            this.getReadsInfo()
             break
         }
       },
@@ -656,6 +679,21 @@
           console.error(e)
         })
       },
+      csvReadsInfo () {
+        this.$http.get(`api/csv/reads-info`, {
+          params: {
+            valuesNames: ['id', 'name', 'mean', 'median', 'q25', 'q75', 'outliersRatio', 'count']
+          }
+        }).then(response => {
+          const blob = new Blob([response.data], {type: TEXT_CSV})
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = 'reads_info.csv'
+          link.click()
+        }).catch(e => {
+          console.error(e)
+        })
+      },
       csvReadsQuality () {
         this.$http.get(`api/csv/readsQuality`, {
           params: {
@@ -718,6 +756,9 @@
             break
           case 9:
             this.csvDuplicatedSequences()
+            break
+          case 10:
+            this.csvReadsInfo()
             break
         }
       },

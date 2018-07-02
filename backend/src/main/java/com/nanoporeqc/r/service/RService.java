@@ -6,6 +6,7 @@ import com.nanoporeqc.exceptions.NotSupportedAnalysisTypeException;
 import com.nanoporeqc.exceptions.REvaluatingException;
 import com.nanoporeqc.file.consts.FileConsts;
 import com.nanoporeqc.file.service.FileService;
+import com.nanoporeqc.r.consts.RDataConst;
 import com.nanoporeqc.r.domain.RData;
 import com.nanoporeqc.r.domain.RVariable;
 import com.nanoporeqc.r.enumeration.RDataEnum;
@@ -84,7 +85,8 @@ public class RService {
 
     private List getDataSetFromR(final RDataEnum rDataEnum, final RVariable rVariable) {
         final String notSaved = rDataEnum.isNotSaved() ? "NotSaved" : "";
-        final String commandPrefix = "results" + rDataEnum.getType() + notSaved + "$" + rDataEnum.getValue() + "$";
+        final String variableType = rDataEnum.getType() != null ? "results" + rDataEnum.getType() + notSaved + "$" : "";
+        final String commandPrefix = variableType + rDataEnum.getValue() + "$";
         try {
             switch (rVariable.getType()) {
                 case LOGICAL:
@@ -130,7 +132,7 @@ public class RService {
     }
 
     public void saveSummaryToFile(final Type type, final String summaryPath) {
-        final RScriptEnum rScriptEnum = getSaveSummaryScript(type.name());
+        final RScriptEnum rScriptEnum = getSaveSummaryScript(type);
         lock.lock();
         try {
             eval("summaryPath <- " + "'" + summaryPath + "'");
@@ -149,6 +151,14 @@ public class RService {
         } finally {
             lock.unlock();
         }
+    }
+
+    public void runClusteringReads(final Type type, final Integer clustersNumber) {
+        final String savedVariable = "results" + type.name() + "$clusteringData";
+        eval("preparedClusteringData <- " + savedVariable);
+        eval("clustersNumber <- " + clustersNumber);
+        eval("clusteringReads <- runClusteringReads(preparedClusteringData, clustersNumber)");
+        eval("clusteringReads <- runClusteringReads(preparedClusteringData, clustersNumber)");
     }
 
     private void copyAllRScriptsToDisc() {
@@ -189,8 +199,8 @@ public class RService {
         }
     }
 
-    public RScriptEnum getReadSummaryScript(final String type) {
-        switch (Type.valueOf(type)) {
+    public RScriptEnum getReadSummaryScript(final Type type) {
+        switch (type) {
             case Fast5:
                 return RScriptEnum.READ_SUMMARY_FAST5;
             case FastQ:
@@ -200,8 +210,8 @@ public class RService {
         }
     }
 
-    private RScriptEnum getSaveSummaryScript(final String type) {
-        switch (Type.valueOf(type)) {
+    private RScriptEnum getSaveSummaryScript(final Type type) {
+        switch (type) {
             case Fast5:
                 return RScriptEnum.SAVE_SUMMARY_FAST5;
             case FastQ:

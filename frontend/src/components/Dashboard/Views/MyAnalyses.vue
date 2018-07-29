@@ -55,12 +55,13 @@
         analysisType: '',
         detailsId: 0,
         qualityStatus: null,
-        columns: ['name', 'comment', 'type', 'qualityStatus', 'runTime', 'viewResults', 'deleteRow', 'runFastQ', 'htmlReport'],
+        columns: ['name', 'comment', 'type', 'userRate', 'qualityStatus', 'runTime', 'viewResults', 'deleteRow', 'runFastQ', 'htmlReport'],
         data: [],
         options: {
           headings: {
             name: 'Analysis name',
             type: 'Type',
+            userRate: 'User rate',
             qualityStatus: 'Quality status',
             runTime: 'Run time',
             comment: 'Comment',
@@ -69,7 +70,7 @@
             runFastQ: 'Run FastQ',
             htmlReport: 'HTML report'
           },
-          sortable: ['name', 'type', 'runTime', 'qualityStatus'],
+          sortable: ['name', 'type', 'runTime', 'userRate', 'qualityStatus'],
           filterable: ['name'],
           pagination: {
             edge: false
@@ -89,6 +90,7 @@
             runFastQ: 'button-width',
             htmlReport: 'button-width',
             type: 'type',
+            userRate: 'user-rate',
             qualityStatus: 'quality-status',
             runTime: 'run-time',
             comment: 'comment'
@@ -119,7 +121,7 @@
       onDeleteRow (rowId, analyseId) {
         this.$http.post(`api/analysis/delete/` + analyseId).then(response => {
           if (response.status === 200) {
-            this.data.splice(rowId - 1, 1)
+            this.data.splice(rowId + 1, 1)
             this.$toast.success({
               title: 'Success',
               message: 'Successful removing'
@@ -201,7 +203,7 @@
   }
 
   .button-width {
-    width: 6%;
+    width: 8%;
   }
 
   .type {
@@ -212,11 +214,15 @@
     width: 8%;
   }
 
+  .user-rate {
+    width: 8%;
+  }
+
   .quality-status {
     width: 8%;
   }
 
   .comment {
-    width: 30%;
+    width: 25%;
   }
 </style>

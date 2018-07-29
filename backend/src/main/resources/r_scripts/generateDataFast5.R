@@ -37,10 +37,10 @@ resultsFast5NotSaved <- list.append(resultsFast5NotSaved, readsComplementQuality
 quantile25 <- quantile(q_2D, 0.25, na.rm = TRUE, names = FALSE)
 median <- median(q_2D, na.rm = TRUE)
 status <- 'Success'
-if (median < 20 || quantile25 < 10) {
+if (median < 15 || quantile25 < 5) {
     status <- 'Warning'
 }
-if (median < 10 || quantile25 < 5) {
+if (median < 10 || quantile25 < 3) {
     status <- 'Failure'
 }
 resultsFast5 <- list.append(resultsFast5, readsQualityStatus = list(status=status))
@@ -50,15 +50,15 @@ out <- tryCatch(readQuality(fq), error = function(cond){return (tibble())})
 q_template <- (out %>% filter(readType == "template"))$meanBaseQuality
 q_complement <- (out %>% filter(readType == "complement"))$meanBaseQuality
 q_2D <- (out %>% filter(readType == "2D"))$meanBaseQuality
-d_template <- density(q_template)
-d_complement <- density(q_complement)
-d_2D <- density(q_2D)
-quality_template <- d_template$x[seq(1, length(d_template$x), 4)]
-density_template <- d_template$y[seq(1, length(d_template$y), 4)]
-quality_complement <- d_complement$x[seq(1, length(d_complement$x), 4)]
-density_complement <- d_complement$y[seq(1, length(d_complement$y), 4)]
-quality_2D <- d_2D$x[seq(1, length(d_2D$x), 4)]
-density_2D <- d_2D$y[seq(1, length(d_2D$y), 4)]
+d_template <- tryCatch(density(q_template), error = function(cond){return (tibble())})
+d_complement <- tryCatch(density(q_complement), error = function(cond){return (tibble())})
+d_2D <- tryCatch(density(q_2D), error = function(cond){return (tibble())})
+quality_template <- if(length(d_template) > 0){d_template$x[seq(1, length(d_template$x), 4)]} else {list()}
+density_template <- if(length(d_template) > 0){d_template$y[seq(1, length(d_template$y), 4)]} else {list()}
+quality_complement <- if(length(d_complement) > 0){ d_complement$x[seq(1, length(d_complement$x), 4)]} else {list()}
+density_complement <- if(length(d_complement) > 0){d_complement$y[seq(1, length(d_complement$y), 4)]} else {list()}
+quality_2D <- if(length(d_2D) > 0){d_2D$x[seq(1, length(d_2D$x), 4)]} else {list()}
+density_2D <- if(length(d_2D) > 0){d_2D$y[seq(1, length(d_2D$y), 4)]} else {list()}
 
 resultsFast5 <- list.append(resultsFast5, readsQualityDensityMulti = list(quality_template=quality_template, density_template=density_template,
 quality_complement=quality_complement, density_complement=density_complement, quality_2D=quality_2D, density_2D=density_2D))

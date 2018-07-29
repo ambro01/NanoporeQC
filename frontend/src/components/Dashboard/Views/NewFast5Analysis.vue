@@ -11,6 +11,7 @@
     </analysis-save>
     <div class="card" v-if=this.showReport>
       <report-stats-fast5 :id=0
+                          :qualityStatus="this.readsQualityStatus"
                           v-if=this.showReport>
       </report-stats-fast5>
     </div>

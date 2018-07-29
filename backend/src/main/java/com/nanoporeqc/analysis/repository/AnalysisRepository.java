@@ -7,7 +7,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -17,10 +16,10 @@ public interface AnalysisRepository extends CrudRepository<Analysis, Long> {
 
     Long countByType(@NotNull final Type type);
 
-    Long countByTypeAndQualityStatus(@NotNull final Type type, @NotNull final QualityStatus qualityStatus);
+    Long countByTypeAndUserRate(@NotNull final Type type, @NotNull final QualityStatus userRate);
 
     Analysis findFirstByTypeOrderByRunTimeDesc(@NotNull final Type type);
 
-    Analysis findFirstByTypeAndQualityStatusOrderByRunTimeDesc(@NotNull final Type type, @NotNull final QualityStatus qualityStatus);
+    Analysis findFirstByTypeAndUserRateOrderByRunTimeDesc(@NotNull final Type type, @NotNull final QualityStatus userRate);
 
 }

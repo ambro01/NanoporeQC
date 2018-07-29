@@ -49,6 +49,10 @@ public class Analysis {
     private Type type;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "USER_RATE")
+    private QualityStatus userRate;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "QUALITY_STATUS")
     private QualityStatus qualityStatus;
 
@@ -64,7 +68,4 @@ public class Analysis {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
     private ApplicationUser user;
-
-    @Column(name = "PARENT_ANALYSIS_ID")
-    private Long parentAnalysisId;
 }

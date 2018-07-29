@@ -33,12 +33,12 @@ public class AnalysisDto {
     @NotEmpty
     private Type type;
 
+    private QualityStatus userRate;
+
     private QualityStatus qualityStatus;
 
     private Boolean hasHtmlReport;
 
     private Boolean fastQFromFast5;
-
-    private Long parentAnalysisId;
 
 }

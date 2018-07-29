@@ -6,8 +6,6 @@ import com.nanoporeqc.exceptions.NotSupportedAnalysisTypeException;
 import com.nanoporeqc.exceptions.REvaluatingException;
 import com.nanoporeqc.file.consts.FileConsts;
 import com.nanoporeqc.file.service.FileService;
-import com.nanoporeqc.r.consts.RDataConst;
-import com.nanoporeqc.r.domain.RData;
 import com.nanoporeqc.r.domain.RVariable;
 import com.nanoporeqc.r.enumeration.RDataEnum;
 import com.nanoporeqc.r.enumeration.RScriptEnum;
@@ -26,9 +24,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -94,7 +89,7 @@ public class RService {
                             .boxed()
                             .collect(Collectors.toList());
                 case DOUBLE:
-                    return Arrays.stream(eval( commandPrefix + rVariable.getName()).asDoubles())
+                    return Arrays.stream(eval(commandPrefix + rVariable.getName()).asDoubles())
                             .boxed()
                             .map(aDouble -> {
                                         if (rVariable.getPrecision() != null) {

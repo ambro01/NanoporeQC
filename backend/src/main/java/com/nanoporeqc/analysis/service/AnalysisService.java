@@ -13,23 +13,20 @@ import com.nanoporeqc.file.service.FileService;
 import com.nanoporeqc.r.enumeration.RScriptEnum;
 import com.nanoporeqc.r.service.RService;
 import com.nanoporeqc.user.service.ApplicationUserService;
-import lombok.AllArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.rowset.serial.SerialBlob;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -154,13 +151,16 @@ public class AnalysisService {
         return analysisRepository.countByType(type);
     }
 
-    public Long getSuccessAnalysesRatio(final Type type) {
+    public Double getSuccessAnalysesRatio(final Type type) {
         final Long all = analysisRepository.countByType(type);
-        final Long success = analysisRepository.countByTypeAndQualityStatus(type, QualityStatus.Success);
+        final Long success = analysisRepository.countByTypeAndUserRate(type, QualityStatus.Success);
         if (all == null || all == 0L || success == null) {
-            return 0L;
+            return 0.0;
         }
-        return success/all;
+        return BigDecimal.valueOf(success.doubleValue()/all.doubleValue())
+                .multiply(BigDecimal.valueOf(100))
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
     }
 
     public String getLastAnalysisTime(final Type type) {
@@ -172,7 +172,7 @@ public class AnalysisService {
     }
 
     public String getLastSuccessAnalysisTime(final Type type) {
-        final Analysis analysis = analysisRepository.findFirstByTypeAndQualityStatusOrderByRunTimeDesc(type, QualityStatus.Success);
+        final Analysis analysis = analysisRepository.findFirstByTypeAndUserRateOrderByRunTimeDesc(type, QualityStatus.Success);
         if (analysis == null) {
             return null;
         }
@@ -210,7 +210,6 @@ public class AnalysisService {
         final AnalysisDto analysisDto = modelMapper.map(analysis, AnalysisDto.class);
         analysisDto.setRunTime(convertLocalDateTimeToString(analysis.getRunTime()));
         analysisDto.setHasHtmlReport(analysis.getHtmlReport() != null);
-        analysisDto.setFastQFromFast5(analysis.getParentAnalysisId() != null);
         return analysisDto;
     }
 
@@ -225,8 +224,8 @@ public class AnalysisService {
                     .comment(analysisDto.getComment())
                     .runTime(LocalDateTime.now())
                     .type(analysisDto.getType())
+                    .userRate(analysisDto.getUserRate())
                     .qualityStatus(analysisDto.getQualityStatus())
-                    .parentAnalysisId(analysisDto.getParentAnalysisId())
                     .mainSummary(new SerialBlob(fileService.getSummaryContent(FileConsts.SUMMARY_FAST5_FILE)))
                     .user(applicationUserService.getCurrentUser())
                     .htmlReport(new SerialBlob(fileService.getSummaryContent(reportService.getHtmlReportPath())))

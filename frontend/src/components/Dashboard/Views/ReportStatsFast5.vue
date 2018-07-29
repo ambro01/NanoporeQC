@@ -177,7 +177,7 @@
         </div>
       </div>
     </div>
-    <quality-status v-if="this.tabIndex === 10"
+    <quality-status v-if="this.tabIndex !== 10"
                     :qualityStatus="this.qualityStatus">
     </quality-status>
   </div>
@@ -369,7 +369,7 @@
                 data: response.data.values['q25']
               },
               {
-                label: 'median/q50',
+                label: 'median',
                 backgroundColor: '#47f889',
                 data: response.data.values['median']
               },

@@ -105,7 +105,7 @@
           {
             type: 'danger',
             icon: 'ti-stats-up',
-            title: 'Success quality analyses rate',
+            title: 'Success quality analyses ratio',
             value: null
           }
         ],
@@ -200,10 +200,10 @@
         this.$http.get(`api/analysis/success-ratio/` + type)
           .then(response => {
             if (type === fast5) {
-              this.statsCardsFast5[3].value = response.data
+              this.statsCardsFast5[3].value = response.data + ' %'
             }
             if (type === fastQ) {
-              this.statsCardsFastQ[3].value = response.data
+              this.statsCardsFastQ[3].value = response.data + ' %'
             }
           })
           .catch(e => {

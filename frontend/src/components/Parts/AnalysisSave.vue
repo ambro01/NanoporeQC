@@ -27,6 +27,14 @@
                         placeholder="Enter comment">
               </fg-input>
             </div>
+            <div class="col-md-2 form-group">
+              <label>User rate</label>
+              <select v-model="userRate" class="form-control border-input">
+                <option>Success</option>
+                <option>Warning</option>
+                <option>Failure</option>
+              </select>
+            </div>
             <div class="col-md-2">
               <div class="col-md-2">
                 <button class="btn btn-primary btn-fill save-button" :disabled="!this.analysisName.length > 0"
@@ -52,7 +60,8 @@
       return {
         isShowingAll: true,
         analysisName: '',
-        comment: ''
+        comment: '',
+        userRate: null
       }
     },
     methods: {
@@ -68,7 +77,7 @@
           comment: this.comment,
           type: this.analysisType,
           qualityStatus: this.qualityStatus,
-          parentAnalysisId: this.parentAnalysisId
+          userRate: this.userRate
         }).then(response => {
           if (response.status === 200) {
             this.resetData()
@@ -88,6 +97,7 @@
       resetData () {
         this.analyseName = ''
         this.comment = ''
+        this.userRate = null
       }
     }
   }
@@ -96,5 +106,8 @@
   .save-button {
     margin-top: 20px;
     width: 100px;
+  }
+  .my-select {
+    background-color: #fffcf5;
   }
 </style>

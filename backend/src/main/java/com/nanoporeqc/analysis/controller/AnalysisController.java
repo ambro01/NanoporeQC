@@ -103,7 +103,7 @@ public class AnalysisController {
     }
 
     @GetMapping(value = "/success-ratio/{type}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Long getSuccessAnalysesRatio(@PathVariable("type") Type type) {
+    public Double getSuccessAnalysesRatio(@PathVariable("type") Type type) {
         return analysisService.getSuccessAnalysesRatio(type);
     }
 

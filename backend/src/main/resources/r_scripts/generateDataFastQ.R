@@ -25,9 +25,10 @@ resultsFastQ <- list.append(resultsFastQ, readsQuality = list(id=id, quality=qua
 resultsFastQNotSaved <- list(readsQualityOutliers = outliersFinder(quality))
 
 # Reads quality denisty
-density_quality <- density(quality)
-quality <- density_quality$x
-density <- density_quality$y
+density_quality <- tryCatch(density(quality), error = function(cond){return (tibble())})
+
+quality <- if(length(density_quality) > 0){density_quality$x} else {list()}
+density <- if(length(density_quality) > 0){density_quality$y} else {list()}
 resultsFastQ <- list.append(resultsFastQ, readsQualityDensity = list(quality=quality, density=density))
 
 # Base quality
@@ -57,7 +58,7 @@ status <- 'Success'
 if (any(df$X50.) < 20 || any(df$X25.) < 10) {
     status <- 'Warning'
 }
-if (any(df$X50.) < 10 || any(df$X25.) < 5) {
+if (any(df$X50.) < 10 || any(df$X25.) < 3) {
     status <- 'Failure'
 }
 resultsFastQ <- list.append(resultsFastQ, basesQualityStatus = list(status=status))
@@ -66,9 +67,11 @@ resultsFastQ <- list.append(resultsFastQ, basesQualityStatus = list(status=statu
 # Base quality denisty
 df <- qaSummary[["perCycle"]]
 df <- df$quality
-density_quality <- density(df[rep(row.names(df), df$Count), 3])
-quality <- density_quality$x
-density <- density_quality$y
+
+density_quality <- tryCatch(density(df[rep(row.names(df), df$Count), 3]), error = function(cond){return (tibble())})
+
+quality <- if(length(density_quality) > 0){density_quality$x} else {list()}
+density <- if(length(density_quality) > 0){density_quality$y} else {list()}
 
 resultsFastQ <- list.append(resultsFastQ, basesQualityDensity = list(quality=quality, density=density))
 
@@ -124,9 +127,9 @@ cgPart <- cg/all
 resultsFastQ <- list.append(resultsFastQ, basesCgContent = list(id=id, cgContent=cgPart))
 
 # Base CG density
-density_cg <- density(cgPart)
-cgPart <- density_cg$x
-density <- density_cg$y
+density_cg <- tryCatch(density(cgPart), error = function(cond){return (tibble())})
+cgPart <- if(length(density_cg) > 0){density_cg$x} else {list()}
+density <- if(length(density_cg) > 0){density_cg$y} else {list()}
 
 resultsFastQ <- list.append(resultsFastQ, basesCgDensity = list(cgContent=cgPart, density=density))
 

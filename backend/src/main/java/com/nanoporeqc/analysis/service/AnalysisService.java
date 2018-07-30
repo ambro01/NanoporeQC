@@ -226,7 +226,8 @@ public class AnalysisService {
                     .type(analysisDto.getType())
                     .userRate(analysisDto.getUserRate())
                     .qualityStatus(analysisDto.getQualityStatus())
-                    .mainSummary(new SerialBlob(fileService.getSummaryContent(FileConsts.SUMMARY_FAST5_FILE)))
+                    .mainSummary(new SerialBlob(fileService.getSummaryContent(
+                            Type.Fast5.equals(analysisDto.getType()) ? FileConsts.SUMMARY_FAST5_FILE : FileConsts.SUMMARY_FASTQ_FILE)))
                     .user(applicationUserService.getCurrentUser())
                     .htmlReport(new SerialBlob(fileService.getSummaryContent(reportService.getHtmlReportPath())))
                     .build();

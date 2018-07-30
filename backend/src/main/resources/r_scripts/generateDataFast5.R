@@ -183,4 +183,4 @@ resultsFast5 <- list.append(resultsFast5, summaryInfo = list(id=id, file=file, r
 num_events_t=num_events_t, duration_t=duration_t, start_time_t=start_time_t, strand_t=strand_t, full_2D_t=full_2D_t,
 num_events_c=num_events_c, duration_c=duration_c, start_time_c=start_time_c, strand_c=strand_c, full_2D_c=full_2D_c))
 
-resultsFast5 <- list.append(resultsFast5, clusteringData = getDataForClustering(fq))
+# resultsFast5 <- list.append(resultsFast5, clusteringData = getDataForClustering(fq))

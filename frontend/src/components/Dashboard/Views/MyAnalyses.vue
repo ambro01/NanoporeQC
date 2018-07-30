@@ -121,7 +121,10 @@
       onDeleteRow (rowId, analyseId) {
         this.$http.post(`api/analysis/delete/` + analyseId).then(response => {
           if (response.status === 200) {
-            this.data.splice(rowId + 1, 1)
+            console.log(this.data)
+            console.log(rowId)
+            console.log(this.data)
+            this.data.splice(this.data.length - rowId, 1)
             this.$toast.success({
               title: 'Success',
               message: 'Successful removing'

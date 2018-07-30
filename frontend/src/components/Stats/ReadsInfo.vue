@@ -7,6 +7,7 @@
                     :data="this.sourceData"
                     :options="options">
     </v-client-table>
+    Quality information about reads
   </div>
 </template>
 

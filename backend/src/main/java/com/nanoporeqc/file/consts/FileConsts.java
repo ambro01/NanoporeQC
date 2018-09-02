@@ -1,7 +1,7 @@
 package com.nanoporeqc.file.consts;
 
 public class FileConsts {
-    private static final String BASE_DIR = "/home/ra/nanoporeqc/";
+    private static final String BASE_DIR = "/usr/nanoporeqc/";
     public static final String FILES_DIR = BASE_DIR + "files/";
     public static final String SCRIPTS_DIR = BASE_DIR + "scripts/";
     public static final String SUMMARY_DIR = BASE_DIR + "summary/";

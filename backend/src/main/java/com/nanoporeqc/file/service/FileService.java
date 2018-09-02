@@ -19,7 +19,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -47,11 +46,10 @@ public class FileService {
     }
 
     public void saveRScriptFile(final RScriptEnum rScriptEnum) {
-        final URL resource = Config.class.getResource(FileConsts.SCRIPTS_RESOURCE + rScriptEnum.getFileName());
-        final File source = new File(resource.getFile());
+        final InputStream in = Config.class.getClassLoader().getResourceAsStream(FileConsts.SCRIPTS_RESOURCE + rScriptEnum.getFileName());
         final String filePath = FileConsts.SCRIPTS_DIR + rScriptEnum.getFileName();
         final File destination = new File(filePath);
-        copySourceToDestination(source, destination);
+        copySourceStreamToDestination(in, destination);
     }
 
 
@@ -127,13 +125,23 @@ public class FileService {
         }
     }
 
-    private void copySourceToDestination(final File source, final File destination) {
+    private void copySourceStreamToDestination(final InputStream inputStream, final File destination) {
         if (destination.exists()) {
             return;
         }
         try {
             if (destination.createNewFile()) {
-                FileUtils.copyFile(source, destination);
+                final OutputStream outputStream = new FileOutputStream(destination);
+                try {
+                    byte[] buffer = new byte[1024];
+                    int length;
+                    while ((length = inputStream.read(buffer)) > 0) {
+                        outputStream.write(buffer, 0, length);
+                    }
+                } finally {
+                    inputStream.close();
+                    outputStream.close();
+                }
             }
         } catch (IOException e) {
             throw new RScriptFileCannotBeSavedException();

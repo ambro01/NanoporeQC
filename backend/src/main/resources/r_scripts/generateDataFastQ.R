@@ -55,10 +55,10 @@ df <- df[rep(row.names(df), df$Count), 1-3]
 df <- df %>% group_by(Cycle) %>% do(data.frame(t(quantile(.$Score, c(0.25, 0.5)))))
 
 status <- 'Success'
-if (any(df$X50.) < 20 || any(df$X25.) < 10) {
+if (any(df$X50.) < 10 || any(df$X25.) < 5) {
     status <- 'Warning'
 }
-if (any(df$X50.) < 10 || any(df$X25.) < 3) {
+if (any(df$X50.) < 8 || any(df$X25.) < 3) {
     status <- 'Failure'
 }
 resultsFastQ <- list.append(resultsFastQ, basesQualityStatus = list(status=status))

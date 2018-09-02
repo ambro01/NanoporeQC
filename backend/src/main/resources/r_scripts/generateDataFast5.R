@@ -37,10 +37,10 @@ resultsFast5NotSaved <- list.append(resultsFast5NotSaved, readsComplementQuality
 quantile25 <- quantile(q_2D, 0.25, na.rm = TRUE, names = FALSE)
 median <- median(q_2D, na.rm = TRUE)
 status <- 'Success'
-if (median < 15 || quantile25 < 5) {
+if (median < 10 || quantile25 < 5) {
     status <- 'Warning'
 }
-if (median < 10 || quantile25 < 3) {
+if (median < 8 || quantile25 < 3) {
     status <- 'Failure'
 }
 resultsFast5 <- list.append(resultsFast5, readsQualityStatus = list(status=status))

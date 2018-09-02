@@ -1,17 +1,11 @@
 package com.nanoporeqc.rTest;
 
-import com.nanoporeqc.Config;
 import com.nanoporeqc.config.IntegrationTest;
 import com.nanoporeqc.file.consts.FileConsts;
-import com.nanoporeqc.r.consts.RDataConst;
-import com.nanoporeqc.r.domain.RVariable;
-import com.nanoporeqc.r.enumeration.RScriptEnum;
 import com.nanoporeqc.r.service.RService;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.rosuda.REngine.REngine;
 import org.rosuda.REngine.Rserve.RConnection;
@@ -20,9 +14,7 @@ import org.rosuda.REngine.Rserve.RserveException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Category(IntegrationTest.class)

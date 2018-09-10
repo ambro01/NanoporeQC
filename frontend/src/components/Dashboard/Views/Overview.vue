@@ -163,10 +163,7 @@
             if (type === fastQ) {
               this.statsCardsFastQ[0].value = response.data
             }
-          })
-          .catch(e => {
-            console.error(e)
-          })
+          }).catch(() => this.$toast.error())
       },
       getLastAnalysisTime (type) {
         this.$http.get(`api/analysis/last/` + type)
@@ -177,10 +174,7 @@
             if (type === fastQ) {
               this.statsCardsFastQ[1].value = response.data
             }
-          })
-          .catch(e => {
-            console.error(e)
-          })
+          }).catch(() => this.$toast.error())
       },
       getLastSuccessAnalysisTime (type) {
         this.$http.get(`api/analysis/last-success/` + type)
@@ -191,10 +185,7 @@
             if (type === fastQ) {
               this.statsCardsFastQ[2].value = response.data
             }
-          })
-          .catch(e => {
-            console.error(e)
-          })
+          }).catch(() => this.$toast.error())
       },
       getSuccessAnalysesRatio (type) {
         this.$http.get(`api/analysis/success-ratio/` + type)
@@ -205,10 +196,7 @@
             if (type === fastQ) {
               this.statsCardsFastQ[3].value = response.data + ' %'
             }
-          })
-          .catch(e => {
-            console.error(e)
-          })
+          }).catch(() => this.$toast.error())
       }
     }
   }

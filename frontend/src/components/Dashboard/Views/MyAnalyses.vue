@@ -108,7 +108,7 @@
       getAnalysisForCurrentUser () {
         this.$http.get(`api/analysis/current-user`).then(response => {
           this.data = response.data
-        }).catch(e => {
+        }).catch(() => {
           this.$toast.error({
             title: 'Error',
             message: 'Analyses loading failed'
@@ -119,28 +119,15 @@
         this.loadAnalysis(row.id, row.type, row.qualityStatus)
       },
       onDeleteRow (rowId, analyseId) {
-        this.$http.post(`api/analysis/delete/` + analyseId).then(response => {
-          if (response.status === 200) {
-            console.log(this.data)
-            console.log(rowId)
-            console.log(this.data)
+        this.$http.post(`api/analysis/delete/` + analyseId)
+          .then(() => {
             this.data.splice(this.data.length - rowId, 1)
             this.$toast.success({
               title: 'Success',
               message: 'Successful removing'
             })
-          } else {
-            this.$toast.error({
-              title: 'Error',
-              message: 'Removing failed'
-            })
-          }
-        }).catch(e => {
-          this.$toast.error({
-            title: 'Error',
-            message: 'Removing failed'
           })
-        })
+          .catch(() => this.$toast.error())
       },
       onRunAnalysis (row) {
         this.$http.post(`api/analysis/from-fast5/` + row.id).then(response => {
@@ -152,33 +139,26 @@
           this.analysisType = 'FastQ'
           this.showSave = true
           this.parentAnalysisId = row.id
-        }).catch(e => {
-          this.$toast.error({
-            title: 'Error',
-            message: 'Running failed'
-          })
         })
+          .catch(() => this.$toast.error())
       },
       loadAnalysis (id, type, qualityStatus) {
         this.$http.get(`api/analysis/` + id, {
           params: {
             type: type
           }
-        }).then(response => {
-          this.reloadData = true
-          this.$toast.success({
-            title: 'Success',
-            message: 'Successful data loading'
-          })
-          this.detailsId = id
-          this.analysisType = type
-          this.qualityStatus = qualityStatus
-        }).catch(e => {
-          this.$toast.error({
-            title: 'Error',
-            message: 'Data loading failed'
-          })
         })
+          .then(() => {
+            this.reloadData = true
+            this.$toast.success({
+              title: 'Success',
+              message: 'Successful data loading'
+            })
+            this.detailsId = id
+            this.analysisType = type
+            this.qualityStatus = qualityStatus
+          })
+          .catch(() => this.$toast.error())
       },
       onDownloadHtmlReport (row) {
         this.$http.get(`api/analysis/download-report/` + row.id).then(response => {

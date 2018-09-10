@@ -85,6 +85,8 @@ readQualityFromShortReadQ <- function(fq) {
     return (res)
 }
 
+########################### Tukey outliers detection #######################
+
 outliersFinder <- function(dataSet) {
     input <- dataSet
     total <- sum(! is.na(dataSet))
@@ -128,33 +130,132 @@ outliersProportion <- function(dataSet) {
     return (proportion)
 }
 
+##############################################################
+
+########################### Clustering #######################
+
+getmode <- function(v) {
+    uniqv <- unique(v)
+    uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
 getDataForClustering <- function(fq) {
     id <- as.character(id(fq))
-    d <- data.frame(id=id)
-    for (i in 1:nrow(d)) {
-        q <- as(quality(fq)[i], 'matrix')
-        d[i, 2]<- mean(q)
-        d[i, 3]<- median(q)
-        d[i, 4]<- quantile(q, probs = 0.25, na.rm = TRUE, names = FALSE)
-        d[i, 5]<- quantile(q, probs = 0.75, na.rm = TRUE, names = FALSE)
-        d[i, 6]<- outliersProportion(q)
-        d[i, 7]<- length(q)
-        d[i, 8]<- i
+    d <- data.frame(id = id)
+    qa <- quality(fq)
+    ra <- sread(fq)
+    for (i in 1 : nrow(d)) {
+        q <- as(qa[i], 'matrix')
+        r <- as(ra[i], 'matrix')
+        d[i, 2] <- getmode(q)
+        d[i, 3] <- mean(q)
+        d[i, 4] <- median(q)
+        d[i, 5] <- quantile(q, probs = 0.25, na.rm = TRUE, names = FALSE)
+        d[i, 6] <- quantile(q, probs = 0.75, na.rm = TRUE, names = FALSE)
+        d[i, 7] <- length(which(r %in% c("C", "G"))) / length(r)
+        d[i, 8] <- sd(q)
+        d[i, 9] <- length(q)
+        d[i, 10] <- i
     }
-    colnames(d) <- c('name', 'mean', 'median', 'q25', 'q75', 'outliersRatio', 'count', 'id')
+    colnames(d) <- c('name', 'mode', 'mean', 'median', 'q25', 'q75', 'cgContent', 'sd', 'length', 'id')
+
     return(d)
 }
 
-runClusteringReads <- function(d, groupsNumber) {
-    d_ <- d[, 2:6]
-    k <- kmeans(d_, groupsNumber)
-    v <- data.frame(k$centers)
-    for (i in 1:nrow(v)) {
-        r <- which(k$cluster %in% i)
-        v[i, 6]<- paste(r, collapse=', ')
-        v[i, 7]<- i
-    }
-    colnames(v) <- c('mean', 'median', 'q25', 'q75', 'outliersRatio', 'readsIndices', 'id')
+pcaTransform <- function(d) {
+    pca <- prcomp(d[, 2 : 9], scale = TRUE)
+    result <- data.frame(pca$x[, 1 : 6])
+    result$name <- d$name
+    result$id <- d$id
 
-    return(v)
+    return(result)
+}
+
+runKmeansClustering <- function(d, groupsNumber) {
+    pca_res <- pcaTransform(d)
+    d_ <- pca_res[, 1 : 6]
+    k <- kmeans(d_, groupsNumber)
+    m <- as.data.frame(matrix(0, ncol = 2, nrow = groupsNumber))
+    for (i in 1 : nrow(m)) {
+        r <- which(k$cluster %in% i)
+        m[i, 1] <- i
+        m[i , 2] <- paste(r, collapse = ', ')
+    }
+    colnames(m) <- c('clusterId', 'ids')
+    return(m)
+}
+
+runMclustClustering <- function(d, groupsNumber) {
+    pca_res <- pcaTransform(d)
+    d_ <- pca_res[, 1 : 6]
+    c <- Mclust(d_, groupsNumber)
+    m <- as.data.frame(matrix(0, ncol = 2, nrow = groupsNumber))
+    for (i in 1 : nrow(m)) {
+        r <- which(c$classification %in% i)
+        m[i, 1] <- i
+        m[i , 2] <- paste(r, collapse = ', ')
+    }
+    colnames(m) <- c('clusterId', 'ids')
+    return(m)
+}
+
+runMclustClusteringWithoutGroupNumber <- function(d) {
+    pca_res <- pcaTransform(d)
+    d_ <- pca_res[, 1 : 6]
+    c <- Mclust(d_)
+    m <- as.data.frame(matrix(0, ncol = 2, nrow = length(unique(c$classification))))
+    for (i in 1 : nrow(m)) {
+        r <- which(c$classification %in% i)
+        m[i, 1] <- i
+        m[i , 2] <- paste(r, collapse = ', ')
+    }
+    colnames(m) <- c('clusterId', 'ids')
+    return(m)
+}
+
+########################### 2D detecion #######################
+
+run2dDetection <- function(d) {
+    k <- kmeans(d[, 2], 2)
+    m <- as.data.frame(matrix(0, ncol = 3, nrow = 2))
+    r1 <- which(k$cluster %in% 1)
+    r2 <- which(k$cluster %in% 2)
+    if (k$centers[1] > k$centers[2]) {
+        m[1, 1] <- '2D'
+        m[1, 2] <- k$centers[1]
+        m[1, 3] <- paste(r1, collapse = ', ')
+        m[2, 1] <- 'Template/Complement'
+        m[2, 2] <- k$centers[2]
+        m[2, 3] <- paste(r2, collapse = ', ')
+    } else {
+        m[1, 1] <- '2D'
+        m[1, 2] <- k$centers[2]
+        m[1, 3] <- paste(r2, collapse = ', ')
+        m[2, 1] <- 'Template/Complement'
+        m[2, 2] <- k$centers[1]
+        m[2, 3] <- paste(r1, collapse = ', ')
+    }
+    colnames(m) <- c('clusterName', 'mode', 'ids')
+    return(m)
+}
+
+########################### Outliers detection kmeans #######################
+
+runOutliersDetection <- function(d, outliersProportion) {
+    pca_res <- pcaTransform(d)
+    d_ <- pca_res[, 1 : 6]
+    k <- kmeans(d_, 1)
+    centers <- k$centers[k$cluster,]
+    distances <- sqrt(rowSums((d_ - centers) ^ 2))
+
+    maxItems <- trunc((outliersProportion / 100) * length(distances))
+    outliers <- order(distances, decreasing = T)[1 : maxItems]
+
+    result <- data.frame(outliers)
+    result$distance <- distances[result$outliers]
+    result$id <- seq(1, length(outliers))
+    result$name <- pca_res$name[outliers]
+    colnames(result) <- c('readId', 'distance', 'outlierPlace', 'name')
+
+    return(result)
 }

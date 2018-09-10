@@ -15,6 +15,8 @@ public class ReadsInfoDto {
 
     private String name;
 
+    private Integer mode;
+
     private Double mean;
 
     private Double median;
@@ -23,8 +25,8 @@ public class ReadsInfoDto {
 
     private Double quantile75;
 
-    private Double outliersRatio;
+    private Double cgContent;
 
-    private Integer count;
+    private Integer length;
 
 }

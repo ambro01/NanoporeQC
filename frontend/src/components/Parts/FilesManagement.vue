@@ -127,12 +127,7 @@
               message: 'Successful upload. Please wait'
             })
           })
-          .catch(e => {
-            this.$toast.error({
-              title: 'Error',
-              message: 'Upload failed'
-            })
-          })
+          .catch(() => this.$toast.error())
       },
       // We want to clear the FormData object on every upload so we can re-calculate new files again.
       // Keep in mind that we can delete files as well so in the future we will need to keep track of that as well

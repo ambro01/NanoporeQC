@@ -11,18 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ClusteringReadsDto {
 
-    private Integer id;
+    private Integer cluster;
 
-    private Double mean;
-
-    private Double median;
-
-    private Double quantile25;
-
-    private Double quantile75;
-
-    private Double outliersRatio;
-
-    private String readsIndices;
+    private String readIds;
 
 }

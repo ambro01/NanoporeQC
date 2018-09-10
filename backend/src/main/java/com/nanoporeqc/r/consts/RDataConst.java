@@ -5,21 +5,9 @@ import com.nanoporeqc.r.domain.RVariable;
 import com.nanoporeqc.r.enumeration.RDataEnum;
 import com.nanoporeqc.r.enumeration.RVariableTypeEnum;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class RDataConst {
-
-    public static final List<String> DUPLICATED_SEQUENCES_DTO_VARIABLES = List.of("sequence", "coubt");
-
-    public static final List<String> SEQUENCES_DISTRIBUTION_DTO_VARIABLES = List.of("fileName", "occurrences", "reads");
-
-    public static final List<String> SUMMARY_INFO_DTO_VARIABLES = Stream.of(
-            "id", "fileName", "strandIndexInChannel", "channelIndex", "startTime", "duration", "eventsNo", "hasTemplate",
-            "eventsNoTemplate", "hasComplement", "eventsNoComplement", "is2d")
-            .collect(Collectors.toList());
 
     private static final RData NUCLEOTIDES_COUNTS = new RData(RDataEnum.NUCLEOTIDES_COUNTS, Map.of(
             "counts", new RVariable("counts", RVariableTypeEnum.NUMERIC),
@@ -172,54 +160,73 @@ public class RDataConst {
     private static final RData READS_TEMPLATE_OUTLIERS_QUALITY = new RData(RDataEnum.READS_TEMPLATE_OUTLIERS_QUALITY, OUTLIERS_VARIABLES);
     private static final RData READS_COMPLEMENT_OUTLIERS_QUALITY = new RData(RDataEnum.READS_COMPLEMENT_OUTLIERS_QUALITY, OUTLIERS_VARIABLES);
 
-    private static final RData CLUSTERING_READS = new RData(RDataEnum.CLUSTERING_READS, Map.of(
-            "id", new RVariable("id", RVariableTypeEnum.NUMERIC),
-            "mean", new RVariable("mean", RVariableTypeEnum.DOUBLE, 2),
-            "median", new RVariable("median", RVariableTypeEnum.DOUBLE, 2),
-            "q25", new RVariable("q25", RVariableTypeEnum.DOUBLE, 2),
-            "q75", new RVariable("q75", RVariableTypeEnum.DOUBLE, 2),
-            "outliersRatio", new RVariable("outliersRatio", RVariableTypeEnum.DOUBLE, 2),
-            "readsIndices", new RVariable("readsIndices", RVariableTypeEnum.CHARACTER)));
-
     private static final RData READS_INFO = new RData(RDataEnum.READS_INFO, Map.of(
             "id", new RVariable("id", RVariableTypeEnum.NUMERIC),
             "name", new RVariable("name", RVariableTypeEnum.CHARACTER),
+            "mode", new RVariable("mode", RVariableTypeEnum.NUMERIC),
             "mean", new RVariable("mean", RVariableTypeEnum.DOUBLE, 2),
             "median", new RVariable("median", RVariableTypeEnum.DOUBLE, 2),
             "q25", new RVariable("q25", RVariableTypeEnum.DOUBLE, 2),
             "q75", new RVariable("q75", RVariableTypeEnum.DOUBLE, 2),
-            "outliersRatio", new RVariable("outliersRatio", RVariableTypeEnum.DOUBLE, 2),
-            "readsIndices", new RVariable("readsIndices", RVariableTypeEnum.CHARACTER),
-            "count", new RVariable("count", RVariableTypeEnum.NUMERIC)));
+            "cgContent", new RVariable("cgContent", RVariableTypeEnum.DOUBLE, 2),
+            "length", new RVariable("length", RVariableTypeEnum.NUMERIC)));
+
+    private static final RData KMEANS_CLUSTERING = new RData(RDataEnum.KMEANS_CLUSTERING, Map.of(
+            "clusterId", new RVariable("clusterId", RVariableTypeEnum.NUMERIC),
+            "ids", new RVariable("ids", RVariableTypeEnum.CHARACTER)));
+
+    private static final RData MCLUST_CLUSTERING = new RData(RDataEnum.MCLUST_CLUSTERING, Map.of(
+            "clusterId", new RVariable("clusterId", RVariableTypeEnum.NUMERIC),
+            "ids", new RVariable("ids", RVariableTypeEnum.CHARACTER)));
+
+    private static final RData MCLUST_CLUSTERING_WITHOUT_OUTLIERS = new RData(RDataEnum.MCLUST_CLUSTERING_WITHOUT_OUTLIERS, Map.of(
+            "clusterId", new RVariable("clusterId", RVariableTypeEnum.NUMERIC),
+            "ids", new RVariable("ids", RVariableTypeEnum.CHARACTER)));
+
+    private static final RData D2_DETECTION = new RData(RDataEnum.D2_DETECTION, Map.of(
+            "clusterName", new RVariable("clusterName", RVariableTypeEnum.CHARACTER),
+            "mode", new RVariable("mode", RVariableTypeEnum.DOUBLE, 2),
+            "ids", new RVariable("ids", RVariableTypeEnum.CHARACTER)));
+
+    private static final RData OUTLIERS_DETECTION = new RData(RDataEnum.OUTLIERS_DETECTION, Map.of(
+            "readId", new RVariable("readId", RVariableTypeEnum.NUMERIC),
+            "distance", new RVariable("distance", RVariableTypeEnum.DOUBLE, 2),
+            "outlierPlace", new RVariable("outlierPlace", RVariableTypeEnum.NUMERIC),
+            "name", new RVariable("name", RVariableTypeEnum.CHARACTER)));
 
     public static final Map<RDataEnum, RData> RDataMap = Map.ofEntries(
-            Map.entry(RDataEnum.NUCLEOTIDES_COUNTS, NUCLEOTIDES_COUNTS),
-            Map.entry(RDataEnum.READS_QUALITY, READS_QUALITY),
-            Map.entry(RDataEnum.READS_QUALITY_DENSITY, READS_QUALITY_DENSITY),
-            Map.entry(RDataEnum.BASES_QUALITY, BASES_QUALITY),
-            Map.entry(RDataEnum.BASES_QUALITY_DENSITY, BASES_QUALITY_DENSITY),
-            Map.entry(RDataEnum.BASES_CALLS, BASES_CALLS),
-            Map.entry(RDataEnum.BASES_CG_CONTENT, BASES_CG_CONTENT),
-            Map.entry(RDataEnum.BASES_CG_DENSITY, BASES_CG_DENSITY),
-            Map.entry(RDataEnum.SEQUENCES_DISTRIBUTION, SEQUENCES_DISTRIBUTION),
-            Map.entry(RDataEnum.DUPLICATED_SEQUENCES, DUPLICATED_SEQUENCES),
-            Map.entry(RDataEnum.SUMMARY_INFO, SUMMARY_INFO),
-            Map.entry(RDataEnum.EVENTS_COUNTS, EVENTS_COUNTS),
-            Map.entry(RDataEnum.READS_ACCUMULATION, READS_ACCUMULATION),
-            Map.entry(RDataEnum.ACTIVE_CHANNELS, ACTIVE_CHANNELS),
-            Map.entry(RDataEnum.READS_CATEGORY_COUNTS, READS_CATEGORY_COUNTS),
-            Map.entry(RDataEnum.READS_CATEGORY_QUALITY, READS_CATEGORY_QUALITY),
-            Map.entry(RDataEnum.KB_PER_CHANNEL, KB_PER_CHANNEL),
-            Map.entry(RDataEnum.READS_PER_CHANNEL, READS_PER_CHANNEL),
-            Map.entry(RDataEnum.READS_QUALITY_MULTI, READS_QUALITY_MULTI),
-            Map.entry(RDataEnum.READS_QUALITY_DENSITY_MULTI, READS_QUALITY_DENSITY_MULTI),
-            Map.entry(RDataEnum.BASE_OUTLIERS_QUALITY, BASE_OUTLIERS_QUALITY),
-            Map.entry(RDataEnum.READS_OUTLIERS_QUALITY, READS_OUTLIERS_QUALITY),
-            Map.entry(RDataEnum.READS_2D_OUTLIERS_QUALITY, READS_2D_OUTLIERS_QUALITY),
-            Map.entry(RDataEnum.READS_TEMPLATE_OUTLIERS_QUALITY, READS_TEMPLATE_OUTLIERS_QUALITY),
-            Map.entry(RDataEnum.READS_COMPLEMENT_OUTLIERS_QUALITY, READS_COMPLEMENT_OUTLIERS_QUALITY),
-            Map.entry(RDataEnum.READS_QUALITY_STATUS, READS_QUALITY_STATUS),
-            Map.entry(RDataEnum.BASES_QUALITY_STATUS, BASES_QUALITY_STATUS),
-            Map.entry(RDataEnum.READS_INFO, READS_INFO),
-            Map.entry(RDataEnum.CLUSTERING_READS, CLUSTERING_READS));
+            Map.entry(NUCLEOTIDES_COUNTS.getName(), NUCLEOTIDES_COUNTS),
+            Map.entry(READS_QUALITY.getName(), READS_QUALITY),
+            Map.entry(READS_QUALITY_DENSITY.getName(), READS_QUALITY_DENSITY),
+            Map.entry(BASES_QUALITY.getName(), BASES_QUALITY),
+            Map.entry(BASES_QUALITY_DENSITY.getName(), BASES_QUALITY_DENSITY),
+            Map.entry(BASES_CALLS.getName(), BASES_CALLS),
+            Map.entry(BASES_CG_CONTENT.getName(), BASES_CG_CONTENT),
+            Map.entry(BASES_CG_DENSITY.getName(), BASES_CG_DENSITY),
+            Map.entry(SEQUENCES_DISTRIBUTION.getName(), SEQUENCES_DISTRIBUTION),
+            Map.entry(DUPLICATED_SEQUENCES.getName(), DUPLICATED_SEQUENCES),
+            Map.entry(SUMMARY_INFO.getName(), SUMMARY_INFO),
+            Map.entry(EVENTS_COUNTS.getName(), EVENTS_COUNTS),
+            Map.entry(READS_ACCUMULATION.getName(), READS_ACCUMULATION),
+            Map.entry(ACTIVE_CHANNELS.getName(), ACTIVE_CHANNELS),
+            Map.entry(READS_CATEGORY_COUNTS.getName(), READS_CATEGORY_COUNTS),
+            Map.entry(READS_CATEGORY_QUALITY.getName(), READS_CATEGORY_QUALITY),
+            Map.entry(KB_PER_CHANNEL.getName(), KB_PER_CHANNEL),
+            Map.entry(READS_PER_CHANNEL.getName(), READS_PER_CHANNEL),
+            Map.entry(READS_QUALITY_MULTI.getName(), READS_QUALITY_MULTI),
+            Map.entry(READS_QUALITY_DENSITY_MULTI.getName(), READS_QUALITY_DENSITY_MULTI),
+            Map.entry(BASE_OUTLIERS_QUALITY.getName(), BASE_OUTLIERS_QUALITY),
+            Map.entry(READS_OUTLIERS_QUALITY.getName(), READS_OUTLIERS_QUALITY),
+            Map.entry(READS_2D_OUTLIERS_QUALITY.getName(), READS_2D_OUTLIERS_QUALITY),
+            Map.entry(READS_TEMPLATE_OUTLIERS_QUALITY.getName(), READS_TEMPLATE_OUTLIERS_QUALITY),
+            Map.entry(READS_COMPLEMENT_OUTLIERS_QUALITY.getName(), READS_COMPLEMENT_OUTLIERS_QUALITY),
+            Map.entry(READS_QUALITY_STATUS.getName(), READS_QUALITY_STATUS),
+            Map.entry(BASES_QUALITY_STATUS.getName(), BASES_QUALITY_STATUS),
+            Map.entry(READS_INFO.getName(), READS_INFO),
+            Map.entry(KMEANS_CLUSTERING.getName(), KMEANS_CLUSTERING),
+            Map.entry(MCLUST_CLUSTERING.getName(), MCLUST_CLUSTERING),
+            Map.entry(MCLUST_CLUSTERING_WITHOUT_OUTLIERS.getName(), MCLUST_CLUSTERING_WITHOUT_OUTLIERS),
+            Map.entry(D2_DETECTION.getName(), D2_DETECTION),
+            Map.entry(OUTLIERS_DETECTION.getName(), OUTLIERS_DETECTION)
+    );
 }

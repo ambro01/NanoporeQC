@@ -1,7 +1,8 @@
 <template>
   <div>
     <div class="card">
-      <div class="header">
+      <div class="header"
+           v-if="this.tabIndex < 11">
         <div class="row">
           <h4 class="title" style="margin-left: 20px">Report of analysis</h4>
           <button class="btn btn-primary btn-wd refresh-button left-margin"
@@ -35,6 +36,8 @@
           <v-tab title="Duplicated sequences"></v-tab>
           <v-tab title="Reads info"></v-tab>
           <v-tab title="Clustering"></v-tab>
+          <v-tab title="Outliers detection"></v-tab>
+          <v-tab title="2D detection"></v-tab>
         </vue-tabs>
         <div v-if="this.tabIndex === 0">
           <nucleotides-counts :chart-data="this.dataNucleotidesCounts"></nucleotides-counts>
@@ -150,9 +153,19 @@
             :analysisType="'FastQ'">
           </clustering-panel>
         </div>
+        <div v-if="this.tabIndex === 12">
+          <outliers-detection
+            :analysisType="'FastQ'">
+          </outliers-detection>
+        </div>
+        <div v-if="this.tabIndex === 13">
+          <d2-detection
+            :analysisType="'FastQ'">
+          </d2-detection>
+        </div>
       </div>
     </div>
-    <quality-status v-if="this.tabIndex !== 11"
+    <quality-status v-if="this.tabIndex < 11"
                     :qualityStatus="this.basesQualityStatus">
     </quality-status>
   </div>
@@ -172,13 +185,13 @@
   import QualityStatus from 'src/components/Parts/QualityStatus.vue'
   import ClusteringPanel from 'src/components/Parts/ClusteringPanel.vue'
   import ReadsInfo from 'src/components/Stats/ReadsInfo.vue'
+  import OutliersDetection from 'src/components/Parts/OutliersDetectionPanel.vue'
+  import D2Detection from 'src/components/Parts/D2DetectionPanel.vue'
+  import CsvService from 'src/components/Services/CsvService.vue'
+  import PoretoolsReportService from 'src/components/Services/PoretoolsReportService.vue'
   import StatsCard from '../../UIComponents/Cards/StatsCard.vue'
 
-  const TEXT_CSV = 'text/csv'
-  const TEXT_HTML = 'text/html'
-
   export default {
-    name: 'VueChartJS',
     components: {
       StatsCard,
       NucleotidesCounts,
@@ -193,7 +206,11 @@
       DuplicatedSequences,
       QualityStatus,
       ReadsInfo,
-      ClusteringPanel
+      ClusteringPanel,
+      OutliersDetection,
+      D2Detection,
+      CsvService,
+      PoretoolsReportService
     },
     props: [
       'id',
@@ -215,6 +232,7 @@
         dataReadsQualityOutliers: null,
         dataReadsInfo: null,
         basesQualityStatus: null,
+        clusteringType: null,
 
         tabIndex: 0
       }
@@ -275,9 +293,7 @@
               }
             ]
           }
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
       getBasesCalls () {
         this.$http.get(`api/analysis/stats/basesCalls`, {
@@ -322,9 +338,7 @@
               }
             ]
           }
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
       getBasesQuality () {
         this.$http.get(`api/analysis/stats/basesQuality`, {
@@ -345,9 +359,7 @@
               }
             ]
           }
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
       getBasesQualityDensity () {
         this.$http.get(`api/analysis/stats/basesQualityDensity`, {
@@ -369,9 +381,7 @@
               }
             ]
           }
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
       getBasesCgContent () {
         this.$http.get(`api/analysis/stats/basesCgContent`, {
@@ -392,9 +402,7 @@
               }
             ]
           }
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
       getBasesCgDensity () {
         this.$http.get(`api/analysis/stats/basesCgDensity`, {
@@ -414,30 +422,22 @@
               }
             ]
           }
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
       getSequencesDistribution () {
         this.$http.get(`api/analysis/stats/sequences-distribution`).then(response => {
           this.dataSequencesDistribution = response.data
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
       getDuplicatedSequences () {
         this.$http.get(`api/analysis/stats/duplicated-sequences`).then(response => {
           this.dataDuplicatedSequences = response.data
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
       getReadsInfo () {
         this.$http.get(`api/analysis/stats/reads-info`).then(response => {
           this.dataReadsInfo = response.data
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
       getReadsQualityDensity () {
         this.$http.get(`api/analysis/stats/readsQualityDensity`, {
@@ -459,9 +459,7 @@
               }
             ]
           }
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
       getReadsQuality () {
         this.$http.get(`api/analysis/stats/readsQuality`, {
@@ -498,9 +496,7 @@
               }
             ]
           }
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
 
       getAllData () {
@@ -559,220 +555,42 @@
         }
       },
 
-      csvNucleotidesCounts () {
-        this.$http.get(`api/csv/nucleotidesCounts`, {
-          params: {
-            valuesNames: ['counts', 'A', 'G', 'C', 'T', 'N']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'nucleotides_counts.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvBaseCalls () {
-        this.$http.get(`api/csv/basesCalls`, {
-          params: {
-            valuesNames: ['id', 'A', 'G', 'C', 'T']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'bases_calls.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvBasesQuality () {
-        this.$http.get(`api/csv/basesQuality`, {
-          params: {
-            valuesNames: ['id', 'quality', 'mean', 'median', 'q25', 'q50', 'q75']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'bases_quality.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvBasesQualityDensity () {
-        this.$http.get(`api/csv/basesQualityDensity`, {
-          params: {
-            valuesNames: ['quality', 'density']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'bases_quality_density.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvBasesCGContent () {
-        this.$http.get(`api/csv/basesCgContent`, {
-          params: {
-            valuesNames: ['id', 'cgContent']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'bases_cg_content.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvBasesCGDensity () {
-        this.$http.get(`api/csv/basesCgDensity`, {
-          params: {
-            valuesNames: ['cgContent', 'density']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'bases_cg_content.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvSequencesDistribution () {
-        this.$http.get(`api/csv/sequences-distribution`, {
-          params: {
-            valuesNames: ['sequence', 'count']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'rsequences_distribution.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvDuplicatedSequences () {
-        this.$http.get(`api/csv/duplicated-sequences`, {
-          params: {
-            valuesNames: ['sequence', 'count']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'duplicated_sequences.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvReadsInfo () {
-        this.$http.get(`api/csv/reads-info`, {
-          params: {
-            valuesNames: ['id', 'name', 'mean', 'median', 'q25', 'q75', 'outliersRatio', 'count']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'reads_info.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvReadsQuality () {
-        this.$http.get(`api/csv/readsQuality`, {
-          params: {
-            valuesNames: ['id', 'quality', 'mean', 'median', 'q25', 'q50', 'q75']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'reads_quality.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvReadsQualityDensity () {
-        this.$http.get(`api/csv/readsQualityDensity`, {
-          params: {
-            valuesNames: ['quality', 'density']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'reads_quality_density.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-
       exportCsv () {
         switch (this.tabIndex) {
           case 0:
-            this.csvNucleotidesCounts()
+            CsvService.methods.csvNucleotidesCounts()
             break
           case 1:
-            this.csvReadsQuality()
+            CsvService.methods.csvReadsQuality()
             break
           case 2:
-            this.csvReadsQualityDensity()
+            CsvService.methods.csvReadsQualityDensity()
             break
           case 3:
-            this.csvBaseCalls()
+            CsvService.methods.csvBaseCalls()
             break
           case 4:
-            this.csvBasesQuality()
+            CsvService.methods.csvBasesQuality()
             break
           case 5:
-            this.csvBasesQualityDensity()
+            CsvService.methods.csvBasesQualityDensity()
             break
           case 6:
-            this.csvBasesCGContent()
+            CsvService.methods.csvBasesCGContent()
             break
           case 7:
-            this.csvBasesCGDensity()
+            CsvService.methods.csvBasesCGDensity()
             break
           case 8:
-            this.csvSequencesDistribution()
+            CsvService.methods.csvSequencesDistribution()
             break
           case 9:
-            this.csvDuplicatedSequences()
+            CsvService.methods.csvDuplicatedSequences()
             break
           case 10:
-            this.csvReadsInfo()
+            CsvService.methods.csvReadsInfo()
             break
         }
-      },
-
-      downloadHtmlReport () {
-        this.$http.get(`api/analysis/download-current-report`).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_HTML})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'fastqc_report.html'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
       },
 
       getBasesQualityOutliers () {
@@ -782,9 +600,7 @@
           }
         }).then(response => {
           this.dataBasesQualityOutliers = response.data.values
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
       getReadsQualityOutliers () {
         this.$http.get(`api/analysis/stats/readsQualityOutliers`, {
@@ -793,70 +609,7 @@
           }
         }).then(response => {
           this.dataReadsQualityOutliers = response.data.values
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-
-      csvBasesQualityOutliers () {
-        this.$http.get(`api/csv/readsQualityOutliers`, {
-          params: {
-            valuesNames: ['outliersId', 'outliersValues']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'reads_quality_outliers.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvBasesQualityDataWithoutOutliers () {
-        this.$http.get(`api/csv/readsQualityOutliers`, {
-          params: {
-            valuesNames: ['notOutliersId', 'notOutliersValues']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'reads_quality_without_outliers.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvReadsQualityOutliers () {
-        this.$http.get(`api/csv/readsQualityOutliers`, {
-          params: {
-            valuesNames: ['outliersId', 'outliersValues']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'reads_quality_outliers.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvReadsQualityDataWithoutOutliers () {
-        this.$http.get(`api/csv/readsQualityOutliers`, {
-          params: {
-            valuesNames: ['notOutliersId', 'notOutliersValues']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'reads_quality_without_outliers.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
 
       getBasesQualityStatus () {
@@ -866,9 +619,11 @@
           }
         }).then(response => {
           this.basesQualityStatus = response.data.values['status'][0]
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
+      },
+
+      downloadHtmlReport () {
+        PoretoolsReportService.methods.downloadHtmlReport()
       }
 
     }

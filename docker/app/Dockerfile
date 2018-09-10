@@ -30,7 +30,7 @@ RUN cd /tmp/poretools && python setup.py install
 RUN export PATH=$PATH:/home/poretools/.local/bin
 RUN pip install --upgrade pillow
 
-RUN R -e "install.packages(c('dplyr', 'ggplot2', 'gridExtra', 'svDialogs', 'data.table', 'bit64', 'Rmisc', 'rlist', 'magrittr', 'NbClust', 'Rlof'), repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages(c('dplyr', 'ggplot2', 'gridExtra', 'svDialogs', 'data.table', 'bit64', 'Rmisc', 'rlist', 'magrittr', 'NbClust', 'Rlof', 'factoextra'), repos='http://cran.rstudio.com/')"
 RUN R -e "source('https://bioconductor.org/biocLite.R'); biocLite(c('IONiseR', 'rhdf5', 'ShortRead'))"
 
 # Java 9 installation

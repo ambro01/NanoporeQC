@@ -42,9 +42,15 @@ public enum RDataEnum {
     READS_COMPLEMENT_OUTLIERS_QUALITY("readsComplementQualityOutliers", Type.Fast5, TRUE),
     READS_QUALITY_STATUS("readsQualityStatus", Type.Fast5),
     BASES_QUALITY_STATUS("basesQualityStatus", Type.FastQ),
+    READS_INFO("clusteringData", Type.FastQ),
 
-    CLUSTERING_READS("clusteringReads", null, TRUE),
-    READS_INFO("clusteringData", Type.FastQ);
+    KMEANS_CLUSTERING("kmeansClustering", null, TRUE),
+    MCLUST_CLUSTERING("mclustClustering", null, TRUE),
+    MCLUST_CLUSTERING_WITHOUT_OUTLIERS("mclustClusteringWithoutGroupNumber", null, TRUE),
+
+    D2_DETECTION("d2Detection",null,TRUE),
+
+    OUTLIERS_DETECTION("outliersDetection",null,TRUE);
 
     private String value;
     private Type type;

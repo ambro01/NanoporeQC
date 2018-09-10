@@ -43,27 +43,15 @@
           this.$http.post(`api/users/create`, {
             username: this.userName,
             password: this.password
-          }).then(response => {
-            if (response.status === 200) {
-              this.$toast.success({
-                title: 'Success',
-                message: 'User ' + this.userName + ' has been created'
-              })
-              this.userName = ''
-              this.password = ''
-              this.confirmedPassword = ''
-            } else {
-              this.$toast.error({
-                title: 'Error',
-                message: 'User creation failed'
-              })
-            }
-          })
-        } else {
-          this.$toast.error({
-            title: 'Error',
-            message: 'Passwords are not equal'
-          })
+          }).then(() => {
+            this.$toast.success({
+              title: 'Success',
+              message: 'User ' + this.userName + ' has been created'
+            })
+            this.userName = ''
+            this.password = ''
+            this.confirmedPassword = ''
+          }).catch(() => this.$toast.error())
         }
       }
     }

@@ -7,8 +7,6 @@ import SessionEnd from '../components/GeneralViews/SessionEnd.vue'
 import Overview from 'src/components/Dashboard/Views/Overview.vue'
 import UserPanel from 'src/components/Dashboard/Views/UserProfile.vue'
 import NewAnalysis from 'src/components/Dashboard/Views/NewAnalysis.vue'
-import Typography from 'src/components/Dashboard/Views/Typography.vue'
-import Icons from 'src/components/Dashboard/Views/Icons.vue'
 import MyAnalyses from 'src/components/Dashboard/Views/MyAnalyses.vue'
 import Login from 'src/components/Login/login.vue'
 
@@ -51,16 +49,6 @@ const routes = [
         path: 'my-analyses',
         name: 'my-analyses',
         component: MyAnalyses
-      },
-      {
-        path: 'typography',
-        name: 'typography',
-        component: Typography
-      },
-      {
-        path: 'icons',
-        name: 'icons',
-        component: Icons
       }
     ]
   }

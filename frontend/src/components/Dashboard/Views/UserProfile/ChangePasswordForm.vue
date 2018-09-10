@@ -50,28 +50,16 @@
             username: this.userName,
             oldPassword: this.oldPassword,
             newPassword: this.newPassword
-          }).then(response => {
-            if (response.status === 200) {
-              this.$toast.success({
-                title: 'Success',
-                message: 'Password has been created'
-              })
-            } else {
-              this.$toast.error({
-                title: 'Error',
-                message: 'Password changing failed'
-              })
-            }
-          })
-          this.userName = ''
-          this.newPassword = ''
-          this.oldPassword = ''
-          this.confirmedPassword = ''
-        } else {
-          this.$toast.error({
-            title: 'Error',
-            message: 'Passwords are not equal'
-          })
+          }).then(() => {
+            this.$toast.success({
+              title: 'Success',
+              message: 'Password has been created'
+            })
+            this.userName = ''
+            this.newPassword = ''
+            this.oldPassword = ''
+            this.confirmedPassword = ''
+          }).catch(() => this.$toast.error())
         }
       }
     }

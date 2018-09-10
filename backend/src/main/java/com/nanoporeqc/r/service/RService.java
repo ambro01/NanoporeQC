@@ -1,5 +1,6 @@
 package com.nanoporeqc.r.service;
 
+import com.nanoporeqc.analysis.domain.ClusteringAlgorithm;
 import com.nanoporeqc.analysis.domain.Type;
 import com.nanoporeqc.analysis.service.StatsService;
 import com.nanoporeqc.exceptions.NotSupportedAnalysisTypeException;
@@ -82,6 +83,7 @@ public class RService {
         final String notSaved = rDataEnum.isNotSaved() ? "NotSaved" : "";
         final String variableType = rDataEnum.getType() != null ? "results" + rDataEnum.getType() + notSaved + "$" : "";
         final String commandPrefix = variableType + rDataEnum.getValue() + "$";
+        LOGGER.info("Get data for variable: " + variableType + rVariable.getName());
         try {
             switch (rVariable.getType()) {
                 case LOGICAL:
@@ -148,12 +150,33 @@ public class RService {
         }
     }
 
-    public void runClusteringReads(final Type type, final Integer clustersNumber) {
+    public void runClusteringReads(final Type type, final ClusteringAlgorithm clusteringAlgorithm, final Integer clustersNumber) {
         final String savedVariable = "results" + type.name() + "$clusteringData";
         eval("preparedClusteringData <- " + savedVariable);
         eval("clustersNumber <- " + clustersNumber);
-        eval("clusteringReads <- runClusteringReads(preparedClusteringData, clustersNumber)");
-        eval("clusteringReads <- runClusteringReads(preparedClusteringData, clustersNumber)");
+        switch (clusteringAlgorithm) {
+            case kmeans:
+                eval("kmeansClustering <- runKmeansClustering(preparedClusteringData, clustersNumber)");
+            case mclust:
+                if (clustersNumber > 0) {
+                    eval("mclustClustering <- runMclustClustering(preparedClusteringData, clustersNumber)");
+                } else {
+                    eval("mclustClusteringWithoutGroupNumber <- runMclustClusteringWithoutGroupNumber(preparedClusteringData)");
+                }
+        }
+    }
+
+    public void runD2Detection(final Type type) {
+        final String savedVariable = "results" + type.name() + "$clusteringData";
+        eval("preparedClusteringData <- " + savedVariable);
+        eval("d2Detection <- run2dDetection(preparedClusteringData)");
+    }
+
+    public void runOutliersDetection(final Type type, final Double outliersProportion) {
+        final String savedVariable = "results" + type.name() + "$clusteringData";
+        eval("preparedClusteringData <- " + savedVariable);
+        eval("outliersProportion <- " + outliersProportion);
+        eval("outliersDetection <- runOutliersDetection(preparedClusteringData, outliersProportion)");
     }
 
     private void copyAllRScriptsToDisc() {

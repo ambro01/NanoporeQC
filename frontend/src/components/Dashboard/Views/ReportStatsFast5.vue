@@ -31,7 +31,7 @@
           <v-tab title="Events"></v-tab>
           <v-tab title="Reads per channel"></v-tab>
           <v-tab title="Kilobases per channel"></v-tab>
-          <v-tab title="Clustering"></v-tab>
+          <!--<v-tab title="Clustering"></v-tab>-->
         </vue-tabs>
         <div v-if="this.tabIndex === 0">
           <summary-info :sourceData="this.dataSummaryInfo" v-if="this.dataSummaryInfo != null"></summary-info>
@@ -196,13 +196,11 @@
   import SummaryInfo from 'src/components/Stats/SummaryInfo.vue'
   import QualityStatus from 'src/components/Parts/QualityStatus.vue'
   import ClusteringPanel from 'src/components/Parts/ClusteringPanel.vue'
+  import CsvService from 'src/components/Services/CsvService.vue'
+  import PoretoolsReportService from 'src/components/Services/PoretoolsReportService.vue'
   import StatsCard from '../../UIComponents/Cards/StatsCard.vue'
 
-  const TEXT_CSV = 'text/csv'
-  const TEXT_HTML = 'text/html'
-
   export default {
-    name: 'VueChartJS',
     components: {
       StatsCard,
       ReadsAccumulation,
@@ -260,9 +258,8 @@
       getSummaryInfo () {
         this.$http.get(`api/analysis/stats/info`).then(response => {
           this.dataSummaryInfo = response.data
-        }).catch(e => {
-          console.error(e)
         })
+          .catch(() => this.$toast.error())
       },
       getReadsAccumulation () {
         this.$http.get(`api/analysis/stats/readsAccumulation/`, {
@@ -280,9 +277,7 @@
               }
             ]
           }
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
       getActiveChannels () {
         this.$http.get(`api/analysis/stats/activeChannels`, {
@@ -305,9 +300,7 @@
               }
             ]
           }
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
       getReadsCategoryCounts () {
         this.$http.get(`api/analysis/stats/readsCategoryCounts`, {
@@ -340,9 +333,7 @@
               }
             ]
           }
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
       getReadsCategoryQuality () {
         this.$http.get(`api/analysis/stats/readsCategoryQuality`, {
@@ -385,9 +376,7 @@
               }
             ]
           }
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
       getEventsCounts () {
         this.$http.get(`api/analysis/stats/eventsCounts`, {
@@ -408,9 +397,7 @@
               }
             ]
           }
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
       getReadsQualityMulti () {
         this.$http.get(`api/analysis/stats/readsQualityMulti`, {
@@ -447,9 +434,7 @@
               }
             ]
           }
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
       getReadsQualityDensityMulti () {
         this.$http.get(`api/analysis/stats/readsQualityDensityMulti`, {
@@ -497,9 +482,7 @@
               }
             ]
           }
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
       getReadsPerChannel () {
         this.$http.get(`api/analysis/stats/readsPerChannel`, {
@@ -519,9 +502,7 @@
               }
             ]
           }
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
       getKbPerChannel () {
         this.$http.get(`api/analysis/stats/kbPerChannel`, {
@@ -542,9 +523,7 @@
               }
             ]
           }
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
       getReadsQualityOutliers2D () {
         this.$http.get(`api/analysis/stats/reads2DQualityOutliers`, {
@@ -553,9 +532,8 @@
           }
         }).then(response => {
           this.dataReadsQualityOutliers2D = response.data.values
-        }).catch(e => {
-          console.error(e)
         })
+          .catch(() => this.$toast.error())
       },
       getReadsQualityOutliersTemplate () {
         this.$http.get(`api/analysis/stats/readsTemplateQualityOutliers`, {
@@ -564,9 +542,7 @@
           }
         }).then(response => {
           this.dataReadsQualityOutliersTemplate = response.data.values
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
       getReadsQualityOutliersComplement () {
         this.$http.get(`api/analysis/stats/readsComplementQualityOutliers`, {
@@ -575,9 +551,7 @@
           }
         }).then(response => {
           this.dataReadsQualityOutliersComplement = response.data.values
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       },
 
       getAllData () {
@@ -634,229 +608,43 @@
         }
       },
 
-      csvSummaryInfo () {
-        this.$http.get(`api/csv/info`).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'summary_info.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvReadsAccumulation () {
-        this.$http.get(`api/csv/readsAccumulation`, {
-          params: {
-            valuesNames: ['minute', 'accumulation']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'reads_accumulation.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvActiveChannels () {
-        this.$http.get(`api/csv/activeChannels`, {
-          params: {
-            valuesNames: ['minute', 'channels']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'active_channels.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvReadsCategoryCounts () {
-        this.$http.get(`api/csv/readsCategoryCounts`, {
-          params: {
-            valuesNames: ['category', 'files_count', 'template_count', 'complement_count', 'full_2d_count']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'read_category_counts.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvReadsCategoryQuality () {
-        this.$http.get(`api/csv/readsCategoryQuality`, {
-          params: {
-            valuesNames: ['category', 'min', 'max', 'mean', 'median']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'read_category_quality.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvEventsCounts () {
-        this.$http.get(`api/csv/eventsCounts`, {
-          params: {
-            valuesNames: ['time', 'events']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'events_counts.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvReadsQualityMulti () {
-        this.$http.get(`api/csv/readsQualityMulti`, {
-          params: {
-            valuesNames: ['id', 'quality', 'min_', 'max_', 'mean_', 'median_']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'reads_quality.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvReadsQualityDensityMulti () {
-        this.$http.get(`api/csv/readsQualityDensityMulti`, {
-          params: {
-            valuesNames: ['quality_template', 'quality_complement', 'quality_2D',
-              'density_template', 'density_complement', 'density_2D']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'read_quality_density.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvReadsPerChannel () {
-        this.$http.get(`api/csv/readsPerChannel`, {
-          params: {
-            valuesNames: ['channel', 'reads']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'reads_per_channel.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvKbPerChannel () {
-        this.$http.get(`api/csv/kbPerChannel`, {
-          params: {
-            valuesNames: ['channel', 'kb']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'kb_per_channel.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvReadsQualityOutliers (type) {
-        this.$http.get(`api/csv/reads` + type + `QualityOutliers`, {
-          params: {
-            valuesNames: ['outliersId', 'outliersValues']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'reads_quality_outliers.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-      csvReadsQualityDataWithoutOutliers (type) {
-        this.$http.get(`api/csv/reads` + type + `QualityOutliers`, {
-          params: {
-            valuesNames: ['notOutliersId', 'notOutliersValues']
-          }
-        }).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_CSV})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'reads_quality_without_outliers.csv'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
-      },
-
       exportCsv () {
         switch (this.tabIndex) {
           case 0:
-            this.csvSummaryInfo()
+            CsvService.methods.csvSummaryInfo()
             break
           case 1:
-            this.csvReadsAccumulation()
+            CsvService.methods.csvReadsAccumulation()
             break
           case 2:
-            this.csvActiveChannels()
+            CsvService.methods.csvActiveChannels()
             break
           case 3:
-            this.csvReadsQualityMulti()
+            CsvService.methods.csvReadsQualityMulti()
             break
           case 4:
-            this.csvReadsQualityDensityMulti()
+            CsvService.methods.csvReadsQualityDensityMulti()
             break
           case 5:
-            this.csvReadsCategoryQuality()
+            CsvService.methods.csvReadsCategoryQuality()
             break
           case 6:
-            this.csvReadsCategoryCounts()
+            CsvService.methods.csvReadsCategoryCounts()
             break
           case 7:
-            this.csvEventsCounts()
+            CsvService.methods.csvEventsCounts()
             break
           case 8:
-            this.csvReadsPerChannel()
+            CsvService.methods.csvReadsPerChannel()
             break
           case 9:
-            this.csvKbPerChannel()
+            CsvService.methods.csvKbPerChannel()
             break
         }
       },
 
       downloadHtmlReport () {
-        this.$http.get(`api/analysis/download-current-report`).then(response => {
-          const blob = new Blob([response.data], {type: TEXT_HTML})
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = 'fastqc_report.html'
-          link.click()
-        }).catch(e => {
-          console.error(e)
-        })
+        PoretoolsReportService.methods.downloadHtmlReport()
       }
 
     }

@@ -46,7 +46,7 @@
       onFilesUploaded () {
         this.$http.post(`api/analysis/run-new`, {
           type: this.typeName
-        }).then(response => {
+        }).then(() => {
           this.$toast.success({
             title: 'Success',
             message: 'Successful data loading'
@@ -54,7 +54,7 @@
           this.showSave = true
           this.showReport = true
           this.getReadsQualityStatus()
-        }).catch(e => {
+        }).catch(() => {
           this.$toast.error({
             title: 'Error',
             message: 'Files loading failed'
@@ -68,9 +68,7 @@
           }
         }).then(response => {
           this.readsQualityStatus = response.data.values['status'][0]
-        }).catch(e => {
-          console.error(e)
-        })
+        }).catch(() => this.$toast.error())
       }
     }
   }

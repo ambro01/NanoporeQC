@@ -146,4 +146,5 @@ sequence <- df$sequence
 count <- df$count
 resultsFastQ <- list.append(resultsFastQ, duplicatedSequences = list(sequence=sequence, count=count))
 
-# resultsFastQ <- list.append(resultsFastQ, clusteringData = getDataForClustering(fq))
+# Prepare data for clustering and outliers detection
+resultsFastQ <- list.append(resultsFastQ, clusteringData = getDataForClustering(fq))

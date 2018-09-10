@@ -18,42 +18,28 @@
     ],
     data () {
       return {
-        columns: ['id', 'readsIndices', 'mean', 'median', 'quantile25', 'quantile75', 'outliersRatio'],
+        columns: ['cluster', 'readIds'],
         data: [],
         options: {
           headings: {
-            id: 'Cluster id',
-            mean: 'Mean',
-            median: 'Median',
-            quantile25: '1st quantile',
-            quantile75: '3rd quantile',
-            outliersRatio: 'Outliers ratio [%]',
-            readsIndices: 'Reads indices'
+            cluster: 'Cluster id',
+            readIds: 'Reads ids'
           },
           headingsTooltips: {
-            mean: 'Mean of mean bases quality in cluster',
-            median: 'Mean median of  bases quality in cluster',
-            quantile25: 'Mean first quantile of bases quality in cluster',
-            quantile75: 'Mean third quantile of bases quality in cluster',
-            outliersRatio: 'Mean proportion of outliers bases in cluster reads',
-            readsIndices: 'Indices of reads in cluster'
+            cluster: 'Cluster id',
+            readIds: 'Ids of reads in cluster'
           },
-          sortable: ['id', 'mean', 'median', 'q25', 'q75', 'outliersRatio'],
-          filterable: ['readsIndices'],
+          sortable: ['cluster'],
+          filterable: ['readIds'],
           pagination: {
             edge: false
           },
           columnsDropdown: true,
           texts: {
-            filter: 'Search in indices:'
+            filter: 'Search in reads ids:'
           },
           columnsClasses: {
-            id: 'width-8',
-            mean: 'width-8',
-            median: 'width-8',
-            quantile25: 'width-8',
-            quantile75: 'width-8',
-            outliersRatio: 'width-10'
+            cluster: 'width-8'
           }
         }
       }

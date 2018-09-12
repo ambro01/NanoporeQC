@@ -1,6 +1,6 @@
 # NanoporeQC
 
-NanoporeQc is a tool for quality control of data produced by MinION sequencer.
+NanoporeQC is a tool for quality control of data produced by MinION sequencer.
 It is a web application. It can run analyses for data in FAST5 and FASTQ formats. 
 
 ## Technological stack 
@@ -16,21 +16,21 @@ To create and run containers:
 To stop and start containers run: 'docker-compose stop' 'docker-compose stop'
 
 Application is deployed in container named: 'nanoporeqc_app', port 8080 is open.
-Data base is run in container named: 'nanoporeqc_db', port 3037 is open.
+Data base is run in container named: 'nanoporeqc_db', port 3307 is open.
 
 You can access to application on: localhost:8080
 
 ###  Application building
 
 1. Build front by running 'npm run-script build' in /frontend directory.
-2. Run script "prepareFront.sh". It will copy necessary frond files to backend module.
-3. Build backend. Run e.g. 'mvn clean install' in /backend directory.
+2. Run script 'prepareFront.sh'. It will copy necessary frontend files to backend module.
+3. Build backend .jar package with copied frontend files. Run e.g. 'mvn clean install' in /backend directory.
 
 
 ### Application restart
 After building new package you can run your new version. 
 Firstly copy .jar package from /backend directory to application container:
-1. docker cp <project location>/backend/target/backend-1.0-SNAPSHOT.jar nanoporeqc_app:/usr/nanoporeqc/app/nanoporeqc.jar
-And restart the container with application (web service)
-2. docker stop web
-3. docker start web
+1. 'docker cp <project location>/backend/target/backend-1.0-SNAPSHOT.jar nanoporeqc_app:/usr/nanoporeqc/app/nanoporeqc.jar'
+And restart the container with application ('web' service)
+2. 'docker stop web'
+3. 'docker start web'

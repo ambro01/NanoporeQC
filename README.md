@@ -10,12 +10,27 @@ Java 9, Spring Boot 2.x.x, Hibernate 5.x.x, MySql, Vue.js 2,  R 3.4.3, Rserve, D
 ### Installing
 
 Application with R environment and data base are run on docker containers (in separate network).
-By running script "startAndRun.sh" from docker dir, everything will be ready for few seconds.
-Application and data base can be accessed from localhost on ports: 8080 (app), 3306 (db). 
+Images have been build and they are stored in DockerHub. You only need to install docker-compose.
+To create and run containers:
+1. Run command 'docker-compose up' in /docker directory
+To stop and start containers run: 'docker-compose stop' 'docker-compose stop'
+
+Application is deployed in container named: 'nanoporeqc_app', port 8080 is open.
+Data base is run in container named: 'nanoporeqc_db', port 3037 is open.
+
+You can access to application on: localhost:8080
 
 ###  Application building
 
-Firstly run script "prepareFront.sh". It will copy necessary frond files to backend module.
-After that build backend module. With maven it will be command "mvn clean install".
-Application is packed to .jar file. Thanks to use Spring Boot,it has embedded Apache Tomcat,
-so app can be run by simply java command "java -jar xxx.jar"
+1. Build front by running 'npm run-script build' in /frontend directory.
+2. Run script "prepareFront.sh". It will copy necessary frond files to backend module.
+3. Build backend. Run e.g. 'mvn clean install' in /backend directory.
+
+
+### Application restart
+After building new package you can run your new version. 
+Firstly copy .jar package from /backend directory to application container:
+$ docker cp <project location>/backend/target/backend-1.0-SNAPSHOT.jar nanoporeqc_app:/usr/nanoporeqc/app/nanoporeqc.jar
+And restart the container with application (web service)
+$ docker stop web
+$ docker start web

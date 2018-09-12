@@ -1,8 +1,0 @@
-To build docker container:
-docker build -t qc_db .
-
-To run:
-docker run --rm -p 3307:3306 -d --name qc_db --hostname=qc_db --net qc_net qc_db
-
-To enter to docker container:
-docker exec -i -t qc_db /bin/bash

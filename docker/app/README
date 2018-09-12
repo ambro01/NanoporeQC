@@ -1,8 +1,0 @@
-To build docker container:
-docker build -t qc_app .
-
-To run:
-docker run --rm -p 8080:8080 -d -i --name qc_app --hostname=nanoporeqc --net qc_net qc_app
-
-To enter to docker container:
-docker exec -i -t qc_app /bin/bash

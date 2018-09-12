@@ -30,7 +30,7 @@ You can access to application on: localhost:8080
 ### Application restart
 After building new package you can run your new version. 
 Firstly copy .jar package from /backend directory to application container:
-$ docker cp <project location>/backend/target/backend-1.0-SNAPSHOT.jar nanoporeqc_app:/usr/nanoporeqc/app/nanoporeqc.jar
+1. docker cp <project location>/backend/target/backend-1.0-SNAPSHOT.jar nanoporeqc_app:/usr/nanoporeqc/app/nanoporeqc.jar
 And restart the container with application (web service)
-$ docker stop web
-$ docker start web
+2. docker stop web
+3. docker start web

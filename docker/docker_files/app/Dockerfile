@@ -31,11 +31,8 @@ RUN export PATH=$PATH:/home/poretools/.local/bin
 RUN pip install --upgrade pillow
 
 RUN R -e "install.packages(c('dplyr', 'ggplot2', 'gridExtra', 'svDialogs', 'data.table', 'bit64', 'Rmisc', 'rlist', 'magrittr', 'NbClust', 'Rlof'), repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages(c('mclust', 'cluster', 'factoextra'), repos='http://cran.rstudio.com/')"
 RUN R -e "source('https://bioconductor.org/biocLite.R'); biocLite(c('IONiseR', 'rhdf5', 'ShortRead'))"
-
-# Java 9 installation
-RUN apt-get install -y openjdk-9-jre
-ENV JAVA_HOME /usr/lib/jvm/java-9-openjdk-amd64
 
 RUN apt-get install -y unzip
 ENV DISPLAY :0.0
@@ -51,6 +48,13 @@ RUN mkdir /usr/nanoporeqc/app
 RUN mkdir /usr/nanoporeqc/tools
 RUN mkdir /usr/nanoporeqc/tools/rserve
 
+# Java 9 installation
+COPY tools/java9oracle.tar.gz /usr/lib/jvm/java9oracle.tar.gz
+RUN tar -zxvf /usr/lib/jvm/java9oracle.tar.gz -C /usr/lib/jvm/
+
+ENV JAVA_HOME /usr/lib/jvm/java-9-oracle
+ENV PATH /usr/lib/jvm/java-9-oracle/bin:$PATH
+
 COPY tools/Rserv.conf /usr/nanoporeqc/tools/rserve/Rserv.conf
 
 COPY tools/fastqc_v0.11.7.zip /usr/local/fastqc.zip
@@ -61,8 +65,6 @@ ENV PATH /usr/nanoporeqc/tools/FastQC:$PATH
 
 COPY tools/Rserve_1.7-3.tar.gz /usr/bin/Rserve_1.7-3.tar.gz
 RUN R CMD INSTALL /usr/bin/Rserve_1.7-3.tar.gz
-
-RUN R -e "install.packages(c('mclust', 'cluster', 'factoextra'), repos='http://cran.rstudio.com/')"
 
 # start app
 COPY nanoporeqc.jar /usr/nanoporeqc/app/nanoporeqc.jar

@@ -29,7 +29,7 @@ import java.time.LocalDateTime;
 @Table(name = "ANALYSES")
 public class Analysis {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Long id;
 

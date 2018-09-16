@@ -9,6 +9,10 @@ Vue.prototype.$http = axios
 
 axios.interceptors.request.use(function (config) {
   // Do something before request is sent
+  config.baseURL = window.location.origin + '/'
+  if (window.location.host === 'localhost:5000') {
+    config.baseURL = 'http://localhost:8080/'
+  }
   let jwt = localStorage.getItem('token')
   if (jwt) {
     config.headers.Authorization = 'Bearer ' + jwt

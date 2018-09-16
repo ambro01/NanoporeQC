@@ -4,11 +4,15 @@ services:
     image: ambro01/nanoporeqc_app 
     ports:
     - 8080:8080
+    depends_on:
+    - db
     links:
     - db:qc_db
     container_name: nanoporeqc_app
   db:
     image: ambro01/nanoporeqc_db
-    ports:
-    - 3307:3306
     container_name: nanoporeqc_db
+    volumes:
+       - db_data:/var/lib/mysql
+volumes:
+    db_data:

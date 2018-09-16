@@ -20,6 +20,10 @@ Data base is run in container named: 'nanoporeqc_db', port 3307 is open.
 
 You can access to application on: localhost:8080
 
+### Testing
+
+After start, application should be checked on test data available in test_data directory. There are FAST5 and FASTQ files.
+
 ###  Application building
 
 1. Build front by running 'npm run-script build' in /frontend directory.

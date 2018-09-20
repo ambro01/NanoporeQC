@@ -50,25 +50,21 @@ resultsFastQNotSaved <- list.append(resultsFastQNotSaved, basesQualityOutliers =
 
 # Checking qaulity status
 df <- qaSummary[["perCycle"]]
-df <- df$quality
-df <- df[rep(row.names(df), df$Count), 1-3]
-df <- df %>% group_by(Cycle) %>% do(data.frame(t(quantile(.$Score, c(0.25, 0.5)))))
+quality <- df$quality
+quantiles <- quality %>% group_by(Cycle) %>% do(data.frame(t(quantile(.$Score, c(0.25, 0.5)))))
 
 status <- 'Success'
-if (any(df$X50.) < 10 || any(df$X25.) < 5) {
+if (any(quantiles$X50.) < 10 || any(quantiles$X25.) < 5) {
     status <- 'Warning'
 }
-if (any(df$X50.) < 8 || any(df$X25.) < 3) {
+if (any(quantiles$X50.) < 8 || any(quantiles$X25.) < 3) {
     status <- 'Failure'
 }
 resultsFastQ <- list.append(resultsFastQ, basesQualityStatus = list(status=status))
 
 
 # Base quality denisty
-df <- qaSummary[["perCycle"]]
-df <- df$quality
-
-density_quality <- tryCatch(density(df[rep(row.names(df), df$Count), 3]), error = function(cond){return (tibble())})
+density_quality <- tryCatch(density(quality[rep(row.names(quality), df$Count), 3]), error = function(cond){return (tibble())})
 
 quality <- if(length(density_quality) > 0){density_quality$x} else {list()}
 density <- if(length(density_quality) > 0){density_quality$y} else {list()}
@@ -76,14 +72,9 @@ density <- if(length(density_quality) > 0){density_quality$y} else {list()}
 resultsFastQ <- list.append(resultsFastQ, basesQualityDensity = list(quality=quality, density=density))
 
 # Base call
-df <- qaSummary[["perCycle"]]
 df <- df$baseCall
-df <- df[rep(row.names(df), df$Count), 1:3]
-
-df <- df[order(df$Base, df$Cycle), ]
 
 df <- df %>% group_by(Cycle, Base) %>% summarise_at(.vars = names(.)[3],.funs = c(Count="sum"))
-
 
 A <- subset(df %>% filter(Base == "A"), select = c("Cycle", "Count"))
 colnames(A)[2] <- "Count_A"

@@ -92,7 +92,6 @@ full_2d_count <- count[4,1]
 
 resultsFast5 <- list.append(resultsFast5, readsCategoryCounts = list(category=category, count=count,
 files_count=files_count, template_count=template_count, complement_count=complement_count, full_2d_count=full_2d_count))
-
 # Events counts
 out <- tryCatch(eventData(summaryData), error = function(cond){return (tibble())})
 out$end_time <- out$start_time + out$duration
@@ -101,12 +100,11 @@ b <- data.frame(out$end_time, out$num_events)
 colnames(a) <- c('time', 'num_events')
 colnames(b) <- c('time', 'num_events')
 total <- rbind(a, b)
-total[with(total, order(time)),]
+total <- total[with(total, order(time)),]
 temp <- tryCatch(select(out, start_time), error = function(cond){return (tibble(start_time = double()))})
 time <- matrix(as.double(unlist(temp)), nrow = nrow(temp))
 temp <- tryCatch(select(out, num_events), error = function(cond){return (tibble(num_events = numeric()))})
 events <- matrix(as.numeric(unlist(temp)), nrow = nrow(temp))
-
 resultsFast5 <- list.append(resultsFast5, eventsCounts = list(time=time, events=events))
 
 # Reads per channel

@@ -136,27 +136,38 @@ outliersProportion <- function(dataSet) {
 
 getmode <- function(v) {
     uniqv <- unique(v)
-    uniqv[which.max(tabulate(match(v, uniqv)))]
+    return(uniqv[which.max(tabulate(match(v, uniqv)))])
+}
+
+quantile25 <- function(v) {
+    return(quantile(v, probs = 0.25, na.rm = TRUE, names = FALSE))
+}
+
+quantile75 <- function(v) {
+    return(quantile(v, probs = 0.75, na.rm = TRUE, names = FALSE))
+}
+
+calculateCG <- function(v) {
+    return(length(which(v %in% c("C", "G"))) / length(v))
 }
 
 getDataForClustering <- function(fq) {
     id <- as.character(id(fq))
-    d <- data.frame(id = id)
-    qa <- quality(fq)
-    ra <- sread(fq)
-    for (i in 1 : nrow(d)) {
-        q <- as(qa[i], 'matrix')
-        r <- as(ra[i], 'matrix')
-        d[i, 2] <- getmode(q)
-        d[i, 3] <- mean(q)
-        d[i, 4] <- median(q)
-        d[i, 5] <- quantile(q, probs = 0.25, na.rm = TRUE, names = FALSE)
-        d[i, 6] <- quantile(q, probs = 0.75, na.rm = TRUE, names = FALSE)
-        d[i, 7] <- length(which(r %in% c("C", "G"))) / length(r)
-        d[i, 8] <- sd(q)
-        d[i, 9] <- length(q)
-        d[i, 10] <- i
-    }
+    q <- as(quality(fq), 'matrix')
+    r <- as(sread(fq), 'matrix')
+
+    d <- as.data.frame(matrix(0, ncol = 10, nrow = length(id)))
+    d[, 1] <- id
+    d[, 2] <- apply(q, 1, getmode)
+    d[, 3] <- apply(q, 1, mean)
+    d[, 4] <- apply(q, 1, median)
+    d[, 5] <- apply(q, 1, quantile25)
+    d[, 6] <- apply(q, 1, quantile75)
+    d[, 7] <- apply(r, 1, calculateCG)
+    d[, 8] <- apply(q, 1, sd)
+    d[, 9] <- apply(q, 1, length)
+    d[, 10] <- seq(1, nrow(d))
+
     colnames(d) <- c('name', 'mode', 'mean', 'median', 'q25', 'q75', 'cgContent', 'sd', 'length', 'id')
 
     return(d)

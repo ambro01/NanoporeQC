@@ -174,7 +174,10 @@ getDataForClustering <- function(fq) {
 }
 
 pcaTransform <- function(d) {
-    pca <- prcomp(d[, 2 : 9], scale = TRUE)
+    # exclude constant columns
+    x <- d[, 2:9]
+    x <- x[ , apply(x, 2, var) != 0]
+    pca <- prcomp(x, scale = TRUE)
     result <- data.frame(pca$x[, 1 : 6])
     result$name <- d$name
     result$id <- d$id

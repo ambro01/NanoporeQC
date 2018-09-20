@@ -12,6 +12,7 @@ services:
   db:
     image: ambro01/nanoporeqc_db
     container_name: nanoporeqc_db
+    command: --max_allowed_packet=32505856
     volumes:
        - db_data:/var/lib/mysql
 volumes:
